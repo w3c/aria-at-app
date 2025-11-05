@@ -741,9 +741,143 @@ const graphqlSchema = gql`
     """
     phrase: String
     """
+    AT bugs that are linked to this assertion.
+    """
+    atBugs(commandId: String): [AtBug]!
+    """
     Collection of ARIA and HTML features references related to the assertion.
     """
     references: [Reference]
+  }
+
+  """
+  Represents a bug in an assistive technology that may be associated with
+  failing assertions and derivatively a test plan report.
+  """
+  type AtBug {
+    """
+    Unique identifier for the bug.
+    """
+    id: ID!
+    """
+    The bug title or link text (e.g., "Region boundaries are not rendered by default").
+    """
+    title: String!
+    """
+    Full URL to the bug tracker issue.
+    """
+    url: String!
+    """
+    Command IDs this bug is linked to (for assertions only).
+    """
+    commandIds: [String]
+    """
+    The assistive technology this bug is associated with.
+    """
+    at: At
+    """
+    All assertions linked to this bug.
+    """
+    assertions: [Assertion]!
+    """
+    The time this bug record was created.
+    """
+    createdAt: Timestamp!
+    """
+    The time this bug record was last updated.
+    """
+    updatedAt: Timestamp!
+  }
+
+  """
+  Represents a negative side effect record that occurred during testing and may be
+  associated with AtBugs for tracking purposes.
+  """
+  type NegativeSideEffectRecord {
+    """
+    Unique identifier for the negative side effect record.
+    """
+    id: ID!
+    """
+    The test plan run this negative side effect belongs to.
+    """
+    testPlanRunId: ID!
+    """
+    The test result ID from TestPlanRun.testResults JSONB.
+    """
+    testResultId: String!
+    """
+    The scenario result ID from TestPlanRun.testResults JSONB.
+    """
+    scenarioResultId: String!
+    """
+    The negative side effect ID from negativeSideEffects.json.
+    """
+    negativeSideEffectId: String!
+    """
+    The impact level (SEVERE, MODERATE, etc.).
+    """
+    impact: String!
+    """
+    Additional details provided by the tester.
+    """
+    details: String
+    """
+    Whether a highlight was required for this negative side effect.
+    """
+    highlightRequired: Boolean
+    """
+    The encoded negative side effect ID (for backward compatibility).
+    """
+    encodedId: String!
+    """
+    Human-readable sentence describing the failure (from negativeSideEffects.json).
+    """
+    text: String!
+    """
+    AT bugs linked to this negative side effect.
+    """
+    atBugs: [AtBug!]!
+    """
+    When this negative side effect was created.
+    """
+    createdAt: Timestamp!
+    """
+    When this negative side effect was last updated.
+    """
+    updatedAt: Timestamp!
+  }
+
+  """
+  Input for creating a new AT bug.
+  """
+  input AtBugInput {
+    """
+    The bug title or link text.
+    """
+    title: String!
+    """
+    Full URL to the bug tracker issue.
+    """
+    url: String!
+    """
+    The ID of the assistive technology this bug is associated with.
+    """
+    atId: ID!
+  }
+
+  """
+  Input for updating an existing AT bug.
+  """
+  input AtBugUpdateInput {
+    """
+    The bug title or link text.
+    """
+    title: String
+    """
+    Full URL to the bug tracker issue.
+    """
+    url: String
   }
 
   """
@@ -850,7 +984,7 @@ const graphqlSchema = gql`
     as a failure for any scenario, even when the assertions otherwise pass.
     Submitted test results require this field to be filled in.
     """
-    negativeSideEffects: [NegativeSideEffect]
+    negativeSideEffects: [NegativeSideEffectRecord]
     match: ScenarioResultMatch
   }
 
@@ -1307,8 +1441,6 @@ const graphqlSchema = gql`
     events: [UpdateEvent]!
   }
 
-  """
-  """
   type ReviewerStatus {
     """
     The vendor representative who reviewed the test.
@@ -1470,6 +1602,14 @@ const graphqlSchema = gql`
     Get all browsers known to the app.
     """
     browsers: [Browser]!
+    """
+    Get a specific AT bug by ID.
+    """
+    atBug(id: ID!): AtBug
+    """
+    Get all AT bugs, optionally filtered by AT ID.
+    """
+    atBugs(atId: ID): [AtBug]!
     """
     Get all TestPlans.
     """
@@ -1893,6 +2033,48 @@ const graphqlSchema = gql`
     createCollectionJobsFromPreviousAtVersion(
       atVersionId: ID!
     ): CreateCollectionJobsFromPreviousVersionResponse!
+    """
+    Create a new AT bug.
+    """
+    createAtBug(input: AtBugInput!): AtBug!
+    """
+    Update an existing AT bug.
+    """
+    updateAtBug(id: ID!, input: AtBugUpdateInput!): AtBug!
+    """
+    Delete an AT bug.
+    """
+    deleteAtBug(id: ID!): Boolean!
+    """
+    Link one or more AT bugs to an assertion.
+    """
+    linkAtBugsToAssertion(
+      assertionId: ID!
+      atBugIds: [ID]!
+      commandId: String
+    ): Assertion!
+    """
+    Unlink one or more AT bugs from an assertion.
+    """
+    unlinkAtBugsFromAssertion(
+      assertionId: ID!
+      atBugIds: [ID]!
+      commandId: String
+    ): Assertion!
+    """
+    Link one or more AT bugs to a negative side effect.
+    """
+    linkAtBugsToNegativeSideEffect(
+      negativeSideEffectId: ID!
+      atBugIds: [ID]!
+    ): NegativeSideEffectRecord!
+    """
+    Unlink one or more AT bugs from a negative side effect.
+    """
+    unlinkAtBugsFromNegativeSideEffect(
+      negativeSideEffectId: ID!
+      atBugIds: [ID]!
+    ): NegativeSideEffectRecord!
   }
 
   type CreateCollectionJobsFromPreviousVersionResponse {

@@ -8,6 +8,9 @@ const {
 const {
   getTestPlanRunById
 } = require('../../models/services/TestPlanRunService');
+const {
+  getAssertionByEncodedId
+} = require('../../models/services/AssertionService');
 const { decodeLocationOfDataId } = require('./locationOfDataId');
 const testPlanVersionTestPlanResolver = require('../../resolvers/TestPlanVersion/testPlanResolver');
 const {
@@ -179,7 +182,36 @@ const populateData = async (locationOfData, { context, preloaded } = {}) => {
     scenario = test.scenarios.find(each => each.id === scenarioId);
   }
   if (assertionId) {
-    assertion = test.assertions.find(each => each.id === assertionId);
+    // TODO: Remove the deprecated JSONB fallback for assertions
+    // Try to fetch from Assertion table first
+    try {
+      const assertionFromDb = await getAssertionByEncodedId({
+        encodedId: assertionId,
+        transaction
+      });
+      if (assertionFromDb) {
+        // Convert database assertion to the format expected by GraphQL
+        assertion = {
+          id: assertionFromDb.encodedId,
+          priority: assertionFromDb.priority,
+          // Use assertionStatement as fallback for v2 format when text is null
+          text:
+            assertionFromDb.text || assertionFromDb.assertionStatement || '',
+          rawAssertionId: assertionFromDb.rawAssertionId,
+          assertionStatement: assertionFromDb.assertionStatement,
+          assertionPhrase: assertionFromDb.assertionPhrase,
+          assertionExceptions: assertionFromDb.assertionExceptions
+        };
+      }
+    } catch (e) {
+      // If database lookup fails, fallback to JSONB
+      console.warn(`Failed to fetch assertion from database: ${e.message}`);
+    }
+
+    // Fallback to JSONB if not found in database
+    if (!assertion) {
+      assertion = test.assertions.find(each => each.id === assertionId);
+    }
   }
 
   const idsContradict = (provided, found) => {

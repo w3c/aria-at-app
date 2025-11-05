@@ -1,5 +1,6 @@
-import React, { Fragment, useRef, useState, useMemo } from 'react';
+import React, { Fragment, useRef, useState, useMemo, Suspense } from 'react';
 import { useQuery } from '@apollo/client';
+import { Routes, Route } from 'react-router-dom';
 import PageStatus from '../common/PageStatus';
 import { TEST_QUEUE_PAGE_QUERY } from './queries';
 import { Alert, Container } from 'react-bootstrap';
@@ -17,6 +18,10 @@ import TestQueueDisclosureContent from './TestQueueDisclosureContent';
 import styles from './TestQueue.module.css';
 import { ME_QUERY } from '../App/queries';
 import useReportRerunCount from '../ReportRerun/useReportRerunCount';
+
+const PageLoader = () => (
+  <Container id="main" as="main" tabIndex="-1"></Container>
+);
 
 const FILTER_KEYS = {
   ALL: 'all',
@@ -335,9 +340,11 @@ const TestQueue = () => {
   const tabs = [
     {
       label: 'Manual Test Queue',
+      tabKey: 'manual',
       content: renderQueueContent()
     },
     {
+      tabKey: 'automated',
       get label() {
         return `Automated Report Updates${
           typeof totalAutomatedRuns === 'number' && totalAutomatedRuns > 0
@@ -355,13 +362,26 @@ const TestQueue = () => {
   ];
 
   return (
-    <Container id="main" as="main" tabIndex="-1">
-      <Helmet>
-        <title>Test Queue | ARIA-AT</title>
-      </Helmet>
-      <h1 className="test-queue-heading">Test Queue</h1>
-      <Tabs tabs={tabs} onSelectedTabChange={setSelectedTab} />
-    </Container>
+    <Routes>
+      <Route
+        path="*"
+        element={
+          <Suspense fallback={<PageLoader />}>
+            <Container id="main" as="main" tabIndex="-1">
+              <Helmet>
+                <title>Test Queue | ARIA-AT</title>
+              </Helmet>
+              <h1 className="test-queue-heading">Test Queue</h1>
+              <Tabs
+                basePath="/test-queue"
+                tabs={tabs}
+                onSelectedTabChange={setSelectedTab}
+              />
+            </Container>
+          </Suspense>
+        }
+      />
+    </Routes>
   );
 };
 

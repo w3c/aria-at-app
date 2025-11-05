@@ -1,5 +1,6 @@
 import AT_FIELDS from './At';
 import AT_VERSION_FIELDS from './AtVersion';
+// NOTE: assertion.atBugs fields are included in AssertionResult fragment
 import ASSERTION_RESULT_FIELDS from './AssertionResult';
 import EVENT_FIELDS from './Event';
 import BROWSER_FIELDS from './Browser';

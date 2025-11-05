@@ -60,7 +60,8 @@ const PageLoader = () => (
 
 export default () => (
   <Routes>
-    <Route index path="/" exact element={<Home />} />
+    <Route path="/" element={<Navigate to="/reports" replace />} />
+    <Route exact path="/about" element={<Home />} />
     <Route
       exact
       path="/signup-instructions"
@@ -93,16 +94,6 @@ export default () => (
       }
     />
     <Route
-      exact
-      path="/test-queue"
-      element={
-        <Suspense fallback={<PageLoader />}>
-          <TestQueue />
-        </Suspense>
-      }
-    />
-    <Route
-      exact
       path="/test-queue/:testPlanReportId/conflicts"
       element={
         <Suspense fallback={<PageLoader />}>
@@ -110,6 +101,7 @@ export default () => (
         </Suspense>
       }
     />
+    <Route path="/test-queue/*" element={<TestQueue />} />
     <Route
       exact
       path="/test-plan-report/:testPlanReportId"
@@ -155,6 +147,8 @@ export default () => (
         </Suspense>
       }
     />
+    <Route path="/reports/*" element={<Reports />} />
+    <Route exact path="/report/:testPlanVersionId/*" element={<Report />} />
     <Route
       exact
       path="/aria-html-feature/:atId/:browserId/:refId"
