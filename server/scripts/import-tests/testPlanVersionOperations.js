@@ -154,7 +154,13 @@ const buildTestsAndCreateTestPlanVersions = async (
     if (fse.existsSync(referencesCsvPath)) {
       // This is a test directory, process it
       await processTestPlanVersion({
-        directory: relativeDirectoryPath,
+        // The expectation going forward is that tests will be within
+        // subfolders coming from aria-at
+        // If none exists, then most likely this is an older test which came
+        // directly from the APG
+        directory: relativeDirectoryPath.includes('/')
+          ? relativeDirectoryPath
+          : `apg/${relativeDirectoryPath}`,
         builtDirectoryPath,
         sourceDirectoryPath,
         useBuildInAppAppUrlPath,
