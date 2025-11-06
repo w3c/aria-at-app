@@ -405,7 +405,7 @@ const getTestableModalDialogVersions = async transaction => {
   // There are no changes for the VO tests
   const directory = 'modal-dialog';
   const expectedOldVersionPhase = 'CANDIDATE';
-  const expectedNewVersionPhase = 'DRAFT';
+  const expectedNewVersionPhase = 'RD';
   const oldVersionSha = '5fe7afd82fe51c185b8661276105190a59d47322';
   const newVersionSha = 'd0e16b42179de6f6c070da2310e99de837c71215';
 
