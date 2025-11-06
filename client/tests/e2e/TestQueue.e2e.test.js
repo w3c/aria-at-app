@@ -486,7 +486,7 @@ describe('Test Queue tester traits when reports exist', () => {
     await getPage({ role: 'tester', url: '/test-queue' }, async page => {
       const alertSectionHeaderSelector = 'h2 ::-p-text(Alert Example)';
       const alertSectionContainerSelector =
-        'div#disclosure-btn-controls-alert-0';
+        'div#disclosure-btn-controls-apg\\/alert-0';
       const modalDialogSectionHeaderSelector =
         'h2 ::-p-text(Modal Dialog Example)';
       const modalDialogSectionContainerSelector =

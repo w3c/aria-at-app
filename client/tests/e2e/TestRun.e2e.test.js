@@ -113,7 +113,7 @@ describe('Test Run when signed in as admin', () => {
   const navigateToRunAsTester = async (
     page,
     {
-      testPlanSectionButtonSelector = 'button#disclosure-btn-apg/modal-dialog-0',
+      testPlanSectionButtonSelector = 'button#disclosure-btn-apg\\/modal-dialog-0',
       testPlanTableSelector = 'table[aria-label="Reports for Modal Dialog Example V24.06.07 in draft phase"]'
     } = {}
   ) => {
@@ -280,7 +280,7 @@ describe('Test Run when signed in as tester', () => {
   const assignSelfAndNavigateToRun = async (
     page,
     {
-      testPlanSectionButtonSelector = 'button#disclosure-btn-apg/modal-dialog-0',
+      testPlanSectionButtonSelector = 'button#disclosure-btn-apg\\/modal-dialog-0',
       testPlanTableSelector = 'table[aria-label="Reports for Modal Dialog Example V24.06.07 in draft phase"]'
     } = {}
   ) => {
@@ -339,7 +339,7 @@ describe('Test Run when signed in as tester', () => {
   const navigateToRunAsAnotherTester = async (
     page,
     {
-      testPlanSectionButtonSelector = 'button#disclosure-btn-apg/modal-dialog-0',
+      testPlanSectionButtonSelector = 'button#disclosure-btn-apg\\/modal-dialog-0',
       testPlanTableSelector = 'table[aria-label="Reports for Modal Dialog Example V24.06.07 in draft phase"]'
     } = {}
   ) => {
@@ -627,7 +627,7 @@ describe('Test Run when signed in as tester', () => {
     };
     await getPage({ role: 'tester', url: '/test-queue' }, async page => {
       await assignSelfAndNavigateToRun(page, {
-        testPlanSectionButtonSelector: 'button#disclosure-btn-apg/alert-0',
+        testPlanSectionButtonSelector: 'button#disclosure-btn-apg\\/alert-0',
         testPlanTableSelector:
           'table[aria-label="Reports for Alert Example V22.04.14 in draft phase"]'
       });
@@ -691,7 +691,7 @@ describe('Test Run when signed in as tester', () => {
     };
     await getPage({ role: 'tester', url: '/test-queue' }, async page => {
       await assignSelfAndNavigateToRun(page, {
-        testPlanSectionButtonSelector: 'button#disclosure-btn-apg/alert-0',
+        testPlanSectionButtonSelector: 'button#disclosure-btn-apg\\/alert-0',
         testPlanTableSelector:
           'table[aria-label="Reports for Alert Example V22.04.14 in draft phase"]'
       });
@@ -828,7 +828,8 @@ describe('Test Run when signed in as tester', () => {
   it('enforces read-only and shows on-hold modal when report is On hold', async () => {
     // Ensure the report is On hold as admin first, then switch to tester in same page
     await getPage({ role: 'admin', url: '/test-queue' }, async page => {
-      const sectionButtonSelector = 'button#disclosure-btn-apg/modal-dialog-0';
+      const sectionButtonSelector =
+        'button#disclosure-btn-apg\\/modal-dialog-0';
       const tableSelector =
         'table[aria-label="Reports for Modal Dialog Example V24.06.07 in draft phase"]';
 
