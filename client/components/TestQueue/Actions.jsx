@@ -240,6 +240,20 @@ const Actions = ({
             variant="primary"
             disabled={!selfAssignedRun}
             href={selfAssignedRun ? `/run/${selfAssignedRun.id}` : undefined}
+            target={selfAssignedRun ? '_blank' : undefined}
+            onClick={e => {
+              if (!selfAssignedRun) {
+                e.preventDefault();
+                e.stopPropagation();
+                return;
+              }
+              e.preventDefault();
+              if (window.PUPPETEER_TESTING) {
+                window.location.href = `/run/${selfAssignedRun.id}`;
+              } else {
+                window.open(`/run/${selfAssignedRun.id}`, '_blank');
+              }
+            }}
           >
             {selfAssignedRun?.testResultsLength
               ? 'Continue Testing'
@@ -260,6 +274,18 @@ const Actions = ({
                 key={testPlanRun.id}
                 role="menuitem"
                 href={`/run/${testPlanRun.id}?user=${testPlanRun.tester.id}`}
+                target="_blank"
+                onClick={e => {
+                  e.preventDefault();
+                  if (window.PUPPETEER_TESTING) {
+                    window.location.href = `/run/${testPlanRun.id}?user=${testPlanRun.tester.id}`;
+                  } else {
+                    window.open(
+                      `/run/${testPlanRun.id}?user=${testPlanRun.tester.id}`,
+                      '_blank'
+                    );
+                  }
+                }}
               >
                 {testPlanRun.tester.username}
               </Dropdown.Item>

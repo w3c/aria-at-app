@@ -403,7 +403,7 @@ const getTestableModalDialogVersions = async transaction => {
   // https://github.com/w3c/aria-at/compare/5fe7afd82fe51c185b8661276105190a59d47322..d0e16b42179de6f6c070da2310e99de837c71215
   // Modal Dialog was updated to show have differences between several NVDA and JAWS tests
   // There are no changes for the VO tests
-  const directory = 'modal-dialog';
+  const directory = 'apg/modal-dialog';
   const expectedOldVersionPhase = 'CANDIDATE';
   const expectedNewVersionPhase = 'DRAFT';
   const oldVersionSha = '5fe7afd82fe51c185b8661276105190a59d47322';
@@ -426,7 +426,7 @@ const getTestableCommandButtonVersions = async transaction => {
   // Based on https://github.com/w3c/aria-at/compare/d9a19f8...565a87b#diff-4e3dcd0a202f268ebec2316344f136c3a83d6e03b3f726775cb46c57322ff3a0,
   // only 'navForwardsToButton' and 'navBackToButton' tests were affected. The individual tests for
   // 'reqInfoAboutButton' should still match.
-  const directory = 'command-button';
+  const directory = 'apg/command-button';
   const expectedOldVersionPhase = 'DRAFT';
   const oldVersionSha = 'd9a19f815d0f21194023b1c5919eb3b04d5c1ab7';
   const newVersionSha = '565a87b4111acebdb883d187b581e82c42a73844';

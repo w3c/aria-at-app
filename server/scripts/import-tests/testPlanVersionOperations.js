@@ -112,39 +112,79 @@ const buildTestsAndCreateTestPlanVersions = async (
     await updateAtsJson({ ats, supportAts: support.ats });
   }
 
-  for (const directory of fse.readdirSync(localBuiltTestsDirectory)) {
-    if (directory === 'resources') continue;
+  // https://github.com/w3c/aria-at/commit/9d73d6bb274b3fe75b9a8825e020c0546a33a162
+  // This is the date of the last commit before the build folder removal.
+  // Meant to support backward compatability until the existing tests can
+  // be updated to the current structure
+  const buildRemovalDate = new Date('2022-03-10 18:08:36.000000 +00:00');
+  const useBuildInAppAppUrlPath =
+    gitCommitDate.getTime() <= buildRemovalDate.getTime();
 
-    const builtDirectoryPath = path.join(localBuiltTestsDirectory, directory);
-    if (!fse.statSync(builtDirectoryPath).isDirectory()) continue;
-    const sourceDirectoryPath = path.join(testsDirectory, directory);
-
-    // https://github.com/w3c/aria-at/commit/9d73d6bb274b3fe75b9a8825e020c0546a33a162
-    // This is the date of the last commit before the build folder removal.
-    // Meant to support backward compatability until the existing tests can
-    // be updated to the current structure
-    const buildRemovalDate = new Date('2022-03-10 18:08:36.000000 +00:00');
-    const useBuildInAppAppUrlPath =
-      gitCommitDate.getTime() <= buildRemovalDate.getTime();
+  /**
+   * Recursively processes test directories, checking for references.csv
+   * to determine if a directory is ready to be processed.
+   * @param {string} relativeDirectoryPath - Relative path from tests root (e.g., "apg/alert")
+   * @returns {Promise<void>}
+   */
+  const processTestDirectoriesRecursively = async relativeDirectoryPath => {
+    const builtDirectoryPath = relativeDirectoryPath
+      ? path.join(localBuiltTestsDirectory, relativeDirectoryPath)
+      : localBuiltTestsDirectory;
+    const sourceDirectoryPath = relativeDirectoryPath
+      ? path.join(testsDirectory, relativeDirectoryPath)
+      : testsDirectory;
 
     if (
       !(
         fse.existsSync(sourceDirectoryPath) &&
+        fse.existsSync(builtDirectoryPath) &&
         fse.statSync(builtDirectoryPath).isDirectory()
       )
     ) {
-      continue;
+      return;
     }
 
-    await processTestPlanVersion({
-      directory,
-      builtDirectoryPath,
+    // Check if this directory has a references.csv (indicates it's a test directory)
+    const referencesCsvPath = path.join(
       sourceDirectoryPath,
-      useBuildInAppAppUrlPath,
-      ats,
-      transaction
-    });
-  }
+      'data',
+      'references.csv'
+    );
+
+    if (fse.existsSync(referencesCsvPath)) {
+      // This is a test directory, process it
+      await processTestPlanVersion({
+        // The expectation going forward is that tests will be within
+        // subfolders coming from aria-at
+        // If none exists, then most likely this is an older test which came
+        // directly from the APG
+        directory: relativeDirectoryPath.includes('/')
+          ? relativeDirectoryPath
+          : `apg/${relativeDirectoryPath}`,
+        builtDirectoryPath,
+        sourceDirectoryPath,
+        useBuildInAppAppUrlPath,
+        ats,
+        transaction
+      });
+    } else {
+      // This is a subfolder, recursively search deeper
+      const entries = fse.readdirSync(builtDirectoryPath);
+      for (const entry of entries) {
+        if (entry === 'resources') continue;
+        const entryBuiltPath = path.join(builtDirectoryPath, entry);
+        if (!fse.statSync(entryBuiltPath).isDirectory()) continue;
+
+        const nextRelativePath = relativeDirectoryPath
+          ? path.join(relativeDirectoryPath, entry)
+          : entry;
+        await processTestDirectoriesRecursively(nextRelativePath);
+      }
+    }
+  };
+
+  // Start processing from the root of the tests directory
+  await processTestDirectoriesRecursively('');
 
   // To ensure build folder is clean when multiple commits are being processed
   // to prevent `EPERM` errors
@@ -363,7 +403,10 @@ async function createAssertionsForTestPlanVersion({
  * Imports the harness files from the test directory to the client resources.
  */
 const importHarness = () => {
-  const sourceFolder = path.resolve(`${testsDirectory}/resources`);
+  let sourceFolder = path.resolve(`${gitCloneDirectory}/resources`);
+  sourceFolder = fse.existsSync(sourceFolder)
+    ? sourceFolder
+    : path.resolve(`${testsDirectory}/resources`);
   const targetClientFolder = path.resolve(
     __dirname,
     '../../../',
@@ -477,9 +520,12 @@ const flattenObject = (obj, parentKey = '') => {
 const updateJsons = async () => {
   try {
     // Commands path info for v1 format
-    const keysMjsPath = pathToFileURL(
-      path.join(testsDirectory, 'resources', 'keys.mjs')
+    let keysMjsPath = pathToFileURL(
+      path.join(gitCloneDirectory, 'resources', 'keys.mjs')
     );
+    keysMjsPath = fse.existsSync(keysMjsPath)
+      ? keysMjsPath
+      : pathToFileURL(path.join(testsDirectory, 'resources', 'keys.mjs'));
     const commands = Object.entries(await import(keysMjsPath)).map(
       ([id, text]) => ({ id, text })
     );
