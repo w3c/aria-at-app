@@ -56,11 +56,11 @@ describe('Test Queue admin traits when reports exist', () => {
     await getPage({ role: 'admin', url: '/test-queue' }, async page => {
       const alertSectionHeaderSelector = 'h2 ::-p-text(Alert Example)';
       const alertSectionContainerSelector =
-        'div#disclosure-btn-controls-apg/alert-0';
+        'div#disclosure-btn-controls-apg\\/alert-0';
       const modalDialogSectionHeaderSelector =
         'h2 ::-p-text(Modal Dialog Example)';
       const modalDialogSectionContainerSelector =
-        'div#disclosure-btn-controls-apg/modal-dialog-0';
+        'div#disclosure-btn-controls-apg\\/modal-dialog-0';
 
       const alertSectionTitle = await text(page, alertSectionHeaderSelector);
       const alertSectionDisplay = await display(
@@ -86,9 +86,9 @@ describe('Test Queue admin traits when reports exist', () => {
   it("renders page and open pattern section's table", async () => {
     await getPage({ role: 'admin', url: '/test-queue' }, async page => {
       const modalDialogSectionContainerSelector =
-        'div#disclosure-btn-controls-apg/modal-dialog-0';
+        'div#disclosure-btn-controls-apg\\/modal-dialog-0';
       const modalDialogSectionButtonSelector =
-        'button#disclosure-btn-apg/modal-dialog-0';
+        'button#disclosure-btn-apg\\/modal-dialog-0';
       const modalDialogTableSelector =
         'table[aria-label="Reports for Modal Dialog Example V24.06.07 in draft phase"]';
 
@@ -179,7 +179,7 @@ describe('Test Queue admin traits when reports exist', () => {
   it("renders page, opens pattern section's table and assigns bot and shows context related action", async () => {
     await getPage({ role: 'admin', url: '/test-queue' }, async page => {
       const modalDialogSectionButtonSelector =
-        'button#disclosure-btn-apg/modal-dialog-0';
+        'button#disclosure-btn-apg\\/modal-dialog-0';
       const modalDialogTableSelector =
         'table[aria-label="Reports for Modal Dialog Example V24.06.07 in draft phase"]';
 
@@ -259,9 +259,9 @@ describe('Test Queue admin traits when reports exist', () => {
   it("renders page, opens pattern section's table and creates report using test plan report status dialog", async () => {
     await getPage({ role: 'admin', url: '/test-queue' }, async page => {
       const modalDialogSectionButtonSelector =
-        'button#disclosure-btn-apg/modal-dialog-0';
+        'button#disclosure-btn-apg\\/modal-dialog-0';
       const modalDialogRequiredReportsButtonSelector =
-        'div#disclosure-btn-controls-apg/modal-dialog-0 div.metadata-container button.test-plan-report-status-dialog-button';
+        'div#disclosure-btn-controls-apg\\/modal-dialog-0 div.metadata-container button.test-plan-report-status-dialog-button';
       const modalDialogTableSelector =
         'table[aria-label="Reports for Modal Dialog Example V24.06.07 in draft phase"]';
 
@@ -317,9 +317,9 @@ describe('Test Queue admin traits when reports exist', () => {
   it("renders page, opens pattern section's table and creates report using test plan report status dialog after updating minimum AT version", async () => {
     await getPage({ role: 'admin', url: '/test-queue' }, async page => {
       const modalDialogSectionButtonSelector =
-        'button#disclosure-btn-apg/modal-dialog-0';
+        'button#disclosure-btn-apg\\/modal-dialog-0';
       const modalDialogRequiredReportsButtonSelector =
-        'div#disclosure-btn-controls-apg/modal-dialog-0 div.metadata-container button.test-plan-report-status-dialog-button';
+        'div#disclosure-btn-controls-apg\\/modal-dialog-0 div.metadata-container button.test-plan-report-status-dialog-button';
       const modalDialogTableSelector =
         'table[aria-label="Reports for Modal Dialog Example V24.06.07 in draft phase"]';
 
@@ -388,7 +388,8 @@ describe('Test Queue admin traits when reports exist', () => {
 
   it('allows admin to toggle On hold and shows pill in Status', async () => {
     await getPage({ role: 'admin', url: '/test-queue' }, async page => {
-      const sectionButtonSelector = 'button#disclosure-btn-apg/modal-dialog-0';
+      const sectionButtonSelector =
+        'button#disclosure-btn-apg\\/modal-dialog-0';
       const tableSelector =
         'table[aria-label="Reports for Modal Dialog Example V24.06.07 in draft phase"]';
 
@@ -489,7 +490,7 @@ describe('Test Queue tester traits when reports exist', () => {
       const modalDialogSectionHeaderSelector =
         'h2 ::-p-text(Modal Dialog Example)';
       const modalDialogSectionContainerSelector =
-        'div#disclosure-btn-controls-apg/modal-dialog-0';
+        'div#disclosure-btn-controls-apg\\/modal-dialog-0';
 
       const alertSectionTitle = await text(page, alertSectionHeaderSelector);
       const alertSectionDisplay = await display(
@@ -515,9 +516,9 @@ describe('Test Queue tester traits when reports exist', () => {
   it("renders page and open pattern section's table", async () => {
     await getPage({ role: 'tester', url: '/test-queue' }, async page => {
       const modalDialogSectionContainerSelector =
-        'div#disclosure-btn-controls-apg/modal-dialog-0';
+        'div#disclosure-btn-controls-apg\\/modal-dialog-0';
       const modalDialogSectionButtonSelector =
-        'button#disclosure-btn-apg/modal-dialog-0';
+        'button#disclosure-btn-apg\\/modal-dialog-0';
       const modalDialogTableSelector =
         'table[aria-label="Reports for Modal Dialog Example V24.06.07 in draft phase"]';
 
@@ -609,7 +610,7 @@ describe('Test Queue tester traits when reports exist', () => {
   it("renders page, opens pattern section's table and assigns yourself and shows proper state of context related action", async () => {
     await getPage({ role: 'tester', url: '/test-queue' }, async page => {
       const modalDialogSectionButtonSelector =
-        'button#disclosure-btn-apg/modal-dialog-0';
+        'button#disclosure-btn-apg\\/modal-dialog-0';
       const modalDialogTableSelector =
         'table[aria-label="Reports for Modal Dialog Example V24.06.07 in draft phase"]';
 
@@ -716,7 +717,7 @@ describe('Test Queue tester traits when reports exist', () => {
   it('starts a bot run and reassigns self after completion', async () => {
     await getPage({ role: 'tester', url: '/test-queue' }, async page => {
       const modalDialogSectionButtonSelector =
-        'button#disclosure-btn-apg/modal-dialog-0';
+        'button#disclosure-btn-apg\\/modal-dialog-0';
       const modalDialogTableSelector =
         'table[aria-label="Reports for Modal Dialog Example V24.06.07 in draft phase"]';
 
