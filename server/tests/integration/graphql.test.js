@@ -515,7 +515,7 @@ describe('graphql', () => {
               }
             }
           }
-          testPlan(id: "checkbox") {
+          testPlan(id: "apg/checkbox") {
             __typename
             id
             directory
