@@ -53,7 +53,7 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
     atVersion: recommendedAtVersion
   };
 
-  const none = None();
+  const none = None('No Data');
 
   const renderVersionsSummaryTable = () => {
     if (testPlanVersion.phase !== 'RECOMMENDED') return null;

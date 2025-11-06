@@ -6,7 +6,7 @@ import ProgressBar from '@components/common/ProgressBar';
 import { None } from '@components/common/None';
 
 const columnName = ({ atName, browserName }) => `${atName} and ${browserName}`;
-const none = None();
+const none = None('No Data');
 
 const FeatureSupportTable = ({ featureData, featureLabel }) => {
   const supportCombos = [...new Set(featureData.map(columnName))];

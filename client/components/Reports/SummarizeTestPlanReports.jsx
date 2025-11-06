@@ -4,7 +4,6 @@ import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import { Container, Table } from 'react-bootstrap';
 import clsx from 'clsx';
-import alphabetizeObjectBy from '../../utils/alphabetizeObjectBy';
 import { derivePhaseName } from '../../utils/aria';
 import { None } from '@components/common/None';
 import { getTestPlanTargetTitle, getTestPlanVersionTitle } from './getTitles';
@@ -57,7 +56,7 @@ const SummarizeTestPlanReports = ({
     getTestPlanTargetTitle(a).localeCompare(getTestPlanTargetTitle(b))
   );
 
-  const none = None();
+  const none = None('No Data');
 
   return (
     <Container

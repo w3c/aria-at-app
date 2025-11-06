@@ -36,7 +36,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
     return 0;
   });
 
-  const none = None();
+  const none = None('No Data');
 
   return (
     <Container
