@@ -4,7 +4,7 @@ import { text } from './util';
 describe('Versions page for pattern with highest report being recommended', () => {
   it('renders page h1', async () => {
     await getPage(
-      { role: false, url: '/data-management/checkbox-tri-state' },
+      { role: false, url: '/data-management/apg/checkbox-tri-state' },
       async (page, { consoleErrors }) => {
         await text(
           page,
@@ -20,7 +20,7 @@ describe('Versions page for pattern with highest report being recommended', () =
 describe('Versions page for pattern with highest report being candidate', () => {
   it('renders page h1', async () => {
     await getPage(
-      { role: false, url: '/data-management/modal-dialog' },
+      { role: false, url: '/data-management/apg/modal-dialog' },
       async page => {
         await text(
           page,
@@ -34,7 +34,7 @@ describe('Versions page for pattern with highest report being candidate', () => 
 describe('Versions page for pattern with highest report being draft', () => {
   it('renders page h1', async () => {
     await getPage(
-      { role: false, url: '/data-management/alert' },
+      { role: false, url: '/data-management/apg/alert' },
       async page => {
         await text(page, 'h1 ::-p-text(Alert Example Test Plan Versions)');
       }
@@ -45,7 +45,7 @@ describe('Versions page for pattern with highest report being draft', () => {
 describe('Versions page for pattern with highest report being R&D', () => {
   it('renders page h1', async () => {
     await getPage(
-      { role: false, url: '/data-management/banner' },
+      { role: false, url: '/data-management/apg/banner' },
       async page => {
         await text(page, 'h1 ::-p-text(Banner Landmark Test Plan Versions)');
       }
@@ -54,7 +54,7 @@ describe('Versions page for pattern with highest report being R&D', () => {
 });
 
 describe('Issues table interactions', () => {
-  const TEST_URL = '/data-management/alert';
+  const TEST_URL = '/data-management/apg/alert';
 
   it('displays correct issue counts in heading', async () => {
     await getPage({ role: false, url: TEST_URL }, async page => {

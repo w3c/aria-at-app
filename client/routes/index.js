@@ -73,11 +73,7 @@ export default () => (
       }
     />
     <Route exact path="/data-management" element={<DataManagement />} />
-    <Route
-      exact
-      path="/data-management/:testPlanDirectory/"
-      element={<TestPlanVersionsPage />}
-    />
+    <Route path="/data-management/*" element={<TestPlanVersionsPage />} />
     <Route exact path="/invalid-request" element={<InvalidRequest />} />
     <Route exact path="/404" element={<NotFound />} />
     <Route exact path="*" element={<Navigate to="/404" replace />} />
