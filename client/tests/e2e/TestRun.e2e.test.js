@@ -797,7 +797,7 @@ describe('Test Run when signed in as tester', () => {
         await page.goto(`${baseUrl}/test-queue`);
         await assignSelfAndNavigateToRun(page, {
           testPlanSectionButtonSelector:
-            'button#disclosure-btn-horizontal-slider-0',
+            'button#disclosure-btn-apg\\/horizontal-slider-0',
           testPlanTableSelector:
             'table[aria-label="Reports for Color Viewer Slider V24.12.04 in draft phase"]'
         });
