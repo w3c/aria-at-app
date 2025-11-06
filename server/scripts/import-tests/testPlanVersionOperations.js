@@ -407,20 +407,21 @@ const importHarness = () => {
   sourceFolder = fse.existsSync(sourceFolder)
     ? sourceFolder
     : path.resolve(`${testsDirectory}/resources`);
-  const targetFolder = path.resolve(
+  const targetClientFolder = path.resolve(
     __dirname,
     '../../../',
     'client',
     'resources'
   );
+  const targetServerFolder = path.resolve(__dirname, '../../', 'resources');
   console.info(
-    `Updating harness directory, copying from ${sourceFolder} to ${targetFolder} ...`
+    `Updating harness directory, copying from ${sourceFolder} to ${targetClientFolder} ...`
   );
-  fse.rmSync(targetFolder, { recursive: true, force: true });
+  fse.rmSync(targetClientFolder, { recursive: true, force: true });
 
   // Copy source folder
   console.info('Importing latest harness files ...');
-  fse.copySync(sourceFolder, targetFolder, {
+  fse.copySync(sourceFolder, targetClientFolder, {
     filter: src => {
       if (fse.lstatSync(src).isDirectory()) {
         return true;
@@ -437,13 +438,23 @@ const importHarness = () => {
   if (fse.existsSync(`${testsDirectory}/${commandsJson}`)) {
     fse.copyFileSync(
       `${testsDirectory}/${commandsJson}`,
-      `${targetFolder}/${commandsJson}`
+      `${targetClientFolder}/${commandsJson}`
     );
   }
-  fse.copyFileSync(
-    `${testsDirectory}/${supportJson}`,
-    `${targetFolder}/${supportJson}`
-  );
+  if (fse.existsSync(`${testsDirectory}/${supportJson}`)) {
+    fse.copyFileSync(
+      `${testsDirectory}/${supportJson}`,
+      `${targetClientFolder}/${supportJson}`
+    );
+
+    console.info(
+      `Updating server/resources/support.json, copying from ${sourceFolder} to ${targetServerFolder} ...`
+    );
+    fse.copyFileSync(
+      `${testsDirectory}/${supportJson}`,
+      `${targetServerFolder}/${supportJson}`
+    );
+  }
   console.info('Harness files update complete.');
 };
 
@@ -507,22 +518,26 @@ const flattenObject = (obj, parentKey = '') => {
  * @returns {Promise<Object>} An object containing the parsed support data.
  */
 const updateJsons = async () => {
-  // Commands path info for v1 format
-  let keysMjsPath = pathToFileURL(
-    path.join(gitCloneDirectory, 'resources', 'keys.mjs')
-  );
-  keysMjsPath = fse.existsSync(keysMjsPath)
-    ? keysMjsPath
-    : pathToFileURL(path.join(testsDirectory, 'resources', 'keys.mjs'));
-  const commands = Object.entries(await import(keysMjsPath)).map(
-    ([id, text]) => ({ id, text })
-  );
+  try {
+    // Commands path info for v1 format
+    let keysMjsPath = pathToFileURL(
+      path.join(gitCloneDirectory, 'resources', 'keys.mjs')
+    );
+    keysMjsPath = fse.existsSync(keysMjsPath)
+      ? keysMjsPath
+      : pathToFileURL(path.join(testsDirectory, 'resources', 'keys.mjs'));
+    const commands = Object.entries(await import(keysMjsPath)).map(
+      ([id, text]) => ({ id, text })
+    );
 
-  // Write commands for v1 format
-  await fse.writeFile(
-    path.resolve(__dirname, '../../resources/commandsV1.json'),
-    JSON.stringify(commands, null, 2) + '\n'
-  );
+    // Write commands for v1 format
+    await fse.writeFile(
+      path.resolve(__dirname, '../../resources/commandsV1.json'),
+      JSON.stringify(commands, null, 2) + '\n'
+    );
+  } catch (error) {
+    console.error('Unable to process keys.mjs for v1 test format');
+  }
 
   try {
     // Commands path info for v2 format
@@ -538,15 +553,27 @@ const updateJsons = async () => {
       JSON.stringify(flattenObject(commandsV2Parsed), null, 2) + '\n'
     );
   } catch (error) {
-    console.error('commands.json for v2 test format may not exist');
+    console.error(
+      'Unable to process commands.json for v2 test format (file may not exist for aria-at commit)'
+    );
   }
 
-  // Path info for support.json
-  const supportPath = pathToFileURL(path.join(testsDirectory, 'support.json'));
-  const supportPathString = fse.readFileSync(supportPath, 'utf8');
-  const supportParsed = JSON.parse(supportPathString);
+  try {
+    // Path info for support.json
+    const supportPath = pathToFileURL(
+      path.join(testsDirectory, 'support.json')
+    );
+    const supportPathString = fse.readFileSync(supportPath, 'utf8');
+    const supportParsed = JSON.parse(supportPathString);
 
-  return { support: supportParsed };
+    return { support: supportParsed };
+  } catch (error) {
+    throw new Error(
+      `Unable to process support.json from ${pathToFileURL(
+        path.join(testsDirectory, 'support.json')
+      )}`
+    );
+  }
 };
 
 /**

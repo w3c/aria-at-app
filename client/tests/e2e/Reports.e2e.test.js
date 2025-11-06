@@ -337,7 +337,7 @@ describe('HTML Feature detail report page', () => {
           'h1 ::-p-text(VoiceOver for macOS and Chrome Support for)'
         );
         await page.waitForSelector(
-          'a ::-p-text(button Accessibility API Mapping)'
+          'a ::-p-text(button HTML-AAM Specification)'
         );
 
         await page.waitForSelector('nav[aria-label="Breadcrumb"]');

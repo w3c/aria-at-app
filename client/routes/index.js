@@ -65,6 +65,11 @@ export default () => (
     />
     <Route
       exact
+      path="/aria-html-feature/:atId/:browserId/:refId/:refType"
+      element={<AriaHtmlFeatureDetailReport />}
+    />
+    <Route
+      exact
       path="/candidate-review"
       element={
         <ConfirmAuth requiredPermission="VENDOR">
