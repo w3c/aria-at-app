@@ -10,12 +10,12 @@ import PageStatus from '../common/PageStatus';
 import { ARIA_HTML_FEATURE_DETAIL_REPORT_QUERY } from './queries';
 
 const AriaHtmlFeatureDetailReport = () => {
-  const { atId, browserId, refId } = useParams();
+  const { atId, browserId, refId, refType } = useParams();
 
   const { loading, data, error } = useQuery(
     ARIA_HTML_FEATURE_DETAIL_REPORT_QUERY,
     {
-      variables: { refId, atId, browserId },
+      variables: { refId, refType, atId, browserId },
       fetchPolicy: 'cache-and-network'
     }
   );
@@ -56,6 +56,12 @@ const AriaHtmlFeatureDetailReport = () => {
     const nameB = `${b.testPlanName}`.toUpperCase();
     return nameA.localeCompare(nameB);
   });
+
+  let downloadURI = `/api/metrics/aria-html-features/details.csv?refId=${refId}&at=${encodeURIComponent(
+    at.name
+  )}&browser=${encodeURIComponent(browser.name)}`;
+  if (refType)
+    downloadURI = `${downloadURI}&refType=${encodeURIComponent(refType)}`;
 
   return (
     <>
@@ -135,14 +141,7 @@ const AriaHtmlFeatureDetailReport = () => {
           </tbody>
         </Table>
 
-        <Button
-          href={`/api/metrics/aria-html-features/details.csv?refId=${refId}&at=${encodeURIComponent(
-            at.name
-          )}&browser=${encodeURIComponent(browser.name)}`}
-          download
-          variant="primary"
-          className="mb-3"
-        >
+        <Button href={downloadURI} download variant="primary" className="mb-3">
           Download CSV
         </Button>
 

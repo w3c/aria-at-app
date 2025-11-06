@@ -6,19 +6,20 @@ import ProgressBar from '@components/common/ProgressBar';
 import { None } from '@components/common/None';
 
 const columnName = ({ atName, browserName }) => `${atName} and ${browserName}`;
-const none = None();
+const none = None('No Data');
 
 const FeatureSupportTable = ({ featureData, featureLabel }) => {
   const supportCombos = [...new Set(featureData.map(columnName))];
+  supportCombos.sort((a, b) => a.localeCompare(b));
 
   const dataByFeature = {};
   const links = {};
   for (const row of featureData) {
-    if (!dataByFeature[row.refId]) {
-      dataByFeature[row.refId] = {};
+    if (!dataByFeature[row.rawValue]) {
+      dataByFeature[row.rawValue] = {};
     }
-    links[row.refId] = { href: row.value, text: row.linkText };
-    dataByFeature[row.refId][columnName(row)] = row;
+    links[row.rawValue] = { href: row.value, text: row.linkText };
+    dataByFeature[row.rawValue][columnName(row)] = row;
   }
 
   const keys = Object.keys(dataByFeature).sort();
@@ -54,7 +55,7 @@ const FeatureSupportTable = ({ featureData, featureLabel }) => {
 
                 if (!row) return <td key={key + col}>{none}</td>;
 
-                const detailLink = `/aria-html-feature/${row.atId}/${row.browserId}/${key}`;
+                const detailLink = `/aria-html-feature/${row.atId}/${row.browserId}/${key}/${row.type}`;
                 return (
                   <td key={key + col}>
                     <Link

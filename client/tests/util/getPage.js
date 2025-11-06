@@ -135,6 +135,10 @@ const getPage = async (options, callback) => {
 
   const page = await incognitoContext.newPage();
 
+  await page.evaluateOnNewDocument(() => {
+    window.PUPPETEER_TESTING = true;
+  });
+
   if (!url) {
     throw new Error('Please provide a URL, even if it it is simply "/"');
   }

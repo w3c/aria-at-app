@@ -28,12 +28,14 @@ describe('embed', () => {
     // Load the iframe, twice, one with a normal load and a second time from
     // the cache
     const initialLoadTimeStart = Number(new Date());
-    const res = await sessionAgent.get('/embed/reports/checkbox-tri-state');
+    const res = await sessionAgent.get('/embed/reports/apg/checkbox-tri-state');
     const initialLoadTimeEnd = Number(new Date());
     const initialLoadTime = initialLoadTimeEnd - initialLoadTimeStart;
 
     const cachedTimeStart = Number(new Date());
-    const res2 = await sessionAgent.get('/embed/reports/checkbox-tri-state');
+    const res2 = await sessionAgent.get(
+      '/embed/reports/apg/checkbox-tri-state'
+    );
     const cachedTimeEnd = Number(new Date());
     const cachedTime = cachedTimeEnd - cachedTimeStart;
 
@@ -73,7 +75,7 @@ describe('embed', () => {
     );
     expect(copyEmbedButton).toBeTruthy();
     expect(copyEmbedButtonOnClick).toMatch(
-      /announceCopied\('https?:\/\/[\w.:]+\/embed\/reports\/checkbox-tri-state'\)/
+      /announceCopied\('https?:\/\/[\w.:]+\/embed\/reports\/apg\/checkbox-tri-state'\)/
     );
     expect(cellWithData).toBeTruthy();
   });

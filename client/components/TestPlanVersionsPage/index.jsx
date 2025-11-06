@@ -2,7 +2,7 @@ import React, { useMemo, useRef } from 'react';
 import { useQuery } from '@apollo/client';
 import { TEST_PLAN_VERSIONS_PAGE_QUERY } from './queries';
 import PageStatus from '../common/PageStatus';
-import { useParams } from 'react-router-dom';
+import { useParams, Navigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { Container, Table } from 'react-bootstrap';
 import VersionString from '../common/VersionString';
@@ -23,7 +23,8 @@ import styles from './TestPlanVersionsPage.module.css';
 import commonStyles from '../common/styles.module.css';
 
 const TestPlanVersionsPage = () => {
-  const { testPlanDirectory } = useParams();
+  const params = useParams();
+  const testPlanDirectory = params['*']?.replace(/\/$/, '') || '';
 
   const { loading, data, error } = useQuery(TEST_PLAN_VERSIONS_PAGE_QUERY, {
     variables: { testPlanDirectory },
@@ -37,8 +38,12 @@ const TestPlanVersionsPage = () => {
   // GraphQL results are read only so they need to be cloned
   // before passing to SortableIssuesTable
   const issues = useMemo(() => {
-    return data ? [...data.testPlan.issues] : [];
+    return data?.testPlan?.issues ? [...data.testPlan.issues] : [];
   }, [data]);
+
+  if (data && !data.testPlan) {
+    return <Navigate to="/404" replace />;
+  }
 
   if (error) {
     return (
