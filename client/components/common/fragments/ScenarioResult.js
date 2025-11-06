@@ -69,6 +69,16 @@ const SCENARIO_RESULT_FIELDS = (type = 'simple') => {
             text
             impact
             details
+            encodedId
+            atBugs {
+              id
+              title
+              url
+              at {
+                id
+                name
+              }
+            }
           }
         }
       `;

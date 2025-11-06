@@ -252,7 +252,7 @@ const TestPlanResultsTable = ({
                     </tr>
                   </thead>
                   <tbody>
-                    {scenarioResult.negativeSideEffects.map(
+                    {(scenarioResult.negativeSideEffects || []).map(
                       ({ id, text, details, impact }) => (
                         <tr key={id}>
                           <td>{text}</td>

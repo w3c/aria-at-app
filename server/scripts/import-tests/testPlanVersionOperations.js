@@ -14,6 +14,9 @@ const {
   getTestPlans,
   createTestPlan
 } = require('../../models/services/TestPlanService');
+const {
+  bulkCreateAssertions
+} = require('../../models/services/AssertionService');
 const { hashTests } = require('../../util/aria');
 const extractZipFile = require('../../util/extractZipFile');
 const { dates } = require('shared');
@@ -332,7 +335,63 @@ const processTestPlanVersion = async ({
     },
     transaction
   });
+
+  // Create assertions in the Assertion table
+  await createAssertionsForTestPlanVersion({
+    testPlanVersionId,
+    tests,
+    transaction
+  });
 };
+
+/**
+ * Creates assertions in the Assertion table for a given TestPlanVersion.
+ * @param {Object} options - Options object.
+ * @param {number} options.testPlanVersionId - ID of the TestPlanVersion.
+ * @param {Array} options.tests - Array of test objects with assertions.
+ * @param {import('sequelize').Transaction} options.transaction - The database transaction.
+ * @returns {Promise<void>}
+ */
+async function createAssertionsForTestPlanVersion({
+  testPlanVersionId,
+  tests,
+  transaction
+}) {
+  const assertionsData = [];
+
+  for (const test of tests) {
+    if (!test.assertions || !Array.isArray(test.assertions)) {
+      continue;
+    }
+
+    for (
+      let assertionIndex = 0;
+      assertionIndex < test.assertions.length;
+      assertionIndex++
+    ) {
+      const assertion = test.assertions[assertionIndex];
+
+      assertionsData.push({
+        testPlanVersionId,
+        testId: test.id,
+        assertionIndex,
+        priority: assertion.priority || '',
+        text: assertion.text || null,
+        rawAssertionId: assertion.rawAssertionId || null,
+        assertionStatement: assertion.assertionStatement || null,
+        assertionPhrase: assertion.assertionPhrase || null,
+        assertionExceptions: assertion.assertionExceptions || null,
+        encodedId: assertion.id,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      });
+    }
+  }
+
+  if (assertionsData.length > 0) {
+    await bulkCreateAssertions({ assertionsData, transaction });
+  }
+}
 
 /**
  * Imports the harness files from the test directory to the client resources.

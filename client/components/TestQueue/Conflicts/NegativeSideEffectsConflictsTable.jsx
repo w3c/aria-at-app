@@ -16,7 +16,7 @@ const NegativeSideEffectsConflictsTable = ({ conflictingResults, testers }) => {
       Array.from(
         new Set(
           conflictingResults.flatMap(result =>
-            result.scenarioResult.negativeSideEffects.map(ub => ub.text)
+            (result.scenarioResult.negativeSideEffects || []).map(ub => ub.text)
           )
         )
       ),

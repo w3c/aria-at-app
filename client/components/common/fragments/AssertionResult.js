@@ -10,6 +10,16 @@ const ASSERTION_RESULT_FIELDS = gql`
       text
       phrase
       priority
+      atBugs {
+        id
+        title
+        url
+        commandIds
+        at {
+          id
+          name
+        }
+      }
       references {
         refId
         value

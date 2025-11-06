@@ -61,6 +61,16 @@ const TEST_PLAN_REPORT_CONFLICT_FIELDS = gql`
           text
           impact
           details
+          encodedId
+          atBugs {
+            id
+            title
+            url
+            at {
+              id
+              name
+            }
+          }
         }
         assertionResults {
           assertion {
