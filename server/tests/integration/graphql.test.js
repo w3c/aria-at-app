@@ -239,7 +239,9 @@ describe('graphql', () => {
               refId
               type
               linkText
+              rawLinkText
               value
+              rawValue
               total
               passed
               failed
@@ -252,7 +254,9 @@ describe('graphql', () => {
               refId
               type
               linkText
+              rawLinkText
               value
+              rawValue
               total
               passed
               failed
@@ -269,7 +273,9 @@ describe('graphql', () => {
               refId
               type
               linkText
+              rawLinkText
               value
+              rawValue
               total
               passed
               failed
@@ -282,7 +288,9 @@ describe('graphql', () => {
               refId
               type
               linkText
+              rawLinkText
               value
+              rawValue
               total
               passed
               failed
@@ -515,7 +523,7 @@ describe('graphql', () => {
               }
             }
           }
-          testPlan(id: "checkbox") {
+          testPlan(id: "apg/checkbox") {
             __typename
             id
             directory

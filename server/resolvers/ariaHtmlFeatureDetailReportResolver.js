@@ -9,7 +9,7 @@ const calculateAssertionStatistics = require('../util/calculateAssertionStatisti
 
 const ariaHtmlFeatureDetailReportResolver = async (
   _,
-  { refId, atId, browserId },
+  { refId, refType, atId, browserId },
   context
 ) => {
   const { transaction } = context;
@@ -71,6 +71,7 @@ const ariaHtmlFeatureDetailReportResolver = async (
           report.id,
           finalizedTestResults,
           refId,
+          refType,
           testIdToResultIdMap
         );
 

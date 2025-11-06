@@ -71,7 +71,10 @@ const App = () => {
                 <Nav.Link
                   as={Link}
                   to="/reports"
-                  aria-current={location.pathname.startsWith('/report')}
+                  aria-current={
+                    location.pathname.startsWith('/report') ||
+                    location.pathname.startsWith('/aria-html-feature')
+                  }
                 >
                   AT Interoperability Reports
                 </Nav.Link>

@@ -123,11 +123,11 @@ const renderEmbedCached = staleWhileRevalidate(renderEmbed, {
   millisecondsUntilStale
 });
 
-app.get('/reports/:testPlanDirectory', async (req, res) => {
+app.get('/reports/:testPlanDirectory*', async (req, res) => {
   // In the instance where an editor doesn't want to display a certain title
   // as it has defined when importing into the ARIA-AT database for being too
   // verbose, etc. eg. `Link Example 1 (span element with text content)`
-  // Usage: https://aria-at.w3.org/embed/reports/command-button?title=Link+Example+(span+element+with+text+content)
+  // Usage: https://aria-at.w3.org/embed/reports/apg/command-button?title=Link+Example+(span+element+with+text+content)
   const queryTitle = req.query.title;
   const testPlanDirectory = req.params.testPlanDirectory;
   const host = req.headers.host;
