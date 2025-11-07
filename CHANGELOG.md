@@ -1,3 +1,11 @@
+### [1.25.1](https://github.com/w3c/aria-at-app/compare/v1.25.0...v1.25.1) (2025-11-07)
+
+
+### Bug Fixes
+
+* Tabs component loses focus to tab when programmatically navigating ([#1630](https://github.com/w3c/aria-at-app/issues/1630)) ([35ad3e2](https://github.com/w3c/aria-at-app/commit/35ad3e2a6bfbd2035319b3a108237aca7feaf89e))
+* Update path to aria-at test page for reports pages and issues creation ([#1629](https://github.com/w3c/aria-at-app/issues/1629)) ([f564ada](https://github.com/w3c/aria-at-app/commit/f564adafcc9c11dba1b83ac5d41c091d0b93b7b4))
+
 ## [1.25.0](https://github.com/w3c/aria-at-app/compare/v1.24.0...v1.25.0) (2025-11-06)
 
 
