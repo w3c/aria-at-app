@@ -114,10 +114,10 @@ describe('Test Run when signed in as admin', () => {
     page,
     {
       testPlanSectionButtonSelector = 'button#disclosure-btn-apg\\/modal-dialog-0',
-      testPlanTableSelector = 'table[aria-label="Reports for Modal Dialog Example V25.10.16 in draft phase"]'
+      testPlanTableSelector = 'table[aria-label="Reports for Modal Dialog Example V25.11.06 in draft phase"]'
     } = {}
   ) => {
-    // Expand Modal Dialog's V25.10.16 section
+    // Expand Modal Dialog's V25.11.06 section
     await page.waitForSelector(testPlanSectionButtonSelector);
     await page.click(testPlanSectionButtonSelector);
 
@@ -127,7 +127,7 @@ describe('Test Run when signed in as admin', () => {
     // Find the 'Open run as...' dropdown button from the Actions Column
     await page.evaluate(() => {
       const modalDialogTableSelector =
-        'table[aria-label="Reports for Modal Dialog Example V25.10.16 in draft phase"]';
+        'table[aria-label="Reports for Modal Dialog Example V25.11.06 in draft phase"]';
       const modalDialogTable = document.querySelector(modalDialogTableSelector);
 
       // Find the 'Open run as...' button from the Actions Column
@@ -281,13 +281,13 @@ describe('Test Run when signed in as tester', () => {
     page,
     {
       testPlanSectionButtonSelector = 'button#disclosure-btn-apg\\/modal-dialog-0',
-      testPlanTableSelector = 'table[aria-label="Reports for Modal Dialog Example V25.10.16 in draft phase"]'
+      testPlanTableSelector = 'table[aria-label="Reports for Modal Dialog Example V25.11.06 in draft phase"]'
     } = {}
   ) => {
     const startTestingButtonSelector =
       'a[role="button"] ::-p-text(Start Testing)';
 
-    // Expand Modal Dialog's V25.10.16 section
+    // Expand Modal Dialog's V25.11.06 section
     await page.waitForSelector(testPlanSectionButtonSelector);
     await page.click(testPlanSectionButtonSelector);
 
@@ -340,10 +340,10 @@ describe('Test Run when signed in as tester', () => {
     page,
     {
       testPlanSectionButtonSelector = 'button#disclosure-btn-apg\\/modal-dialog-0',
-      testPlanTableSelector = 'table[aria-label="Reports for Modal Dialog Example V25.10.16 in draft phase"]'
+      testPlanTableSelector = 'table[aria-label="Reports for Modal Dialog Example V25.11.06 in draft phase"]'
     } = {}
   ) => {
-    // Expand Modal Dialog's V25.10.16 section
+    // Expand Modal Dialog's V25.11.06 section
     await page.waitForSelector(testPlanSectionButtonSelector);
     await page.click(testPlanSectionButtonSelector);
 
@@ -353,7 +353,7 @@ describe('Test Run when signed in as tester', () => {
     // Find the 'View Results for...' dropdown button from the Actions Column
     await page.evaluate(() => {
       const modalDialogTableSelector =
-        'table[aria-label="Reports for Modal Dialog Example V25.10.16 in draft phase"]';
+        'table[aria-label="Reports for Modal Dialog Example V25.11.06 in draft phase"]';
       const modalDialogTable = document.querySelector(modalDialogTableSelector);
 
       // Find the 'View Results for...' button from the Actions Column
@@ -799,7 +799,7 @@ describe('Test Run when signed in as tester', () => {
           testPlanSectionButtonSelector:
             'button#disclosure-btn-apg\\/horizontal-slider-0',
           testPlanTableSelector:
-            'table[aria-label="Reports for Color Viewer Slider V25.10.16 in draft phase"]'
+            'table[aria-label="Reports for Color Viewer Slider V25.11.06 in draft phase"]'
         });
         await handlePageSubmit(page, { expectConflicts: false });
       }
@@ -831,7 +831,7 @@ describe('Test Run when signed in as tester', () => {
       const sectionButtonSelector =
         'button#disclosure-btn-apg\\/modal-dialog-0';
       const tableSelector =
-        'table[aria-label="Reports for Modal Dialog Example V25.10.16 in draft phase"]';
+        'table[aria-label="Reports for Modal Dialog Example V25.11.06 in draft phase"]';
 
       await page.waitForSelector(sectionButtonSelector);
       await page.click(sectionButtonSelector);
