@@ -90,7 +90,7 @@ describe('Test Queue admin traits when reports exist', () => {
       const modalDialogSectionButtonSelector =
         'button#disclosure-btn-apg\\/modal-dialog-0';
       const modalDialogTableSelector =
-        'table[aria-label="Reports for Modal Dialog Example V25.10.16 in draft phase"]';
+        'table[aria-label="Reports for Modal Dialog Example V25.11.06 in draft phase"]';
 
       await page.waitForSelector(modalDialogSectionButtonSelector);
 
@@ -103,7 +103,7 @@ describe('Test Queue admin traits when reports exist', () => {
         modalDialogSectionContainerSelector
       );
 
-      // Expand Modal Dialog's V25.10.16 section
+      // Expand Modal Dialog's V25.11.06 section
       await page.click(modalDialogSectionButtonSelector);
       const postClickModalDialogSectionDisplay = await display(
         page,
@@ -169,7 +169,7 @@ describe('Test Queue admin traits when reports exist', () => {
         );
       });
 
-      expect(modalDialogSectionButton.includes('V25.10.16')).toBe(true);
+      expect(modalDialogSectionButton.includes('V25.11.06')).toBe(true);
       expect(preClickModalDialogSectionDisplay).toBe('none');
       expect(postClickModalDialogSectionDisplay).toBe('block');
       expect(validTable).toBe(true);
@@ -181,11 +181,11 @@ describe('Test Queue admin traits when reports exist', () => {
       const modalDialogSectionButtonSelector =
         'button#disclosure-btn-apg\\/modal-dialog-0';
       const modalDialogTableSelector =
-        'table[aria-label="Reports for Modal Dialog Example V25.10.16 in draft phase"]';
+        'table[aria-label="Reports for Modal Dialog Example V25.11.06 in draft phase"]';
 
       await page.waitForSelector(modalDialogSectionButtonSelector);
 
-      // Expand Modal Dialog's V25.10.16 section
+      // Expand Modal Dialog's V25.11.06 section
       await page.click(modalDialogSectionButtonSelector);
 
       // Wait for the table to render
@@ -193,7 +193,7 @@ describe('Test Queue admin traits when reports exist', () => {
 
       const assignTestersDropdownButton = await page.evaluateHandle(() => {
         const modalDialogTableSelector =
-          'table[aria-label="Reports for Modal Dialog Example V25.10.16 in draft phase"]';
+          'table[aria-label="Reports for Modal Dialog Example V25.11.06 in draft phase"]';
         const modalDialogTable = document.querySelector(
           modalDialogTableSelector
         );
@@ -263,11 +263,11 @@ describe('Test Queue admin traits when reports exist', () => {
       const modalDialogRequiredReportsButtonSelector =
         'div#disclosure-btn-controls-apg\\/modal-dialog-0 div.metadata-container button.test-plan-report-status-dialog-button';
       const modalDialogTableSelector =
-        'table[aria-label="Reports for Modal Dialog Example V25.10.16 in draft phase"]';
+        'table[aria-label="Reports for Modal Dialog Example V25.11.06 in draft phase"]';
 
       await page.waitForSelector(modalDialogSectionButtonSelector);
 
-      // Expand Modal Dialog's V25.10.16 section
+      // Expand Modal Dialog's V25.11.06 section
       await page.click(modalDialogSectionButtonSelector);
 
       // Wait for the table to render
@@ -321,11 +321,11 @@ describe('Test Queue admin traits when reports exist', () => {
       const modalDialogRequiredReportsButtonSelector =
         'div#disclosure-btn-controls-apg\\/modal-dialog-0 div.metadata-container button.test-plan-report-status-dialog-button';
       const modalDialogTableSelector =
-        'table[aria-label="Reports for Modal Dialog Example V25.10.16 in draft phase"]';
+        'table[aria-label="Reports for Modal Dialog Example V25.11.06 in draft phase"]';
 
       await page.waitForSelector(modalDialogSectionButtonSelector);
 
-      // Expand Modal Dialog's V25.10.16 section
+      // Expand Modal Dialog's V25.11.06 section
       await page.click(modalDialogSectionButtonSelector);
 
       // Wait for the table to render
@@ -391,7 +391,7 @@ describe('Test Queue admin traits when reports exist', () => {
       const sectionButtonSelector =
         'button#disclosure-btn-apg\\/modal-dialog-0';
       const tableSelector =
-        'table[aria-label="Reports for Modal Dialog Example V25.10.16 in draft phase"]';
+        'table[aria-label="Reports for Modal Dialog Example V25.11.06 in draft phase"]';
 
       await page.waitForSelector(sectionButtonSelector);
       await page.click(sectionButtonSelector);
@@ -520,7 +520,7 @@ describe('Test Queue tester traits when reports exist', () => {
       const modalDialogSectionButtonSelector =
         'button#disclosure-btn-apg\\/modal-dialog-0';
       const modalDialogTableSelector =
-        'table[aria-label="Reports for Modal Dialog Example V25.10.16 in draft phase"]';
+        'table[aria-label="Reports for Modal Dialog Example V25.11.06 in draft phase"]';
 
       await page.waitForSelector(modalDialogSectionButtonSelector);
 
@@ -533,7 +533,7 @@ describe('Test Queue tester traits when reports exist', () => {
         modalDialogSectionContainerSelector
       );
 
-      // Expand Modal Dialog's V25.10.16 section
+      // Expand Modal Dialog's V25.11.06 section
       await page.click(modalDialogSectionButtonSelector);
       const postClickModalDialogSectionDisplay = await display(
         page,
@@ -600,7 +600,7 @@ describe('Test Queue tester traits when reports exist', () => {
         );
       });
 
-      expect(modalDialogSectionButton.includes('V25.10.16')).toBe(true);
+      expect(modalDialogSectionButton.includes('V25.11.06')).toBe(true);
       expect(preClickModalDialogSectionDisplay).toBe('none');
       expect(postClickModalDialogSectionDisplay).toBe('block');
       expect(validTable).toBe(true);
@@ -612,11 +612,11 @@ describe('Test Queue tester traits when reports exist', () => {
       const modalDialogSectionButtonSelector =
         'button#disclosure-btn-apg\\/modal-dialog-0';
       const modalDialogTableSelector =
-        'table[aria-label="Reports for Modal Dialog Example V25.10.16 in draft phase"]';
+        'table[aria-label="Reports for Modal Dialog Example V25.11.06 in draft phase"]';
 
       await page.waitForSelector(modalDialogSectionButtonSelector);
 
-      // Expand Modal Dialog's V25.10.16 section
+      // Expand Modal Dialog's V25.11.06 section
       await page.click(modalDialogSectionButtonSelector);
 
       // Wait for the table to render
@@ -655,7 +655,7 @@ describe('Test Queue tester traits when reports exist', () => {
 
       const assignYourselfButton = await page.evaluateHandle(() => {
         const modalDialogTableSelector =
-          'table[aria-label="Reports for Modal Dialog Example V25.10.16 in draft phase"]';
+          'table[aria-label="Reports for Modal Dialog Example V25.11.06 in draft phase"]';
         const modalDialogTable = document.querySelector(
           modalDialogTableSelector
         );
@@ -719,7 +719,7 @@ describe('Test Queue tester traits when reports exist', () => {
       const modalDialogSectionButtonSelector =
         'button#disclosure-btn-apg\\/modal-dialog-0';
       const modalDialogTableSelector =
-        'table[aria-label="Reports for Modal Dialog Example V25.10.16 in draft phase"]';
+        'table[aria-label="Reports for Modal Dialog Example V25.11.06 in draft phase"]';
 
       await page.waitForSelector(modalDialogSectionButtonSelector);
       await page.click(modalDialogSectionButtonSelector);
