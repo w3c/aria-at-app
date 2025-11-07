@@ -159,11 +159,18 @@ const createIssueLink = ({
 
   let testSetupFormatted = '';
   if (hasTest) {
-    // TODO: fix renderedUrl
+    // TODO: fix renderedUrl source
     let modifiedRenderedUrl = testRenderedUrl.replace(
       /.+(?=\/tests)/,
       'https://aria-at.netlify.app'
     );
+    if (!modifiedRenderedUrl.includes(testPlanDirectory)) {
+      const lastDirectorySegment = testPlanDirectory.split('/').pop();
+      modifiedRenderedUrl = modifiedRenderedUrl.replace(
+        new RegExp(`/${lastDirectorySegment}/`),
+        `/${testPlanDirectory}/`
+      );
+    }
 
     const shortenedUrl = modifiedRenderedUrl?.match(/[^/]+$/)[0];
 
