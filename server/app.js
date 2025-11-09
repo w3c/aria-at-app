@@ -38,12 +38,12 @@ listener.use('/api', app).use('/embed', embedApp);
 const proxyBaseUrl = 'https://raw.githubusercontent.com';
 const onlyStatus200 = (req, res) => res.statusCode === 200;
 
-listener.route('/aria-at/:path').get(
+listener.route('/aria-at/*path').get(
   cacheMiddleware('7 days', onlyStatus200),
   (req, res, next) => {
     // Extract branch and file path from the path parameter
-    const fullPath = req.params.path;
-    const pathParts = fullPath.split('/');
+    // 'path' comes in as array
+    const pathParts = req.params.path;
     req.params.branch = pathParts[0];
     req.params.filePath = '/' + pathParts.slice(1).join('/');
     next();
@@ -91,7 +91,7 @@ app.use(transactionMiddleware.errorware);
 
 // Error handling must be the last middleware
 listener.use((error, req, res, next) => {
-  console.error(error);
+  console.error(error?.message || error);
   next(error);
 });
 
