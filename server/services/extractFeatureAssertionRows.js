@@ -5,7 +5,9 @@ const extractFeatureAssertionRows = (
   testPlanReport,
   testPlanReportId,
   finalizedTestResults,
-  refId
+  refId,
+  refType,
+  testIdToResultIdMap = {}
 ) => {
   const rows = [];
   let featureInfo = {};
@@ -16,6 +18,7 @@ const extractFeatureAssertionRows = (
   finalizedTestResults.forEach(testResult => {
     const testTitle = testResult.test.title;
     const testId = testResult.test.id;
+    const mappedTestResultId = testIdToResultIdMap[testId] ?? testResult.id;
 
     testResult.scenarioResults.forEach(scenarioResult => {
       scenarioResult.assertionResults.forEach(assertionResult => {
@@ -24,6 +27,7 @@ const extractFeatureAssertionRows = (
 
         assertion.references.forEach(reference => {
           if (reference.refId !== refId) return;
+          if (refType && reference.type !== refType) return;
 
           if (!featureInfo.refId) {
             featureInfo.refId = reference.refId;
@@ -69,7 +73,7 @@ const extractFeatureAssertionRows = (
             testPlanReportId: testPlanReport.id,
             testTitle,
             testId,
-            testResultId: testResult.id,
+            testResultId: mappedTestResultId,
             commandSequence: scenarioResult.scenario.commands
               .map(cmd => cmd.text)
               .join(' then '),

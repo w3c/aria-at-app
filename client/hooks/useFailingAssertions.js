@@ -25,14 +25,30 @@ export const useFailingAssertions = testPlanReport => {
           const processPriorityAssertionResults = priority => {
             return scenarioResult[`${priority.toLowerCase()}AssertionResults`]
               .filter(assertionResult => !assertionResult.passed)
-              .map(assertionResult => ({
-                ...commonResult,
-                priority,
-                assertionText: getAssertionPhraseOrText(
-                  assertionResult.assertion
-                ),
-                output: scenarioResult.output
-              }));
+              .map(assertionResult => {
+                // Filter bugs by commandId to only show bugs linked to this specific command
+                const allBugs = assertionResult.assertion.atBugs || [];
+                const filteredBugs = allBugs.filter(bug => {
+                  // If bug has commandIds array, check if it includes this commandId
+                  if (bug.commandIds && Array.isArray(bug.commandIds)) {
+                    return bug.commandIds.includes(commonResult.commandId);
+                  }
+                  return false;
+                });
+
+                return {
+                  ...commonResult,
+                  priority,
+                  assertionText: getAssertionPhraseOrText(
+                    assertionResult.assertion
+                  ),
+                  output: scenarioResult.output,
+                  assertionId: assertionResult.assertion.id,
+                  assertionAtBugs: filteredBugs,
+                  atVersionName: testResult?.atVersion?.name || null,
+                  browserVersionName: testResult?.browserVersion?.name || null
+                };
+              });
           };
 
           const assertionResults = scenarioResult.untestable
@@ -42,8 +58,10 @@ export const useFailingAssertions = testPlanReport => {
                 ...processPriorityAssertionResults('SHOULD')
               ];
 
-          const unexpectedResults = scenarioResult.negativeSideEffects.map(
-            negativeSideEffect => ({
+          const unexpectedResults = (
+            scenarioResult.negativeSideEffects || []
+          ).map(negativeSideEffect => {
+            return {
               ...commonResult,
               assertionText:
                 negativeSideEffect.impact.toLowerCase() === 'moderate'
@@ -57,9 +75,16 @@ export const useFailingAssertions = testPlanReport => {
                   : negativeSideEffect.impact.toLowerCase() === 'severe'
                   ? 'MUST'
                   : 'N/A',
-              output: negativeSideEffect.text
-            })
-          );
+              output: negativeSideEffect.text,
+              // Add fields to identify this as a negative side effect for bug linking
+              isNegativeSideEffect: true,
+              negativeSideEffectId: negativeSideEffect.encodedId,
+              negativeSideEffectImpact: negativeSideEffect.impact,
+              negativeSideEffectDetails: negativeSideEffect.details,
+              // Include any existing bug links from the negative side effect
+              assertionAtBugs: negativeSideEffect.atBugs || []
+            };
+          });
           return [...assertionResults, ...unexpectedResults];
         });
       }

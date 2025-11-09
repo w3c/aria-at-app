@@ -4,7 +4,6 @@ import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import { Container, Table } from 'react-bootstrap';
 import clsx from 'clsx';
-import alphabetizeObjectBy from '../../utils/alphabetizeObjectBy';
 import { derivePhaseName } from '../../utils/aria';
 import { None } from '@components/common/None';
 import { getTestPlanTargetTitle, getTestPlanVersionTitle } from './getTitles';
@@ -50,11 +49,14 @@ const SummarizeTestPlanReports = ({
       testPlanTargetsById[testPlanTarget.id] = testPlanTarget;
     });
   });
-  testPlanTargetsById = alphabetizeObjectBy(testPlanTargetsById, keyValue =>
-    getTestPlanTargetTitle(keyValue[1])
+  const orderedColumns = Object.entries(testPlanTargetsById).map(
+    ([, data]) => data
+  );
+  orderedColumns.sort((a, b) =>
+    getTestPlanTargetTitle(a).localeCompare(getTestPlanTargetTitle(b))
   );
 
-  const none = None();
+  const none = None('No Data');
 
   return (
     <Container
@@ -71,16 +73,18 @@ const SummarizeTestPlanReports = ({
         <h1>Assistive Technology Interoperability Reports</h1>
 
         <Tabs
+          basePath="/reports"
           tabs={[
             {
               label: 'Test Plans',
+              tabKey: 'test-plans',
               content: (
                 <>
                   <h2>Test Plan Support Levels</h2>
                   <p id="support-levels-table-description">
-                    The percentage of 'Must' + 'Should' assertions that are
-                    passing for a given combination of assistive technology and
-                    browser.
+                    The percentage of &apos;Must&apos; + &apos;Should&apos;
+                    assertions that are passing for a given combination of
+                    assistive technology and browser.
                   </p>
                   <Table
                     bordered
@@ -90,42 +94,41 @@ const SummarizeTestPlanReports = ({
                     <thead>
                       <tr>
                         <th>Test Plan</th>
-                        {Object.values(testPlanTargetsById).map(
-                          testPlanTarget => (
-                            <th key={testPlanTarget.id}>
-                              {getTestPlanTargetTitle(testPlanTarget)}
-                            </th>
-                          )
-                        )}
+                        {orderedColumns.map(testPlanTarget => (
+                          <th key={testPlanTarget.id}>
+                            {getTestPlanTargetTitle(testPlanTarget)}
+                          </th>
+                        ))}
                       </tr>
                     </thead>
                     <tbody>
-                      {testPlanVersions.map(testPlanVersion => {
-                        const { testPlanReports } = testPlanVersion;
-                        const phase = testPlanVersion.phase;
-                        return (
-                          <tr key={testPlanVersion.id}>
-                            <td>
-                              <Link
-                                to={`/report/${testPlanVersion.id}`}
-                                aria-label={`${getTestPlanVersionTitle(
-                                  testPlanVersion
-                                )}, ${phase} report`}
-                              >
-                                {getTestPlanVersionTitle(testPlanVersion)}
-                              </Link>
-                              <span
-                                className={clsx(
-                                  styles.phaseText,
-                                  styles[phase.toLowerCase()]
-                                )}
-                                aria-hidden
-                              >
-                                {derivePhaseName(phase)}
-                              </span>
-                            </td>
-                            {Object.values(testPlanTargetsById).map(
-                              testPlanTarget => {
+                      {testPlanVersions
+                        .sort((a, b) => (a.title < b.title ? -1 : 1))
+                        .map(testPlanVersion => {
+                          const { testPlanReports } = testPlanVersion;
+                          const phase = testPlanVersion.phase;
+                          return (
+                            <tr key={testPlanVersion.id}>
+                              <td>
+                                <Link
+                                  to={`/report/${testPlanVersion.id}`}
+                                  aria-label={`${getTestPlanVersionTitle(
+                                    testPlanVersion
+                                  )}, ${phase} report`}
+                                >
+                                  {getTestPlanVersionTitle(testPlanVersion)}
+                                </Link>
+                                <span
+                                  className={clsx(
+                                    styles.phaseText,
+                                    styles[phase.toLowerCase()]
+                                  )}
+                                  aria-hidden
+                                >
+                                  {derivePhaseName(phase)}
+                                </span>
+                              </td>
+                              {orderedColumns.map(testPlanTarget => {
                                 const testPlanReport = testPlanReports.find(
                                   testPlanReport =>
                                     testPlanReport.at.id ===
@@ -159,11 +162,10 @@ const SummarizeTestPlanReports = ({
                                     </Link>
                                   </td>
                                 );
-                              }
-                            )}
-                          </tr>
-                        );
-                      })}
+                              })}
+                            </tr>
+                          );
+                        })}
                     </tbody>
                   </Table>
                 </>
@@ -171,6 +173,7 @@ const SummarizeTestPlanReports = ({
             },
             {
               label: 'ARIA Features',
+              tabKey: 'aria-features',
               content: (
                 <FeatureSupportTable
                   featureData={ariaHtmlFeaturesMetrics.ariaFeaturesByAtBrowser}
@@ -180,6 +183,7 @@ const SummarizeTestPlanReports = ({
             },
             {
               label: 'HTML Features',
+              tabKey: 'html-features',
               content: (
                 <FeatureSupportTable
                   featureData={ariaHtmlFeaturesMetrics.htmlFeaturesByAtBrowser}

@@ -113,11 +113,11 @@ describe('Test Run when signed in as admin', () => {
   const navigateToRunAsTester = async (
     page,
     {
-      testPlanSectionButtonSelector = 'button#disclosure-btn-modal-dialog-0',
-      testPlanTableSelector = 'table[aria-label="Reports for Modal Dialog Example V24.06.07 in draft phase"]'
+      testPlanSectionButtonSelector = 'button#disclosure-btn-apg\\/modal-dialog-0',
+      testPlanTableSelector = 'table[aria-label="Reports for Modal Dialog Example V25.11.06 in draft phase"]'
     } = {}
   ) => {
-    // Expand Modal Dialog's V24.06.07 section
+    // Expand Modal Dialog's V25.11.06 section
     await page.waitForSelector(testPlanSectionButtonSelector);
     await page.click(testPlanSectionButtonSelector);
 
@@ -127,7 +127,7 @@ describe('Test Run when signed in as admin', () => {
     // Find the 'Open run as...' dropdown button from the Actions Column
     await page.evaluate(() => {
       const modalDialogTableSelector =
-        'table[aria-label="Reports for Modal Dialog Example V24.06.07 in draft phase"]';
+        'table[aria-label="Reports for Modal Dialog Example V25.11.06 in draft phase"]';
       const modalDialogTable = document.querySelector(modalDialogTableSelector);
 
       // Find the 'Open run as...' button from the Actions Column
@@ -280,14 +280,14 @@ describe('Test Run when signed in as tester', () => {
   const assignSelfAndNavigateToRun = async (
     page,
     {
-      testPlanSectionButtonSelector = 'button#disclosure-btn-modal-dialog-0',
-      testPlanTableSelector = 'table[aria-label="Reports for Modal Dialog Example V24.06.07 in draft phase"]'
+      testPlanSectionButtonSelector = 'button#disclosure-btn-apg\\/modal-dialog-0',
+      testPlanTableSelector = 'table[aria-label="Reports for Modal Dialog Example V25.11.06 in draft phase"]'
     } = {}
   ) => {
     const startTestingButtonSelector =
       'a[role="button"] ::-p-text(Start Testing)';
 
-    // Expand Modal Dialog's V24.06.07 section
+    // Expand Modal Dialog's V25.11.06 section
     await page.waitForSelector(testPlanSectionButtonSelector);
     await page.click(testPlanSectionButtonSelector);
 
@@ -339,11 +339,11 @@ describe('Test Run when signed in as tester', () => {
   const navigateToRunAsAnotherTester = async (
     page,
     {
-      testPlanSectionButtonSelector = 'button#disclosure-btn-modal-dialog-0',
-      testPlanTableSelector = 'table[aria-label="Reports for Modal Dialog Example V24.06.07 in draft phase"]'
+      testPlanSectionButtonSelector = 'button#disclosure-btn-apg\\/modal-dialog-0',
+      testPlanTableSelector = 'table[aria-label="Reports for Modal Dialog Example V25.11.06 in draft phase"]'
     } = {}
   ) => {
-    // Expand Modal Dialog's V24.06.07 section
+    // Expand Modal Dialog's V25.11.06 section
     await page.waitForSelector(testPlanSectionButtonSelector);
     await page.click(testPlanSectionButtonSelector);
 
@@ -353,7 +353,7 @@ describe('Test Run when signed in as tester', () => {
     // Find the 'View Results for...' dropdown button from the Actions Column
     await page.evaluate(() => {
       const modalDialogTableSelector =
-        'table[aria-label="Reports for Modal Dialog Example V24.06.07 in draft phase"]';
+        'table[aria-label="Reports for Modal Dialog Example V25.11.06 in draft phase"]';
       const modalDialogTable = document.querySelector(modalDialogTableSelector);
 
       // Find the 'View Results for...' button from the Actions Column
@@ -627,7 +627,7 @@ describe('Test Run when signed in as tester', () => {
     };
     await getPage({ role: 'tester', url: '/test-queue' }, async page => {
       await assignSelfAndNavigateToRun(page, {
-        testPlanSectionButtonSelector: 'button#disclosure-btn-alert-0',
+        testPlanSectionButtonSelector: 'button#disclosure-btn-apg\\/alert-0',
         testPlanTableSelector:
           'table[aria-label="Reports for Alert Example V22.04.14 in draft phase"]'
       });
@@ -691,7 +691,7 @@ describe('Test Run when signed in as tester', () => {
     };
     await getPage({ role: 'tester', url: '/test-queue' }, async page => {
       await assignSelfAndNavigateToRun(page, {
-        testPlanSectionButtonSelector: 'button#disclosure-btn-alert-0',
+        testPlanSectionButtonSelector: 'button#disclosure-btn-apg\\/alert-0',
         testPlanTableSelector:
           'table[aria-label="Reports for Alert Example V22.04.14 in draft phase"]'
       });
@@ -797,9 +797,9 @@ describe('Test Run when signed in as tester', () => {
         await page.goto(`${baseUrl}/test-queue`);
         await assignSelfAndNavigateToRun(page, {
           testPlanSectionButtonSelector:
-            'button#disclosure-btn-horizontal-slider-0',
+            'button#disclosure-btn-apg\\/horizontal-slider-0',
           testPlanTableSelector:
-            'table[aria-label="Reports for Color Viewer Slider V24.12.04 in draft phase"]'
+            'table[aria-label="Reports for Color Viewer Slider V25.11.06 in draft phase"]'
         });
         await handlePageSubmit(page, { expectConflicts: false });
       }
@@ -828,9 +828,10 @@ describe('Test Run when signed in as tester', () => {
   it('enforces read-only and shows on-hold modal when report is On hold', async () => {
     // Ensure the report is On hold as admin first, then switch to tester in same page
     await getPage({ role: 'admin', url: '/test-queue' }, async page => {
-      const sectionButtonSelector = 'button#disclosure-btn-modal-dialog-0';
+      const sectionButtonSelector =
+        'button#disclosure-btn-apg\\/modal-dialog-0';
       const tableSelector =
-        'table[aria-label="Reports for Modal Dialog Example V24.06.07 in draft phase"]';
+        'table[aria-label="Reports for Modal Dialog Example V25.11.06 in draft phase"]';
 
       await page.waitForSelector(sectionButtonSelector);
       await page.click(sectionButtonSelector);

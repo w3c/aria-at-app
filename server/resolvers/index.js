@@ -2,6 +2,8 @@ const me = require('./meResolver');
 const users = require('./usersResolver');
 const ats = require('./atsResolver');
 const browsers = require('./browsersResolver');
+const atBug = require('./atBugResolver');
+const atBugs = require('./atBugsResolver');
 const testPlans = require('./testPlansResolver');
 const testPlan = require('./testPlanResolver');
 const testPlanReport = require('./testPlanReportResolver');
@@ -58,6 +60,15 @@ const AtVersion = require('./AtVersion');
 const createCollectionJobsFromPreviousAtVersion = require('./createCollectionJobsFromPreviousAtVersionResolver');
 const rerunnableReports = require('./rerunnableReportsResolver');
 const { updateEvents, updateEvent } = require('./UpdateEvent');
+const createAtBug = require('./createAtBugResolver');
+const updateAtBug = require('./updateAtBugResolver');
+const deleteAtBug = require('./deleteAtBugResolver');
+const linkAtBugsToAssertion = require('./linkAtBugsToAssertionResolver');
+const unlinkAtBugsFromAssertion = require('./unlinkAtBugsFromAssertionResolver');
+const linkAtBugsToNegativeSideEffect = require('./linkAtBugsToNegativeSideEffectResolver');
+const unlinkAtBugsFromNegativeSideEffect = require('./unlinkAtBugsFromNegativeSideEffectResolver');
+const AtBug = require('./AtBug');
+const Assertion = require('./Assertion');
 
 const resolvers = {
   Query: {
@@ -65,6 +76,8 @@ const resolvers = {
     users,
     ats,
     browsers,
+    atBug,
+    atBugs,
     keyMetrics,
     ariaHtmlFeaturesMetrics,
     ariaHtmlFeatureDetailReport,
@@ -106,7 +119,14 @@ const resolvers = {
     deleteCollectionJob,
     scheduleCollectionJob,
     restartCollectionJob,
-    createCollectionJobsFromPreviousAtVersion
+    createCollectionJobsFromPreviousAtVersion,
+    createAtBug,
+    updateAtBug,
+    deleteAtBug,
+    linkAtBugsToAssertion,
+    unlinkAtBugsFromAssertion,
+    linkAtBugsToNegativeSideEffect,
+    unlinkAtBugsFromNegativeSideEffect
   },
   AtOperations,
   AtVersionOperations,
@@ -124,7 +144,9 @@ const resolvers = {
   TestResultOperations,
   TestPlanVersionOperations,
   CollectionJobOperations,
-  AtVersion
+  AtVersion,
+  AtBug,
+  Assertion
 };
 
 module.exports = resolvers;

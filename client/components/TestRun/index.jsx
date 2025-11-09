@@ -27,7 +27,6 @@ import BasicModal from '../common/BasicModal';
 import BasicThemedModal from '../common/BasicThemedModal';
 import AtAndBrowserDetailsModal from '../common/AtAndBrowserDetailsModal';
 import { useDetectUa } from '../../hooks/useDetectUa';
-import DisplayNone from '../../utils/DisplayNone';
 import { navigateTests } from '../../utils/navigateTests';
 import {
   DELETE_TEST_RESULT_MUTATION,
@@ -40,8 +39,8 @@ import {
 } from './queries';
 import { DELETE_TEST_PLAN_RUN } from '../TestQueue/queries';
 import { evaluateAuth } from '../../utils/evaluateAuth';
-import ReviewConflicts from '../ReviewConflicts';
 import createIssueLink from '../../utils/createIssueLink';
+import generateConflictMarkdown from '../../utils/generateConflictMarkdown';
 import { Provider as CollectionJobContextProvider } from './CollectionJobContext';
 import { useUrlTestIndex } from '../../hooks/useUrlTestIndex';
 import styles from './TestRun.module.css';
@@ -405,6 +404,12 @@ const TestRun = () => {
 
   let issueLink, commonIssueContent;
   const hasLoadingCompleted = Object.keys(currentTest).length;
+  if (Object.keys(testPlanReport).length > 0) {
+    conflictMarkdownRef.current = generateConflictMarkdown(
+      testPlanReport,
+      currentTest
+    );
+  }
   if (hasLoadingCompleted) {
     commonIssueContent = {
       testPlanTitle: testPlanVersion.title,
@@ -640,7 +645,9 @@ const TestRun = () => {
       case 'closeTest': {
         // Save renderer's form state
         await saveForm();
-        navigate('/test-queue');
+        if (!window.PUPPETEER_TESTING) {
+          window.close();
+        }
         break;
       }
     }
@@ -1251,13 +1258,6 @@ const TestRun = () => {
             </Col>
           </Row>
         )}
-        <DisplayNone>
-          <ReviewConflicts
-            testPlanReport={testPlanReport}
-            test={currentTest}
-            conflictMarkdownRef={conflictMarkdownRef}
-          />
-        </DisplayNone>
 
         {/* Modals */}
         {showStartOverModal && (

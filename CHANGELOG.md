@@ -1,3 +1,41 @@
+### [1.25.1](https://github.com/w3c/aria-at-app/compare/v1.25.0...v1.25.1) (2025-11-07)
+
+
+### Bug Fixes
+
+* Tabs component loses focus to tab when programmatically navigating ([#1630](https://github.com/w3c/aria-at-app/issues/1630)) ([35ad3e2](https://github.com/w3c/aria-at-app/commit/35ad3e2a6bfbd2035319b3a108237aca7feaf89e))
+* Update path to aria-at test page for reports pages and issues creation ([#1629](https://github.com/w3c/aria-at-app/issues/1629)) ([f564ada](https://github.com/w3c/aria-at-app/commit/f564adafcc9c11dba1b83ac5d41c091d0b93b7b4))
+
+## [1.25.0](https://github.com/w3c/aria-at-app/compare/v1.24.0...v1.25.0) (2025-11-06)
+
+
+### Features
+
+* open new tab, close tab and return to open queue on save ([#1605](https://github.com/w3c/aria-at-app/issues/1605)) ([ed52cfe](https://github.com/w3c/aria-at-app/commit/ed52cfe4c438c0d85ac1f27c379b7e63e5650636))
+* Support for subfolders in `/aria-at/tests/*` ([#1613](https://github.com/w3c/aria-at-app/issues/1613)) ([849301d](https://github.com/w3c/aria-at-app/commit/849301d58ad6f800eeba71427f5c5725b9147f41))
+
+
+### Bug Fixes
+
+* Consistent column order for ARIA and HTML Features tabs ([#1620](https://github.com/w3c/aria-at-app/issues/1620)) ([eabc6e0](https://github.com/w3c/aria-at-app/commit/eabc6e04aa250e25e18f03726a8d2232161c1190))
+* Prefer "No Data" instead of "None" on reports pages ([#1622](https://github.com/w3c/aria-at-app/issues/1622)) ([9e89b8a](https://github.com/w3c/aria-at-app/commit/9e89b8ad228ea96cf11422a13ddf254c77f5cf3a))
+* Support dynamic renames of `aria-at/support.json/references` properties ([#1617](https://github.com/w3c/aria-at-app/issues/1617)) ([f5d92fe](https://github.com/w3c/aria-at-app/commit/f5d92fe3fc9d1692af0e3ec5ec86ca9587980696)), closes [#1618](https://github.com/w3c/aria-at-app/issues/1618)
+
+## [1.24.0](https://github.com/w3c/aria-at-app/compare/v1.23.0...v1.24.0) (2025-11-04)
+
+
+### Features
+
+* `AtBugs` for tracking known AT issues ([#1577](https://github.com/w3c/aria-at-app/issues/1577)) ([a92724e](https://github.com/w3c/aria-at-app/commit/a92724eff3897087c1875111d696aee4f54df533))
+* tab urls ([#1606](https://github.com/w3c/aria-at-app/issues/1606)) ([d3262e6](https://github.com/w3c/aria-at-app/commit/d3262e628e951f6a461850e7d13c17fd3fe1d55a))
+
+
+### Bug Fixes
+
+* aria/html feature front end fixes ([#1598](https://github.com/w3c/aria-at-app/issues/1598)) ([52841bc](https://github.com/w3c/aria-at-app/commit/52841bc550894ae74517e4001f496eb9f80e1ce8))
+* Incorrect sort order on reports page Test Plans tab ([#1612](https://github.com/w3c/aria-at-app/issues/1612)) ([144e797](https://github.com/w3c/aria-at-app/commit/144e7972a8035a99fa6e2788295039818ecf6d33))
+* Show untestable vs passing/failing assertions as conflicts ([#1599](https://github.com/w3c/aria-at-app/issues/1599)) ([4cb0793](https://github.com/w3c/aria-at-app/commit/4cb079316241f1dd1dbbed0afff4120696caf2da))
+
 ## [1.23.0](https://github.com/w3c/aria-at-app/compare/v1.22.0...v1.23.0) (2025-10-30)
 
 
