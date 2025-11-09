@@ -1,7 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cacheMiddleware = require('apicache').middleware;
-const axios = require('axios');
 const { session } = require('./middleware/session');
 const embedApp = require('./apps/embed');
 const authRoutes = require('./routes/auth');
@@ -54,7 +53,14 @@ listener.route('/aria-at/*path').get(
       const filePath = req.params.filePath;
       const githubUrl = `${proxyBaseUrl}/w3c/aria-at/${branch}${filePath}`;
 
-      const response = await axios.get(githubUrl, { timeout: 10000 });
+      const response = await fetch(githubUrl, {
+        signal: AbortSignal.timeout(10000)
+      });
+      if (!response.ok) {
+        throw new Error(
+          `"/aria-at/${branch}${filePath}" returned ${response.status}`
+        );
+      }
 
       // Set proper Content-Type based on file extension
       if (filePath && filePath.includes('.html')) {
@@ -64,9 +70,16 @@ listener.route('/aria-at/*path').get(
       } else if (filePath && filePath.includes('.js')) {
         res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
       } else {
-        res.set(response.headers);
+        // Convert Headers object to plain object for res.set()
+        const headers = {};
+        response.headers.forEach((value, key) => {
+          headers[key] = value;
+        });
+        res.set(headers);
       }
-      res.send(response.data);
+
+      const data = await response.text();
+      res.send(data);
     } catch (error) {
       next(error);
     }
