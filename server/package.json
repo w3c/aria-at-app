@@ -38,7 +38,7 @@
     "express-handlebars": "^8.0.3",
     "express-session": "^1.18.2",
     "fs-extra": "^11.3.2",
-    "graphql": "^16.11.0",
+    "graphql": "^16.12.0",
     "js-base64": "^3.7.8",
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
@@ -55,7 +55,7 @@
   },
   "devDependencies": {
     "@testing-library/dom": "^10.4.1",
-    "jsdom": "^27.0.1",
+    "jsdom": "^27.1.0",
     "jsdom-global": "^3.0.2",
     "node-mocks-http": "^1.17.2",
     "sequelize-cli": "^6.6.3",
