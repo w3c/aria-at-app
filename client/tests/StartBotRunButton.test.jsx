@@ -46,10 +46,7 @@ const setup = ({ mutateImpl } = {}) => {
 
   const utils = render(
     <BrowserRouter>
-      <MockedProvider
-        mocks={[]}
-        cache={new InMemoryCache({ addTypename: false })}
-      >
+      <MockedProvider mocks={[]} cache={new InMemoryCache()}>
         <ConfirmationModalProvider>
           <StartBotRunButton testPlanReport={testPlanReport} />
         </ConfirmationModalProvider>

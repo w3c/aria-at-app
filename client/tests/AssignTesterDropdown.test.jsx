@@ -219,7 +219,7 @@ describe('AssignTesterDropdown', () => {
 
   it('assigns tester correctly and calls assignTester mutation', async () => {
     render(
-      <MockedProvider mocks={getMocks('nvda', 'chrome')} addTypename={false}>
+      <MockedProvider mocks={getMocks('nvda', 'chrome')}>
         <AssignTesterDropdown {...mockProps} />
       </MockedProvider>
     );
@@ -245,7 +245,7 @@ describe('AssignTesterDropdown', () => {
 
   it('assigns bot correctly and calls scheduleCollection mutation', async () => {
     render(
-      <MockedProvider mocks={getMocks('nvda', 'chrome')} addTypename={false}>
+      <MockedProvider mocks={getMocks('nvda', 'chrome')}>
         <AssignTesterDropdown {...mockProps} />
       </MockedProvider>
     );
@@ -270,7 +270,7 @@ describe('AssignTesterDropdown', () => {
   it('does not list bot when run does not support automation', async () => {
     await act(async () => {
       render(
-        <MockedProvider mocks={getMocks('jaws', 'chrome')} addTypename={false}>
+        <MockedProvider mocks={getMocks('jaws', 'chrome')}>
           <AssignTesterDropdown {...mockProps} />
         </MockedProvider>
       );
@@ -295,10 +295,7 @@ describe('AssignTesterDropdown', () => {
   it('only lists supported bot', async () => {
     await act(async () => {
       render(
-        <MockedProvider
-          mocks={getMocks('voiceover_macos', 'safari_macos')}
-          addTypename={false}
-        >
+        <MockedProvider mocks={getMocks('voiceover_macos', 'safari_macos')}>
           <AssignTesterDropdown {...mockProps} />
         </MockedProvider>
       );
@@ -337,7 +334,7 @@ describe('AssignTesterDropdown', () => {
     ];
 
     render(
-      <MockedProvider mocks={getMocks('nvda', 'chrome')} addTypename={false}>
+      <MockedProvider mocks={getMocks('nvda', 'chrome')}>
         <AssignTesterDropdown {...mockProps} />
       </MockedProvider>
     );

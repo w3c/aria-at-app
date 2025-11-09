@@ -41,7 +41,7 @@ test('correctly displays statuses for single COMPLETED test run', async () => {
   const mocks = getMocks(testPlanRuns);
 
   const screen = render(
-    <MockedProvider mocks={mocks} addTypename={false}>
+    <MockedProvider mocks={mocks}>
       <BotRunTestStatusList testPlanReportId="1" />
     </MockedProvider>
   );
@@ -79,7 +79,7 @@ test('correctly ignores test results from a human-submitted test plan run', asyn
   const mocks = getMocks(testPlanRuns);
 
   const { getByText } = render(
-    <MockedProvider mocks={mocks} addTypename={false}>
+    <MockedProvider mocks={mocks}>
       <BotRunTestStatusList testPlanReportId="1" />
     </MockedProvider>
   );
@@ -125,7 +125,7 @@ test('correctly ignores test results from a human-submitted test plan run with a
   const mocks = getMocks(testPlanRuns);
 
   const { getByText } = render(
-    <MockedProvider mocks={mocks} addTypename={false}>
+    <MockedProvider mocks={mocks}>
       <BotRunTestStatusList testPlanReportId="1" />
     </MockedProvider>
   );
@@ -156,7 +156,7 @@ test('correctly displays statuses for CANCELLED test run', async () => {
   const mocks = getMocks(testPlanRuns);
 
   const { getByText } = render(
-    <MockedProvider mocks={mocks} addTypename={false}>
+    <MockedProvider mocks={mocks}>
       <BotRunTestStatusList testPlanReportId="1" />
     </MockedProvider>
   );
@@ -201,7 +201,7 @@ test('correctly displays statuses for multiple RUNNING and QUEUED test runs', as
   const mocks = getMocks(testPlanRuns);
 
   const { getByText } = render(
-    <MockedProvider mocks={mocks} addTypename={false}>
+    <MockedProvider mocks={mocks}>
       <BotRunTestStatusList testPlanReportId="1" />
     </MockedProvider>
   );
@@ -209,7 +209,7 @@ test('correctly displays statuses for multiple RUNNING and QUEUED test runs', as
   await waitFor(async () => {
     // Wait for the component to update
     // Imperfect but prevents needing to detect loading removal
-    await setTimeout(() => {
+    setTimeout(() => {
       expect(getByText('1 Test Running')).toBeInTheDocument();
       expect(getByText('2 Tests Executed')).toBeInTheDocument();
       expect(getByText('1 Test Queued')).toBeInTheDocument();

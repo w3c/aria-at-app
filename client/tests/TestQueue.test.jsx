@@ -24,10 +24,7 @@ const setup = (mocks = []) => {
   return render(
     <BrowserRouter>
       <AriaLiveRegionProvider>
-        <MockedProvider
-          mocks={mergedMocks}
-          cache={new InMemoryCache({ addTypename: false })}
-        >
+        <MockedProvider mocks={mergedMocks} cache={new InMemoryCache()}>
           <TestQueue />
         </MockedProvider>
       </AriaLiveRegionProvider>

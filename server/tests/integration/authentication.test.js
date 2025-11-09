@@ -1,4 +1,3 @@
-const fetch = require('node-fetch');
 const setUpMockGithubServer = require('../util/mock-github-server');
 const startSupertestServer = require('../util/api-server');
 const authRoutes = require('../../routes/auth');
