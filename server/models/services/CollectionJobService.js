@@ -405,7 +405,14 @@ const getCollectionJobs = async ({
  */
 const triggerWorkflow = async (job, testIds, atVersion, { transaction }) => {
   const { testPlanVersion } = job.testPlanRun.testPlanReport;
-  const { gitSha, directory } = testPlanVersion;
+  let { gitSha, directory, updatedAt } = testPlanVersion;
+
+  const testPlanVersionCommitDate = new Date(updatedAt);
+  const preApgTestsDate = new Date('2025-11-06 11:57:41.000000 +00:00');
+  if (testPlanVersionCommitDate < preApgTestsDate) {
+    directory = directory.replace('apg/', '');
+  }
+
   try {
     if (isGithubWorkflowEnabled()) {
       // TODO: pass the reduced list of testIds along / deal with them somehow
