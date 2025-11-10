@@ -1,3 +1,10 @@
+### [1.25.2](https://github.com/w3c/aria-at-app/compare/v1.25.1...v1.25.2) (2025-11-10)
+
+
+### Bug Fixes
+
+* Support older imported TestPlanVersions in automation ([#1634](https://github.com/w3c/aria-at-app/issues/1634)) ([77ba1d4](https://github.com/w3c/aria-at-app/commit/77ba1d452c8ee396c8188d5cef7b8c54e2b801bf))
+
 ### [1.25.1](https://github.com/w3c/aria-at-app/compare/v1.25.0...v1.25.1) (2025-11-07)
 
 
