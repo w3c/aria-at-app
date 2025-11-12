@@ -1,16 +1,11 @@
 const { getAtVersionById } = require('../../models/services/AtVersionService');
-const {
-  isSupportedByAutomation
-} = require('../../util/isSupportedByAutomation');
 
 const supportedByAutomationResolver = async (parent, _, { transaction }) => {
   const atVersion = await getAtVersionById({
     id: parent.id,
     transaction
   });
-  return isSupportedByAutomation(atVersion.at.id, atVersion.name, {
-    transaction
-  });
+  return atVersion.supportedByAutomation;
 };
 
 module.exports = supportedByAutomationResolver;

@@ -1,11 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { dates } from 'shared';
-import {
-  TestPlanVersionPropType,
-  TestPlanRunPropType,
-  UserPropType
-} from '../proptypes';
+import { UserPropType } from '../proptypes';
 import styles from './ReportStatusSummary.module.css';
 
 const ReportStatusSummary = ({
@@ -39,9 +35,9 @@ const ReportStatusSummary = ({
   };
 
   const renderPartialCompleteReportStatus = testPlanReport => {
-    const { metrics, draftTestPlanRuns } = testPlanReport;
+    const { conflictsLength, draftTestPlanRuns } = testPlanReport;
 
-    const conflictsCount = metrics.conflictsCount ?? 0;
+    const conflictsCount = conflictsLength ?? 0;
     switch (draftTestPlanRuns?.length) {
       case 0:
         return fromTestQueue ? (
@@ -86,13 +82,21 @@ const ReportStatusSummary = ({
 };
 
 ReportStatusSummary.propTypes = {
-  testPlanVersion: TestPlanVersionPropType.isRequired,
+  testPlanVersion: PropTypes.shape({
+    id: PropTypes.string.isRequired
+  }),
   testPlanReport: PropTypes.shape({
     id: PropTypes.string.isRequired,
     percentComplete: PropTypes.number,
     markedFinalAt: PropTypes.string,
-    metrics: PropTypes.object,
-    draftTestPlanRuns: PropTypes.arrayOf(TestPlanRunPropType).isRequired
+    conflictsLength: PropTypes.number,
+    draftTestPlanRuns: PropTypes.arrayOf(
+      PropTypes.shape({
+        tester: PropTypes.shape({
+          username: PropTypes.string
+        })
+      })
+    )
   }),
   me: UserPropType,
   fromTestQueue: PropTypes.bool

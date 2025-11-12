@@ -3,25 +3,21 @@ import {
   AT_FIELDS,
   AT_VERSION_FIELDS,
   BROWSER_FIELDS,
-  BROWSER_VERSION_FIELDS,
   ISSUE_FIELDS,
   ME_FIELDS,
   TEST_PLAN_FIELDS,
   TEST_PLAN_REPORT_FIELDS,
-  TEST_PLAN_VERSION_FIELDS,
-  TEST_RESULT_FIELDS
+  TEST_PLAN_VERSION_FIELDS
 } from '@components/common/fragments';
 
 export const DATA_MANAGEMENT_PAGE_QUERY = gql`
   ${AT_FIELDS}
   ${AT_VERSION_FIELDS}
   ${BROWSER_FIELDS}
-  ${BROWSER_VERSION_FIELDS}
   ${ISSUE_FIELDS()}
   ${ME_FIELDS}
   ${TEST_PLAN_FIELDS}
   ${TEST_PLAN_REPORT_FIELDS}
-  ${TEST_RESULT_FIELDS}
   query DataManagementPage {
     me {
       ...MeFields
@@ -86,26 +82,6 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
         }
         browser {
           ...BrowserFields
-        }
-        draftTestPlanRuns {
-          tester {
-            username
-          }
-          testPlanReport {
-            id
-          }
-          testResults {
-            ...TestResultFields
-            test {
-              id
-            }
-            atVersion {
-              ...AtVersionFields
-            }
-            browserVersion {
-              ...BrowserVersionFields
-            }
-          }
         }
       }
     }

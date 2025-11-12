@@ -1,7 +1,9 @@
 export default (
   testPlanReportAtBrowserQuery,
   existingTestPlanReportsQuery,
-  getUpdateEventsQuery
+  getUpdateEventsQuery,
+  addTestPlansQuery,
+  getAutomationSupportedAtVersionsQuery
 ) => [
   {
     request: {
@@ -132,6 +134,42 @@ export default (
     result: {
       data: {
         updateEvents: []
+      }
+    }
+  },
+  {
+    request: {
+      query: getAutomationSupportedAtVersionsQuery,
+      variables: {}
+    },
+    result: {
+      data: {
+        ats: [
+          {
+            id: '1',
+            name: 'Chrome',
+            atVersions: [
+              {
+                id: '1',
+                name: '126',
+                releasedAt: '2024-01-01',
+                supportedByAutomation: true
+              }
+            ]
+          },
+          {
+            id: '2',
+            name: 'Firefox',
+            atVersions: [
+              {
+                id: '2',
+                name: '123',
+                releasedAt: '2024-01-01',
+                supportedByAutomation: true
+              }
+            ]
+          }
+        ]
       }
     }
   }

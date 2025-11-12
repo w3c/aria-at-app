@@ -564,4 +564,159 @@ describe('AtVersionModel Data Checks', () => {
       })
     );
   });
+
+  it('should have supportedByAutomation and latestAutomationSupporting flags', async () => {
+    // A1
+    const _id = 1;
+
+    // A2
+    const atVersion = await AtVersionService.getAtVersionById({
+      id: _id,
+      transaction: false
+    });
+
+    // A3
+    expect(atVersion).toHaveProperty('supportedByAutomation');
+    expect(atVersion).toHaveProperty('latestAutomationSupporting');
+    expect(typeof atVersion.supportedByAutomation).toBe('boolean');
+    expect(typeof atVersion.latestAutomationSupporting).toBe('boolean');
+  });
+
+  it('should promote an atVersion to automation supported', async () => {
+    await dbCleaner(async transaction => {
+      // A1
+      const _atId = 1;
+      const _atVersion = randomStringGenerator();
+      const _releasedAt = new Date('2022-05-01 20:00:00-04');
+
+      // A2
+      const atVersionInstance = await AtVersionService.createAtVersion({
+        values: {
+          atId: _atId,
+          name: _atVersion,
+          releasedAt: _releasedAt
+        },
+        transaction
+      });
+      const { id } = atVersionInstance;
+
+      // A3
+      const promoted = await AtVersionService.promoteAutomationSupportedVersion(
+        {
+          atVersionId: id,
+          transaction
+        }
+      );
+
+      // A4
+      expect(promoted).not.toBeNull();
+      expect(promoted.supportedByAutomation).toBe(true);
+      expect(promoted.latestAutomationSupporting).toBe(true);
+    });
+  });
+
+  it('should handle promoting an already-promoted atVersion', async () => {
+    await dbCleaner(async transaction => {
+      // A1
+      const _atId = 1;
+      const _atVersion = randomStringGenerator();
+      const _releasedAt = new Date('2022-05-01 20:00:00-04');
+
+      // A2
+      const atVersionInstance = await AtVersionService.createAtVersion({
+        values: {
+          atId: _atId,
+          name: _atVersion,
+          releasedAt: _releasedAt,
+          supportedByAutomation: true,
+          latestAutomationSupporting: true
+        },
+        transaction
+      });
+      const { id } = atVersionInstance;
+
+      // A3
+      const promoted = await AtVersionService.promoteAutomationSupportedVersion(
+        {
+          atVersionId: id,
+          transaction
+        }
+      );
+
+      // A4
+      expect(promoted).not.toBeNull();
+      expect(promoted.supportedByAutomation).toBe(true);
+      expect(promoted.latestAutomationSupporting).toBe(true);
+    });
+  });
+
+  it('should demote other versions when promoting a new latest', async () => {
+    await dbCleaner(async transaction => {
+      // A1
+      const _atId = 1;
+      const _firstVersion = randomStringGenerator();
+      const _secondVersion = randomStringGenerator();
+      const _releasedAt1 = new Date('2022-05-01 20:00:00-04');
+      const _releasedAt2 = new Date('2022-06-01 20:00:00-04');
+
+      // A2
+      const firstVersion = await AtVersionService.createAtVersion({
+        values: {
+          atId: _atId,
+          name: _firstVersion,
+          releasedAt: _releasedAt1,
+          supportedByAutomation: true,
+          latestAutomationSupporting: true
+        },
+        transaction
+      });
+
+      const secondVersion = await AtVersionService.createAtVersion({
+        values: {
+          atId: _atId,
+          name: _secondVersion,
+          releasedAt: _releasedAt2,
+          supportedByAutomation: false,
+          latestAutomationSupporting: false
+        },
+        transaction
+      });
+
+      // A3
+      const promoted = await AtVersionService.promoteAutomationSupportedVersion(
+        {
+          atVersionId: secondVersion.id,
+          transaction
+        }
+      );
+
+      // A4
+      const demoted = await AtVersionService.getAtVersionById({
+        id: firstVersion.id,
+        transaction
+      });
+
+      expect(promoted.latestAutomationSupporting).toBe(true);
+      expect(demoted.latestAutomationSupporting).toBe(false);
+      expect(demoted.supportedByAutomation).toBe(true);
+    });
+  });
+
+  it('should return null when promoting non-existent atVersion', async () => {
+    await dbCleaner(async transaction => {
+      // A1
+      const nonExistentId = 999999;
+
+      // A2
+      const promoted = await AtVersionService.promoteAutomationSupportedVersion(
+        {
+          atVersionId: nonExistentId,
+          transaction
+        }
+      );
+
+      // A3
+      expect(promoted).toBeNull();
+    });
+  });
 });

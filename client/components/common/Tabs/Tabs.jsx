@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, startTransition } from 'react';
 import PropTypes from 'prop-types';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styles from './Tabs.module.css';
 
-const Tabs = ({ tabs, basePath }) => {
+const Tabs = ({ tabs, onSelectedTabChange, basePath }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const tabRefs = useRef([]);
@@ -55,7 +55,9 @@ const Tabs = ({ tabs, basePath }) => {
     if (currentTabKey) {
       const index = tabs.findIndex(tab => tab.tabKey === currentTabKey);
       if (index < 0) {
-        navigate(basePath, { replace: true });
+        startTransition(() => {
+          navigate(basePath, { replace: true });
+        });
         return;
       }
     }
@@ -70,6 +72,7 @@ const Tabs = ({ tabs, basePath }) => {
 
   const updateSelectedTab = index => {
     setSelectedTab(index);
+    onSelectedTabChange?.(index);
     const tab = tabs[index];
     const tabKey = tab.tabKey || `tab-${index}`;
     let targetPath;
@@ -80,8 +83,10 @@ const Tabs = ({ tabs, basePath }) => {
     } else {
       targetPath = `${basePath}/${tabKey}`;
     }
-    navigate(`${targetPath}${location.search}${location.hash}`, {
-      replace: true
+    startTransition(() => {
+      navigate(`${targetPath}${location.search}${location.hash}`, {
+        replace: true
+      });
     });
   };
 
@@ -133,19 +138,17 @@ const Tabs = ({ tabs, basePath }) => {
           </button>
         ))}
       </div>
-      {tabs.map((tab, index) => (
+      {tabs[selectedTab] && (
         <div
-          key={index}
           role="tabpanel"
-          id={`panel-${index}`}
-          aria-labelledby={`tab-${index}`}
-          hidden={selectedTab !== index}
+          id={`panel-${selectedTab}`}
+          aria-labelledby={`tab-${selectedTab}`}
           tabIndex={0}
           className={styles.tabPanel}
         >
-          {tab.content}
+          {tabs[selectedTab].content}
         </div>
-      ))}
+      )}
     </div>
   );
 };
@@ -154,10 +157,11 @@ Tabs.propTypes = {
   tabs: PropTypes.arrayOf(
     PropTypes.shape({
       label: PropTypes.string.isRequired,
-      content: PropTypes.node.isRequired,
+      content: PropTypes.node,
       tabKey: PropTypes.string
     })
   ).isRequired,
+  onSelectedTabChange: PropTypes.func,
   basePath: PropTypes.string
 };
 

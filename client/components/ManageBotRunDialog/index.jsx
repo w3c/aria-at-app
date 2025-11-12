@@ -40,7 +40,7 @@ const ManageBotRunDialog = ({
       variables: {
         testPlanRunId: testPlanRun.id
       },
-      fetchPolicy: 'cache-and-network'
+      fetchPolicy: 'cache-first'
     }
   );
 
@@ -57,7 +57,7 @@ const ManageBotRunDialog = ({
       variables: {
         testPlanReportId
       },
-      fetchPolicy: 'cache-and-network'
+      fetchPolicy: 'cache-only'
     }
   );
 
@@ -75,7 +75,9 @@ const ManageBotRunDialog = ({
 
   const { isAdmin, isTester } = evaluateAuth(me);
 
-  const [assignTester] = useMutation(ASSIGN_TESTER_MUTATION);
+  const [assignTester] = useMutation(ASSIGN_TESTER_MUTATION, {
+    refetchQueries: ['TestQueueExpandedRow']
+  });
 
   const isBotRunFinished = useMemo(() => {
     const status = collectionJobQuery?.collectionJobByTestPlanRunId?.status;
@@ -187,7 +189,9 @@ const ManageBotRunDialog = ({
     collectionJobQuery,
     isAdmin,
     isTester,
-    isBotRunFinished
+    isBotRunFinished,
+    me?.id,
+    assignTester
   ]);
 
   const deleteConfirmationContent = (

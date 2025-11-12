@@ -6,10 +6,7 @@ import {
   ME_FIELDS,
   TEST_PLAN_FIELDS,
   TEST_PLAN_REPORT_FIELDS,
-  TEST_PLAN_REPORT_STATUS_FIELDS,
   TEST_PLAN_RUN_FIELDS,
-  TEST_PLAN_VERSION_FIELDS,
-  TEST_RESULT_FIELDS,
   ISSUE_FIELDS,
   USER_FIELDS
 } from '@components/common/fragments';
@@ -20,11 +17,6 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
   ${BROWSER_FIELDS}
   ${ME_FIELDS}
   ${TEST_PLAN_FIELDS}
-  ${TEST_PLAN_REPORT_FIELDS}
-  ${TEST_PLAN_REPORT_STATUS_FIELDS()}
-  ${TEST_PLAN_RUN_FIELDS}
-  ${TEST_PLAN_VERSION_FIELDS}
-  ${TEST_RESULT_FIELDS}
   ${USER_FIELDS}
   query TestQueuePage {
     me {
@@ -33,9 +25,6 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
     users {
       ...UserFields
       roles
-      ats {
-        ...AtFields
-      }
     }
     ats {
       ...AtFields
@@ -49,54 +38,35 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
     testPlans(testPlanVersionPhases: [DRAFT, CANDIDATE, RECOMMENDED]) {
       ...TestPlanFields
       testPlanVersions {
-        ...TestPlanVersionFields
+        __typename
+        id
+        title
+        phase
+        versionString
+        updatedAt
+        draftPhaseReachedAt
+        candidatePhaseReachedAt
+        recommendedPhaseReachedAt
+        recommendedPhaseTargetDate
+        deprecatedAt
         testPlanReports(isFinal: false) {
-          ...TestPlanReportFields
-          runnableTests {
-            scenarios {
-              id
-              at {
-                id
-              }
-            }
-          }
+          id
           at {
-            ...AtFields
-            atVersions {
-              ...AtVersionFields
-            }
+            name
           }
           browser {
-            ...BrowserFields
-          }
-          minimumAtVersion {
-            ...AtVersionFields
-          }
-          exactAtVersion {
-            ...AtVersionFields
+            name
           }
           draftTestPlanRuns {
-            ...TestPlanRunFields
-            testResultsLength
-            collectionJob {
-              status
-            }
-            testResults {
-              ...TestResultFields
-              scenarioResults {
-                output
-                assertionResults {
-                  passed
-                }
-                negativeSideEffects {
-                  id
-                }
-              }
-            }
+            id
+            isRerun
           }
-        }
-        testPlanReportStatuses {
-          ...TestPlanReportStatusFieldsSimple
+          minimumAtVersion {
+            releasedAt
+          }
+          exactAtVersion {
+            releasedAt
+          }
         }
       }
     }
@@ -276,6 +246,53 @@ export const SET_ON_HOLD_MUTATION = gql`
           id
           onHold
         }
+      }
+    }
+  }
+`;
+
+export const TEST_QUEUE_EXPANDED_ROW_QUERY = gql`
+  ${AT_FIELDS}
+  ${AT_VERSION_FIELDS}
+  ${BROWSER_FIELDS}
+  ${TEST_PLAN_REPORT_FIELDS}
+  ${TEST_PLAN_RUN_FIELDS}
+  query TestQueueExpandedRow($testPlanReportId: ID!) {
+    testPlanReport(id: $testPlanReportId) {
+      ...TestPlanReportFields
+      totalScenarioCount
+      at {
+        ...AtFields
+        atVersions {
+          ...AtVersionFields
+        }
+      }
+      browser {
+        ...BrowserFields
+      }
+      minimumAtVersion {
+        ...AtVersionFields
+      }
+      exactAtVersion {
+        ...AtVersionFields
+      }
+      draftTestPlanRuns {
+        ...TestPlanRunFields
+      }
+    }
+  }
+`;
+
+export const ADD_TEST_PLANS_QUERY = gql`
+  ${TEST_PLAN_FIELDS}
+  query AddTestPlans($testPlanVersionPhases: [TestPlanVersionPhase!]!) {
+    testPlans(testPlanVersionPhases: $testPlanVersionPhases) {
+      ...TestPlanFields
+      testPlanVersions {
+        __typename
+        id
+        gitSha
+        gitMessage
       }
     }
   }
