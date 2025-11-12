@@ -4,7 +4,6 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
-import { InMemoryCache } from '@apollo/client';
 import BotRunTestStatusList from '../components/BotRunTestStatusList';
 import { TEST_PLAN_RUNS_TEST_RESULTS_QUERY } from '../components/BotRunTestStatusList/queries';
 import '@testing-library/jest-dom';
@@ -42,7 +41,7 @@ test('correctly displays statuses for single COMPLETED test run', async () => {
   const mocks = getMocks(testPlanRuns);
 
   const screen = render(
-    <MockedProvider mocks={mocks} cache={new InMemoryCache()}>
+    <MockedProvider mocks={mocks} addTypename={false}>
       <BotRunTestStatusList testPlanReportId="1" />
     </MockedProvider>
   );
@@ -80,7 +79,7 @@ test('correctly ignores test results from a human-submitted test plan run', asyn
   const mocks = getMocks(testPlanRuns);
 
   const { getByText } = render(
-    <MockedProvider mocks={mocks} cache={new InMemoryCache()}>
+    <MockedProvider mocks={mocks} addTypename={false}>
       <BotRunTestStatusList testPlanReportId="1" />
     </MockedProvider>
   );
@@ -126,7 +125,7 @@ test('correctly ignores test results from a human-submitted test plan run with a
   const mocks = getMocks(testPlanRuns);
 
   const { getByText } = render(
-    <MockedProvider mocks={mocks} cache={new InMemoryCache()}>
+    <MockedProvider mocks={mocks} addTypename={false}>
       <BotRunTestStatusList testPlanReportId="1" />
     </MockedProvider>
   );
@@ -157,7 +156,7 @@ test('correctly displays statuses for CANCELLED test run', async () => {
   const mocks = getMocks(testPlanRuns);
 
   const { getByText } = render(
-    <MockedProvider mocks={mocks} cache={new InMemoryCache()}>
+    <MockedProvider mocks={mocks} addTypename={false}>
       <BotRunTestStatusList testPlanReportId="1" />
     </MockedProvider>
   );
@@ -202,7 +201,7 @@ test('correctly displays statuses for multiple RUNNING and QUEUED test runs', as
   const mocks = getMocks(testPlanRuns);
 
   const { getByText } = render(
-    <MockedProvider mocks={mocks} cache={new InMemoryCache()}>
+    <MockedProvider mocks={mocks} addTypename={false}>
       <BotRunTestStatusList testPlanReportId="1" />
     </MockedProvider>
   );

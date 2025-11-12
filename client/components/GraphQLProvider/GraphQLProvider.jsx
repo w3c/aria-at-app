@@ -25,6 +25,7 @@ const headerMiddleware = new ApolloLink((operation, forward) => {
 const client = new ApolloClient({
   link: concat(headerMiddleware, new HttpLink({ uri: '/api/graphql' })),
   cache: new InMemoryCache({
+    addTypename: false,
     typePolicies: {
       Query: {
         fields: {

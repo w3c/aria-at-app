@@ -3,9 +3,7 @@ const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-  entry: {
-    bundle: ['core-js/stable', './index.js']
-  },
+  entry: ['core-js/stable', './index.js'],
   mode: 'production',
   module: {
     rules: [

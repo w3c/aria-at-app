@@ -51,7 +51,10 @@ const setup = (props, mockMutation) => {
   });
   return render(
     <BrowserRouter>
-      <MockedProvider mocks={[]} cache={new InMemoryCache()}>
+      <MockedProvider
+        mocks={[]}
+        cache={new InMemoryCache({ addTypename: false })}
+      >
         <AddTestToQueueWithConfirmation {...props} />
       </MockedProvider>
     </BrowserRouter>

@@ -18,7 +18,10 @@ import { mockedTestPlanVersion } from './__mocks__/GraphQLMocks/TestPlanReportSt
 const setup = (props, mocks = []) => {
   return render(
     <BrowserRouter>
-      <MockedProvider mocks={mocks} cache={new InMemoryCache()}>
+      <MockedProvider
+        mocks={mocks}
+        cache={new InMemoryCache({ addTypename: false })}
+      >
         <TestPlanReportStatusDialog {...props} />
       </MockedProvider>
     </BrowserRouter>
