@@ -18,7 +18,7 @@
   become: yes
   with_items:
     - deb https://dl.yarnpkg.com/debian/ stable main
-    - deb https://deb.nodesource.com/node_18.x buster main
+    - deb https://deb.nodesource.com/node_22.x buster main
 
 - name: Install packages
   apt:

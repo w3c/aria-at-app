@@ -209,7 +209,7 @@ test('correctly displays statuses for multiple RUNNING and QUEUED test runs', as
   await waitFor(async () => {
     // Wait for the component to update
     // Imperfect but prevents needing to detect loading removal
-    await setTimeout(() => {
+    setTimeout(() => {
       expect(getByText('1 Test Running')).toBeInTheDocument();
       expect(getByText('2 Tests Executed')).toBeInTheDocument();
       expect(getByText('1 Test Queued')).toBeInTheDocument();
