@@ -20,7 +20,8 @@ export const useTestPlanRunIsFinished = testPlanRunId => {
       variables: {
         testPlanRunId
       },
-      fetchPolicy: 'cache-and-network'
+      fetchPolicy: 'cache-and-network',
+      nextFetchPolicy: 'cache-first'
     }
   );
 

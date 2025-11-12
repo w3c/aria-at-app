@@ -1,27 +1,32 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Form } from 'react-bootstrap';
 import RadioBox from '@components/common/RadioBox';
 import AddTestToQueueWithConfirmation from '@components/AddTestToQueueWithConfirmation';
 import { dates } from 'shared';
 import PropTypes from 'prop-types';
+import { AtPropType } from '@components/common/proptypes';
 import {
-  AtPropType,
-  TestPlanVersionPropType
-} from '@components/common/proptypes';
+  useAddTestPlansData,
+  useAddTestPlansFormState
+} from './useAddTestPlansData';
 import styles from './ManageTestQueue.module.css';
 import commonStyles from '../common/styles.module.css';
 
 const AddTestPlans = ({
   ats = [],
-  testPlanVersions = [],
+  isOpen = false,
   triggerUpdate = () => {}
 }) => {
-  const [allTestPlans, setAllTestPlans] = useState([]);
-  const [allTestPlanVersions, setAllTestPlanVersions] = useState([]);
+  const { allTestPlans, allTestPlanVersions } = useAddTestPlansData(isOpen);
+  const {
+    selectedTestPlanVersionId,
+    setSelectedTestPlanVersionId,
+    getMatchingTestPlanVersions
+  } = useAddTestPlansFormState(allTestPlanVersions);
 
-  const [selectedTestPlanVersionId, setSelectedTestPlanVersionId] =
-    useState('');
-  const [matchingTestPlanVersions, setMatchingTestPlanVersions] = useState([]);
+  const matchingTestPlanVersions = getMatchingTestPlanVersions(
+    selectedTestPlanVersionId
+  );
 
   const [selectedAtId, setSelectedAtId] = useState('');
   const [selectedBrowserId, setSelectedBrowserId] = useState('');
@@ -33,67 +38,6 @@ const AddTestPlans = ({
     showMinimumAtVersionErrorMessage,
     setShowMinimumAtVersionErrorMessage
   ] = useState(false);
-
-  useEffect(() => {
-    // Prevent allTestPlanVersions and filteredTestPlanVersions from being unnecessarily overwritten
-    if (allTestPlanVersions.length) return;
-
-    const _allTestPlanVersions = testPlanVersions
-      .map(version => ({ ...version }))
-      .flat();
-
-    // Get valid test plans by removing duplicate entries from different
-    // test plan versions of the same test plan being imported multiple times
-    const _allTestPlans = _allTestPlanVersions
-      .filter(
-        (v, i, a) =>
-          a.findIndex(
-            t =>
-              t.title === v.title &&
-              t.testPlan.directory === v.testPlan.directory
-          ) === i
-      )
-      .map(({ id, title, testPlan }) => ({
-        id,
-        title,
-        directory: testPlan.directory
-      }))
-      // sort by the testPlanVersion titles
-      .sort((a, b) => (a.title < b.title ? -1 : 1));
-
-    // mark the first testPlanVersion as selected
-    if (_allTestPlans.length) {
-      const plan = _allTestPlans[0];
-      updateMatchingTestPlanVersions(plan.id, _allTestPlanVersions);
-    }
-
-    setAllTestPlans(_allTestPlans);
-    setAllTestPlanVersions(_allTestPlanVersions);
-  }, [testPlanVersions]);
-
-  const updateMatchingTestPlanVersions = (value, allTestPlanVersions) => {
-    // update test plan versions based on selected test plan
-    const retrievedTestPlanVersion = allTestPlanVersions.find(
-      item => item.id === value
-    );
-
-    // find the versions that apply and pre-set these
-    const matchingTestPlanVersions = allTestPlanVersions
-      .filter(
-        item =>
-          item.title === retrievedTestPlanVersion.title &&
-          item.testPlan.directory ===
-            retrievedTestPlanVersion.testPlan.directory &&
-          item.phase !== 'DEPRECATED' &&
-          item.phase !== 'RD'
-      )
-      .sort((a, b) => (new Date(a.updatedAt) > new Date(b.updatedAt) ? -1 : 1));
-    setMatchingTestPlanVersions(matchingTestPlanVersions);
-
-    if (matchingTestPlanVersions.length)
-      setSelectedTestPlanVersionId(matchingTestPlanVersions[0].id);
-    else setSelectedTestPlanVersionId(null);
-  };
 
   const onTestPlanVersionChange = e => {
     const { value } = e.target;
@@ -143,7 +87,7 @@ const AddTestPlans = ({
               const { value } = e.target;
               setShowMinimumAtVersionErrorMessage(false);
               setSelectedAtVersionExactOrMinimum('Exact Version');
-              updateMatchingTestPlanVersions(value, allTestPlanVersions);
+              setSelectedTestPlanVersionId(value);
             }}
           >
             {allTestPlans.map(item => (
@@ -165,9 +109,14 @@ const AddTestPlans = ({
           >
             {matchingTestPlanVersions.length ? (
               matchingTestPlanVersions.map(item => (
-                <option key={`${item.gitSha}-${item.id}`} value={item.id}>
+                <option
+                  key={`${item.id}-${item.versionString}`}
+                  value={item.id}
+                >
                   {dates.convertDateToString(item.updatedAt, 'MMM D, YYYY')}{' '}
-                  {item.gitMessage} ({item.gitSha.substring(0, 7)})
+                  {item.gitMessage
+                    ? `${item.gitMessage} (${item.gitSha?.substring(0, 7)})`
+                    : item.versionString}
                 </option>
               ))
             ) : (
@@ -291,7 +240,7 @@ const AddTestPlans = ({
 
 AddTestPlans.propTypes = {
   ats: PropTypes.arrayOf(AtPropType).isRequired,
-  testPlanVersions: PropTypes.arrayOf(TestPlanVersionPropType).isRequired,
+  isOpen: PropTypes.bool,
   triggerUpdate: PropTypes.func
 };
 

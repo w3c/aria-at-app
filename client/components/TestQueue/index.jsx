@@ -1,9 +1,9 @@
-import React, { Fragment, useRef, useState, useMemo } from 'react';
-import { useApolloClient, useQuery } from '@apollo/client';
-import { Routes, Route } from 'react-router-dom';
+import React, { Fragment, useRef, useState, useMemo, useEffect } from 'react';
+import { useQuery } from '@apollo/client';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import PageStatus from '../common/PageStatus';
 import { TEST_QUEUE_PAGE_QUERY } from './queries';
-import { Alert, Container, Table } from 'react-bootstrap';
+import { Alert, Container } from 'react-bootstrap';
 import { Helmet } from 'react-helmet';
 import { evaluateAuth } from '../../utils/evaluateAuth';
 import ManageTestQueue from '../ManageTestQueue';
@@ -11,20 +11,13 @@ import DisclosureComponent from '../common/DisclosureComponent';
 import useForceUpdate from '../../hooks/useForceUpdate';
 import VersionString from '../common/VersionString';
 import PhasePill from '../common/PhasePill';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
-import TestPlanReportStatusDialogWithButton from '../TestPlanReportStatusDialog/WithButton';
-import { AtVersion, BrowserVersion } from '../common/AtBrowserVersion';
-import RowStatus from './RowStatus';
-import AssignTesters from './AssignTesters';
-import Actions from './Actions';
-import BotRunTestStatusList from '../BotRunTestStatusList';
 import ReportRerun from '../ReportRerun';
 import Tabs from '../common/Tabs';
 import FilterButtons from '../common/FilterButtons';
+import TestQueueDisclosureContent from './TestQueueDisclosureContent';
 import styles from './TestQueue.module.css';
-import pillStyles from '../common/VersionString/VersionString.module.css';
-import commonStyles from '../common/styles.module.css';
+import { ME_QUERY } from '../App/queries';
+import useReportRerunCount from '../ReportRerun/useReportRerunCount';
 
 const FILTER_KEYS = {
   ALL: 'all',
@@ -33,12 +26,49 @@ const FILTER_KEYS = {
 };
 
 const TestQueue = () => {
-  const client = useApolloClient();
-  const [totalAutomatedRuns, setTotalAutomatedRuns] = useState(null);
+  const location = useLocation();
   const [activeFilter, setActiveFilter] = useState(FILTER_KEYS.MANUAL);
+
+  const getInitialTabIndex = () => {
+    const pathSegments = location.pathname.split('/').filter(Boolean);
+    const baseSegments = '/test-queue'.split('/').filter(Boolean);
+    const relativePath = pathSegments.slice(baseSegments.length);
+    const currentTabKey = relativePath[0];
+
+    if (!currentTabKey) return 0;
+    if (currentTabKey === 'automated') return 1;
+    return 0;
+  };
+
+  const [selectedTab, setSelectedTab] = useState(() => getInitialTabIndex());
   const { data, error, refetch } = useQuery(TEST_QUEUE_PAGE_QUERY, {
-    fetchPolicy: 'cache-and-network'
+    fetchPolicy: 'cache-first',
+    nextFetchPolicy: 'cache-first'
   });
+
+  useEffect(() => {
+    const pathSegments = location.pathname.split('/').filter(Boolean);
+    const baseSegments = '/test-queue'.split('/').filter(Boolean);
+    const relativePath = pathSegments.slice(baseSegments.length);
+    const currentTabKey = relativePath[0];
+
+    let pathIndex = 0;
+    if (currentTabKey === 'automated') {
+      pathIndex = 1;
+    }
+
+    if (pathIndex !== selectedTab) {
+      setSelectedTab(pathIndex);
+    }
+  }, [location.pathname, selectedTab]);
+
+  const { data: { me } = {} } = useQuery(ME_QUERY, {
+    fetchPolicy: 'cache-first',
+    nextFetchPolicy: 'cache-first'
+  });
+  const { isAdmin } = evaluateAuth(me);
+
+  const totalAutomatedRuns = useReportRerunCount(isAdmin);
 
   const openDisclosuresRef = useRef({});
   const forceUpdate = useForceUpdate();
@@ -207,8 +237,6 @@ const TestQueue = () => {
 
   const isSignedIn = !!data.me;
 
-  const { isAdmin } = evaluateAuth(data.me);
-
   // Use processed data from useMemo hooks
   const { testPlans, testers } = processedData;
 
@@ -244,7 +272,8 @@ const TestQueue = () => {
         ))}
         onClick={testPlan.testPlanVersions.map(testPlanVersion => () => {
           const isOpen = openDisclosuresRef.current[testPlanVersion.id];
-          openDisclosuresRef.current[testPlanVersion.id] = !isOpen;
+          const newIsOpen = !isOpen;
+          openDisclosuresRef.current[testPlanVersion.id] = newIsOpen;
           forceUpdate();
         })}
         expanded={testPlan.testPlanVersions.map(
@@ -252,132 +281,17 @@ const TestQueue = () => {
             openDisclosuresRef.current[testPlanVersion.id] || false
         )}
         disclosureContainerView={testPlan.testPlanVersions.map(
-          testPlanVersion =>
-            renderDisclosureContent({ testPlan, testPlanVersion })
+          testPlanVersion => (
+            <TestQueueDisclosureContent
+              key={testPlanVersion.id}
+              testPlan={testPlan}
+              testPlanVersion={testPlanVersion}
+              me={me}
+              testers={testers}
+            />
+          )
         )}
       />
-    );
-  };
-
-  const renderDisclosureContent = ({ testPlan, testPlanVersion }) => {
-    return (
-      <>
-        <div className={styles.metadataContainer}>
-          <a href={`/test-review/${testPlanVersion.id}`}>
-            <FontAwesomeIcon
-              icon={faArrowUpRightFromSquare}
-              size="xs"
-              className={commonStyles.darkGray}
-            />
-            View tests in {testPlanVersion.versionString}
-          </a>
-          <TestPlanReportStatusDialogWithButton
-            triggerUpdate={refetch}
-            testPlanVersionId={testPlanVersion.id}
-          />
-        </div>
-        <Table
-          aria-label={
-            `Reports for ${testPlanVersion.title} ` +
-            `${testPlanVersion.versionString} in ` +
-            `${testPlanVersion.phase.toLowerCase()} phase`
-          }
-          bordered
-          responsive
-          hover={false}
-          className={styles.testQueue}
-        >
-          <thead>
-            <tr>
-              <th>Assistive Technology</th>
-              <th>Browser</th>
-              <th>Testers</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {testPlanVersion.testPlanReports.map(testPlanReport =>
-              renderRow({
-                testPlan,
-                testPlanVersion,
-                testPlanReport
-              })
-            )}
-          </tbody>
-        </Table>
-      </>
-    );
-  };
-
-  const renderRow = ({ testPlan, testPlanVersion, testPlanReport }) => {
-    const hasBotRun = testPlanReport.draftTestPlanRuns?.some(
-      ({ tester }) => tester.isBot
-    );
-
-    const shouldPollPercent = testPlanReport.draftTestPlanRuns?.some(
-      run => run.collectionJob
-    );
-
-    return (
-      <tr key={testPlanReport.id}>
-        <td>
-          <AtVersion
-            at={testPlanReport.at}
-            minimumAtVersion={testPlanReport.minimumAtVersion}
-            exactAtVersion={testPlanReport.exactAtVersion}
-          />
-        </td>
-        <td>
-          <BrowserVersion browser={testPlanReport.browser} />
-        </td>
-        <td>
-          <AssignTesters
-            me={data.me}
-            testers={testers}
-            testPlanReport={testPlanReport}
-          />
-        </td>
-        <td>
-          <div className={styles.statusContainer}>
-            <RowStatus
-              testPlanVersion={testPlanVersion}
-              testPlanReport={testPlanReport}
-              shouldPoll={!!shouldPollPercent}
-            />
-            {testPlanReport.onHold ? (
-              <span
-                className={`${pillStyles.styledPill} ${pillStyles.autoWidth}`}
-              >
-                On hold
-              </span>
-            ) : null}
-            {hasBotRun ? (
-              <BotRunTestStatusList testPlanReportId={testPlanReport.id} />
-            ) : null}
-          </div>
-        </td>
-        <td>
-          <Actions
-            me={data.me}
-            testers={testers}
-            testPlan={testPlan}
-            testPlanReport={testPlanReport}
-            triggerUpdate={async () => {
-              await client.refetchQueries({
-                include: ['TestQueuePage', 'TestPlanReportStatusDialog']
-              });
-
-              // Refocus on testers assignment dropdown button
-              const selector = `#assign-testers-${testPlanReport.id} button`;
-              const element = document.querySelector(selector);
-              if (element) {
-                element.focus();
-              }
-            }}
-          />
-        </td>
-      </tr>
     );
   };
 
@@ -458,19 +372,17 @@ const TestQueue = () => {
       tabKey: 'automated',
       get label() {
         return `Automated Report Updates${
-          typeof totalAutomatedRuns === 'number'
+          typeof totalAutomatedRuns === 'number' && totalAutomatedRuns > 0
             ? ` (${totalAutomatedRuns})`
             : ''
         }`;
       },
-      content: (
-        <div className={styles.tabContentPadding}>
-          <ReportRerun
-            onQueueUpdate={refetch}
-            onTotalRunsAvailable={setTotalAutomatedRuns}
-          />
-        </div>
-      )
+      content:
+        selectedTab === 1 ? (
+          <div className={styles.tabContentPadding}>
+            <ReportRerun onQueueUpdate={refetch} />
+          </div>
+        ) : null
     }
   ];
 
@@ -484,7 +396,11 @@ const TestQueue = () => {
               <title>Test Queue | ARIA-AT</title>
             </Helmet>
             <h1 className="test-queue-heading">Test Queue</h1>
-            <Tabs basePath="/test-queue" tabs={tabs} />
+            <Tabs
+              basePath="/test-queue"
+              tabs={tabs}
+              onSelectedTabChange={setSelectedTab}
+            />
           </Container>
         }
       />

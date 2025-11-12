@@ -8,7 +8,10 @@ import useConfirmationModal from '../../../hooks/useConfirmationModal';
 import { useTriggerLoad } from '../../common/LoadingStatus';
 import BasicModal from '../../common/BasicModal';
 import { SCHEDULE_COLLECTION_JOB_MUTATION } from '../../AddTestToQueueWithConfirmation/queries';
-import { TEST_QUEUE_PAGE_QUERY } from '../../TestQueue/queries';
+import {
+  TEST_QUEUE_PAGE_QUERY,
+  TEST_QUEUE_EXPANDED_ROW_QUERY
+} from '../../TestQueue/queries';
 import { TEST_PLAN_REPORT_STATUS_DIALOG_QUERY } from '../../TestPlanReportStatusDialog/queries';
 
 const StartBotRunButton = ({ testPlanReport, onChange }) => {
@@ -62,7 +65,11 @@ const StartBotRunButton = ({ testPlanReport, onChange }) => {
             variables: { testPlanReportId: testPlanReport.id },
             refetchQueries: [
               TEST_QUEUE_PAGE_QUERY,
-              TEST_PLAN_REPORT_STATUS_DIALOG_QUERY
+              TEST_PLAN_REPORT_STATUS_DIALOG_QUERY,
+              {
+                query: TEST_QUEUE_EXPANDED_ROW_QUERY,
+                variables: { testPlanReportId: testPlanReport.id }
+              }
             ],
             awaitRefetchQueries: true
           });

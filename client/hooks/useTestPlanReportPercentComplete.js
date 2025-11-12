@@ -16,6 +16,7 @@ export const useTestPlanReportPercentComplete = (
   const { data } = useQuery(TEST_PLAN_REPORT_PERCENT_QUERY, {
     variables: { testPlanReportId },
     fetchPolicy: 'cache-and-network',
+    nextFetchPolicy: 'cache-first',
     pollInterval: pollInterval ?? undefined
   });
 
