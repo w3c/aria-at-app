@@ -690,6 +690,42 @@ const graphqlSchema = gql`
   }
 
   """
+  Sourced from tests/<pattern>/data/references.csv on the ARIA-AT repo
+  """
+  type Reference {
+    """
+    The reference ID, such as "button" or "aria-expanded".
+    """
+    refId: String!
+    """
+    The value of the reference. This could be link, an identifier such as an
+    email or just text.
+    It's returned mutated according to these reference calculations:
+    https://github.com/w3c/aria-at/wiki/Test-Format-Definition-V2#reference-link-calculation
+    """
+    value: String!
+    """
+    The non-mutated value.
+    """
+    rawValue: String!
+    """
+    The type of the reference, such as "htmlAam", "aria", "metadata", etc.
+    """
+    type: String
+    """
+    The link text of the reference if value is, or will be transformed into a
+    link.
+    It's returned mutated according to these reference calculations:
+    https://github.com/w3c/aria-at/wiki/Test-Format-Definition-V2#reference-link-calculation
+    """
+    linkText: String
+    """
+    The non-mutated linkText.
+    """
+    rawLinkText: String
+  }
+
+  """
   For a given output, the assertion describes a check on that output which can
   pass or fail.
   """
@@ -716,6 +752,144 @@ const graphqlSchema = gql`
     https://github.com/w3c/aria-at/wiki/Test-Format-Definition-V2#assertionphrase
     """
     phrase: String
+    """
+    AT bugs that are linked to this assertion.
+    """
+    atBugs(commandId: String): [AtBug]!
+    """
+    Collection of ARIA and HTML features references related to the assertion.
+    """
+    references: [Reference]
+  }
+
+  """
+  Represents a bug in an assistive technology that may be associated with
+  failing assertions and derivatively a test plan report.
+  """
+  type AtBug {
+    """
+    Unique identifier for the bug.
+    """
+    id: ID!
+    """
+    The bug title or link text (e.g., "Region boundaries are not rendered by default").
+    """
+    title: String!
+    """
+    Full URL to the bug tracker issue.
+    """
+    url: String!
+    """
+    Command IDs this bug is linked to (for assertions only).
+    """
+    commandIds: [String]
+    """
+    The assistive technology this bug is associated with.
+    """
+    at: At
+    """
+    All assertions linked to this bug.
+    """
+    assertions: [Assertion]!
+    """
+    The time this bug record was created.
+    """
+    createdAt: Timestamp!
+    """
+    The time this bug record was last updated.
+    """
+    updatedAt: Timestamp!
+  }
+
+  """
+  Represents a negative side effect record that occurred during testing and may be
+  associated with AtBugs for tracking purposes.
+  """
+  type NegativeSideEffectRecord {
+    """
+    Unique identifier for the negative side effect record.
+    """
+    id: ID!
+    """
+    The test plan run this negative side effect belongs to.
+    """
+    testPlanRunId: ID!
+    """
+    The test result ID from TestPlanRun.testResults JSONB.
+    """
+    testResultId: String!
+    """
+    The scenario result ID from TestPlanRun.testResults JSONB.
+    """
+    scenarioResultId: String!
+    """
+    The negative side effect ID from negativeSideEffects.json.
+    """
+    negativeSideEffectId: String!
+    """
+    The impact level (SEVERE, MODERATE, etc.).
+    """
+    impact: String!
+    """
+    Additional details provided by the tester.
+    """
+    details: String
+    """
+    Whether a highlight was required for this negative side effect.
+    """
+    highlightRequired: Boolean
+    """
+    The encoded negative side effect ID (for backward compatibility).
+    """
+    encodedId: String!
+    """
+    Human-readable sentence describing the failure (from negativeSideEffects.json).
+    """
+    text: String!
+    """
+    AT bugs linked to this negative side effect.
+    """
+    atBugs: [AtBug!]!
+    """
+    When this negative side effect was created.
+    """
+    createdAt: Timestamp!
+    """
+    When this negative side effect was last updated.
+    """
+    updatedAt: Timestamp!
+  }
+
+  """
+  Input for creating a new AT bug.
+  """
+  input AtBugInput {
+    """
+    The bug title or link text.
+    """
+    title: String!
+    """
+    Full URL to the bug tracker issue.
+    """
+    url: String!
+    """
+    The ID of the assistive technology this bug is associated with.
+    """
+    atId: ID!
+  }
+
+  """
+  Input for updating an existing AT bug.
+  """
+  input AtBugUpdateInput {
+    """
+    The bug title or link text.
+    """
+    title: String
+    """
+    Full URL to the bug tracker issue.
+    """
+    url: String
   }
 
   """
@@ -822,7 +996,7 @@ const graphqlSchema = gql`
     as a failure for any scenario, even when the assertions otherwise pass.
     Submitted test results require this field to be filled in.
     """
-    negativeSideEffects: [NegativeSideEffect]
+    negativeSideEffects: [NegativeSideEffectRecord]
     match: ScenarioResultMatch
   }
 
@@ -1267,11 +1441,12 @@ const graphqlSchema = gql`
     This is computed from runnable tests for the AT, accounting for EXCLUDE exceptions.
     """
     totalPossibleAssertions: Int!
+    """
+    Events for this test plan report, tracking tester assignments and other events.
+    """
+    events: [UpdateEvent]!
   }
 
-  """
-  Records information about the review of a TestPlanReport by a vendor representative.
-  """
   type ReviewerStatus {
     """
     The vendor representative who reviewed the test.
@@ -1380,18 +1555,40 @@ const graphqlSchema = gql`
     previousVersionGroups: [PreviousVersionGroup!]!
   }
 
-  enum UpdateEventType {
-    COLLECTION_JOB
-    GENERAL
-    TEST_PLAN_RUN
-    TEST_PLAN_REPORT
-  }
-
+  """
+  Records tracking events in the system.
+  """
   type UpdateEvent {
+    """
+    Postgres-provided numeric ID.
+    """
     id: ID!
-    timestamp: String!
+    """
+    The type of event that was logged (e.g., 'TESTER_ASSIGNMENT', 'TESTER_REASSIGNMENT', etc.).
+    """
+    type: String!
+    """
+    Human-readable description of the event.
+    """
     description: String!
-    type: UpdateEventType!
+    """
+    The user who performed the action.
+    """
+    performedBy: User
+    """
+    The primary entity ID involved in the event (e.g., testPlanReportId).
+    The metadata field should state what entity this id is for.
+    """
+    entityId: Int
+    """
+    Additional metadata about the event, including specific details like
+    tester IDs, test plan run IDs, entity IDs, etc.
+    """
+    metadata: Any
+    """
+    When the event occurred.
+    """
+    timestamp: Timestamp!
   }
 
   type Query {
@@ -1411,6 +1608,14 @@ const graphqlSchema = gql`
     Get all browsers known to the app.
     """
     browsers: [Browser]!
+    """
+    Get a specific AT bug by ID.
+    """
+    atBug(id: ID!): AtBug
+    """
+    Get all AT bugs, optionally filtered by AT ID.
+    """
+    atBugs(atId: ID): [AtBug]!
     """
     Get all TestPlans.
     """
@@ -1503,7 +1708,7 @@ const graphqlSchema = gql`
     """
     Get update events
     """
-    updateEvents(type: UpdateEventType): [UpdateEvent!]!
+    updateEvents(types: [String]): [UpdateEvent!]!
     """
     Get a particular update event by ID
     """
@@ -1512,6 +1717,22 @@ const graphqlSchema = gql`
     Get key metrics
     """
     keyMetrics: KeyMetrics!
+    """
+    Get ARIA and HTML features metrics across finalized reports for test plan
+    versions in the candidate and recommended phases
+    """
+    ariaHtmlFeaturesMetrics: ARIAHTMLFeatureMetrics!
+    """
+    Get detailed assertion results for a specific ARIA or HTML feature for a
+    given AT and browser combination. Used to construct individual feature
+    detail report pages.
+    """
+    ariaHtmlFeatureDetailReport(
+      refId: String!
+      refType: String
+      atId: ID!
+      browserId: ID!
+    ): ARIAHTMLFeatureDetailReport
   }
 
   # Mutation-specific types below
@@ -1819,6 +2040,48 @@ const graphqlSchema = gql`
     createCollectionJobsFromPreviousAtVersion(
       atVersionId: ID!
     ): CreateCollectionJobsFromPreviousVersionResponse!
+    """
+    Create a new AT bug.
+    """
+    createAtBug(input: AtBugInput!): AtBug!
+    """
+    Update an existing AT bug.
+    """
+    updateAtBug(id: ID!, input: AtBugUpdateInput!): AtBug!
+    """
+    Delete an AT bug.
+    """
+    deleteAtBug(id: ID!): Boolean!
+    """
+    Link one or more AT bugs to an assertion.
+    """
+    linkAtBugsToAssertion(
+      assertionId: ID!
+      atBugIds: [ID]!
+      commandId: String
+    ): Assertion!
+    """
+    Unlink one or more AT bugs from an assertion.
+    """
+    unlinkAtBugsFromAssertion(
+      assertionId: ID!
+      atBugIds: [ID]!
+      commandId: String
+    ): Assertion!
+    """
+    Link one or more AT bugs to a negative side effect.
+    """
+    linkAtBugsToNegativeSideEffect(
+      negativeSideEffectId: ID!
+      atBugIds: [ID]!
+    ): NegativeSideEffectRecord!
+    """
+    Unlink one or more AT bugs from a negative side effect.
+    """
+    unlinkAtBugsFromNegativeSideEffect(
+      negativeSideEffectId: ID!
+      atBugIds: [ID]!
+    ): NegativeSideEffectRecord!
   }
 
   type CreateCollectionJobsFromPreviousVersionResponse {
@@ -1834,6 +2097,80 @@ const graphqlSchema = gql`
     verdictsLast90Count: Int!
     testsCount: Int!
     suitesCount: Int!
+  }
+
+  type ARIAHTMLFeatureCount {
+    refId: String!
+    type: String!
+    linkText: String!
+    rawLinkText: String!
+    value: String!
+    rawValue: String!
+    total: Int!
+    passed: Int!
+    failed: Int!
+    untestable: Int!
+    passedPercentage: Int!
+    formatted: String!
+    atName: String
+    browserName: String
+    atId: ID
+    browserId: ID
+  }
+
+  type ARIAHTMLFeatureMetrics {
+    ariaFeaturesPassedCount: Int!
+    ariaFeaturesCount: Int!
+    ariaFeaturesFailedCount: Int!
+    ariaFeaturesUntestableCount: Int!
+    htmlFeaturesPassedCount: Int!
+    htmlFeaturesCount: Int!
+    htmlFeaturesFailedCount: Int!
+    htmlFeaturesUntestableCount: Int!
+    ariaFeatures: [ARIAHTMLFeatureCount]!
+    htmlFeatures: [ARIAHTMLFeatureCount]!
+    ariaFeaturesByAtBrowser: [ARIAHTMLFeatureCount]!
+    htmlFeaturesByAtBrowser: [ARIAHTMLFeatureCount]!
+  }
+
+  type AssertionStatisticsRow {
+    label: String!
+    passingCount: Int!
+    passingTotal: Int!
+    failingCount: Int!
+    failingTotal: Int!
+    untestableCount: Int!
+    untestableTotal: Int!
+    passingPercentage: Int
+    failingPercentage: Int
+    untestablePercentage: Int
+  }
+
+  type ARIAHTMLFeatureDetailReportRow {
+    testPlanName: String!
+    testPlanVersion: String!
+    testPlanVersionId: ID!
+    testPlanReportId: ID!
+    testTitle: String!
+    testId: ID!
+    testResultId: ID!
+    commandSequence: String!
+    assertionPriority: String!
+    assertionPhrase: String!
+    result: String!
+    testedOn: String
+    atVersion: String!
+    browserVersion: String!
+    severeSideEffectsCount: Int!
+    moderateSideEffectsCount: Int!
+  }
+
+  type ARIAHTMLFeatureDetailReport {
+    feature: ARIAHTMLFeatureCount!
+    at: At!
+    browser: Browser!
+    assertionStatistics: [AssertionStatisticsRow!]!
+    rows: [ARIAHTMLFeatureDetailReportRow!]!
   }
 `;
 

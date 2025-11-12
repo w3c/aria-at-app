@@ -10,25 +10,43 @@ describe('Reports page', () => {
           'h1 ::-p-text(Assistive Technology Interoperability Reports)'
         );
 
-        await page.waitForSelector('h2 ::-p-text(Introduction)');
-        await page.waitForSelector('h2 ::-p-text(Support Levels)');
+        // Check that tabs exist
+        await page.waitForSelector('button ::-p-text(Test Plans)');
+        await page.waitForSelector('button ::-p-text(ARIA Features)');
+        await page.waitForSelector('button ::-p-text(HTML Features)');
 
-        const tableRowsLength = await page.$eval(
-          'table[aria-label="Support Levels"]',
+        // Check Test Plans tab content (default tab)
+        await page.waitForSelector('h2 ::-p-text(Test Plan Support Levels)');
+        const testPlansTableRowsLength = await page.$eval(
+          'table[aria-label="Test Plan Support Levels"]',
           el => Array.from(el.rows).length
         );
+        expect(testPlansTableRowsLength).toBeGreaterThan(1);
 
-        // Check that the currently 'required' reports combinations exist; these
-        // combinations must exist in the table to be on this page
-        await page.waitForSelector('th ::-p-text(Test Plan)');
-        await page.waitForSelector('th ::-p-text(JAWS and Chrome)');
-        await page.waitForSelector('th ::-p-text(NVDA and Chrome)');
+        // Click ARIA Features tab
+        await page.click('button ::-p-text(ARIA Features)');
+        await page.waitForSelector('h2 ::-p-text(ARIA Feature Support Levels)');
+
+        // Check for ARIA features in table
+        await page.waitForSelector('th ::-p-text(ARIA Feature)');
         await page.waitForSelector(
           'th ::-p-text(VoiceOver for macOS and Safari)'
         );
+        await page.waitForSelector('th ::-p-text(JAWS and Chrome)');
+        await page.waitForSelector('th ::-p-text(NVDA and Chrome)');
 
-        // There is more than just the thead row
-        expect(tableRowsLength).toBeGreaterThan(1);
+        // Check for some key ARIA features
+        await page.waitForSelector('td ::-p-text(aria-activedescendant)');
+        await page.waitForSelector('td ::-p-text(aria-expanded)');
+        await page.waitForSelector('td ::-p-text(aria-haspopup)');
+
+        // Click HTML Features tab
+        await page.click('button ::-p-text(HTML Features)');
+        await page.waitForSelector('h2 ::-p-text(HTML Feature Support Levels)');
+
+        // Check for HTML features in table
+        await page.waitForSelector('th ::-p-text(HTML Feature)');
+        await page.waitForSelector('td ::-p-text(button)');
 
         expect(consoleErrors).toHaveLength(0);
       }
@@ -240,5 +258,136 @@ describe('Report page for candidate report', () => {
       expect(isVersionsSummaryFound).toBe(false);
       expect(currentUrl).toMatch(/^.*\/report\/\d+\/targets\/\d+/);
     });
+  });
+});
+
+describe('ARIA Feature detail report page', () => {
+  it('renders ARIA feature report', async () => {
+    await getPage(
+      { role: false, url: '/aria-html-feature/3/3/aria-expanded' },
+      async (page, { consoleErrors }) => {
+        await page.waitForSelector(
+          'h1 ::-p-text(VoiceOver for macOS and Safari Support for)'
+        );
+        await page.waitForSelector(
+          'a ::-p-text(aria-expanded ARIA Specification)'
+        );
+
+        await page.waitForSelector('nav[aria-label="Breadcrumb"]');
+        await page.waitForSelector('a ::-p-text(AT Interoperability Reports)');
+
+        await page.waitForSelector(
+          'h2 ::-p-text(Summary of Results for VoiceOver for macOS and Safari)'
+        );
+
+        await page.waitForSelector(
+          'table[aria-label="Assertion Statistics Summary"]'
+        );
+        await page.waitForSelector('th ::-p-text(Passing)');
+        await page.waitForSelector('th ::-p-text(Failing)');
+        await page.waitForSelector('th ::-p-text(Untestable)');
+        await page.waitForSelector('td ::-p-text(Should-Have Behaviors)');
+
+        await page.waitForSelector('a[download] ::-p-text(Download CSV)');
+
+        await page.waitForSelector('h2 ::-p-text(Raw Data)');
+        await page.waitForSelector('table[aria-label="Raw assertion data"]');
+        await page.waitForSelector('th ::-p-text(Test Plan Report)');
+        await page.waitForSelector('th ::-p-text(Test)');
+        await page.waitForSelector('th ::-p-text(Command)');
+        await page.waitForSelector('th ::-p-text(Assertion Priority)');
+        await page.waitForSelector('th ::-p-text(Assertion Phrase)');
+        await page.waitForSelector('th ::-p-text(Result)');
+
+        await page.waitForSelector(
+          'td ::-p-text(Action Menu Button Example Using aria-activedescendant)'
+        );
+        await page.waitForSelector('td ::-p-text(Activate a menu item)');
+        await page.waitForSelector('td ::-p-text(Control+Option+Space)');
+
+        expect(consoleErrors).toHaveLength(0);
+      }
+    );
+  });
+
+  it('can download CSV for ARIA feature report', async () => {
+    await getPage(
+      { role: false, url: '/aria-html-feature/3/3/aria-expanded' },
+      async page => {
+        const downloadButton = 'a[download] ::-p-text(Download CSV)';
+        await page.waitForSelector(downloadButton);
+
+        const downloadLink = await page.$eval(downloadButton, el => el.href);
+
+        expect(downloadLink).toContain(
+          '/api/metrics/aria-html-features/details.csv'
+        );
+        expect(downloadLink).toContain('refId=aria-expanded');
+      }
+    );
+  });
+});
+
+describe('HTML Feature detail report page', () => {
+  it('renders HTML feature report', async () => {
+    await getPage(
+      { role: false, url: '/aria-html-feature/3/2/button' },
+      async (page, { consoleErrors }) => {
+        await page.waitForSelector(
+          'h1 ::-p-text(VoiceOver for macOS and Chrome Support for)'
+        );
+        await page.waitForSelector(
+          'a ::-p-text(button HTML-AAM Specification)'
+        );
+
+        await page.waitForSelector('nav[aria-label="Breadcrumb"]');
+        await page.waitForSelector('a ::-p-text(AT Interoperability Reports)');
+
+        await page.waitForSelector(
+          'h2 ::-p-text(Summary of Results for VoiceOver for macOS and Chrome)'
+        );
+
+        await page.waitForSelector(
+          'table[aria-label="Assertion Statistics Summary"]'
+        );
+        await page.waitForSelector('th ::-p-text(Passing)');
+        await page.waitForSelector('th ::-p-text(Failing)');
+        await page.waitForSelector('th ::-p-text(Untestable)');
+        await page.waitForSelector('td ::-p-text(Should-Have Behaviors)');
+
+        await page.waitForSelector('a[download] ::-p-text(Download CSV)');
+
+        await page.waitForSelector('h2 ::-p-text(Raw Data)');
+        await page.waitForSelector('table[aria-label="Raw assertion data"]');
+        await page.waitForSelector('th ::-p-text(Test Plan Report)');
+        await page.waitForSelector('th ::-p-text(Test)');
+        await page.waitForSelector('th ::-p-text(Command)');
+        await page.waitForSelector('th ::-p-text(Assertion Priority)');
+
+        await page.waitForSelector(
+          'td ::-p-text(Action Menu Button Example Using aria-activedescendant)'
+        );
+        await page.waitForSelector('td ::-p-text(Activate a menu item)');
+
+        expect(consoleErrors).toHaveLength(0);
+      }
+    );
+  });
+
+  it('can download CSV for HTML feature report', async () => {
+    await getPage(
+      { role: false, url: '/aria-html-feature/3/2/button' },
+      async page => {
+        const downloadButton = 'a[download] ::-p-text(Download CSV)';
+        await page.waitForSelector(downloadButton);
+
+        const downloadLink = await page.$eval(downloadButton, el => el.href);
+
+        expect(downloadLink).toContain(
+          '/api/metrics/aria-html-features/details.csv'
+        );
+        expect(downloadLink).toContain('refId=button');
+      }
+    );
   });
 });

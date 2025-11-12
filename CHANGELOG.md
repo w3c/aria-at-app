@@ -1,3 +1,82 @@
+### [1.25.2](https://github.com/w3c/aria-at-app/compare/v1.25.1...v1.25.2) (2025-11-10)
+
+
+### Bug Fixes
+
+* Support older imported TestPlanVersions in automation ([#1634](https://github.com/w3c/aria-at-app/issues/1634)) ([77ba1d4](https://github.com/w3c/aria-at-app/commit/77ba1d452c8ee396c8188d5cef7b8c54e2b801bf))
+
+### [1.25.1](https://github.com/w3c/aria-at-app/compare/v1.25.0...v1.25.1) (2025-11-07)
+
+
+### Bug Fixes
+
+* Tabs component loses focus to tab when programmatically navigating ([#1630](https://github.com/w3c/aria-at-app/issues/1630)) ([35ad3e2](https://github.com/w3c/aria-at-app/commit/35ad3e2a6bfbd2035319b3a108237aca7feaf89e))
+* Update path to aria-at test page for reports pages and issues creation ([#1629](https://github.com/w3c/aria-at-app/issues/1629)) ([f564ada](https://github.com/w3c/aria-at-app/commit/f564adafcc9c11dba1b83ac5d41c091d0b93b7b4))
+
+## [1.25.0](https://github.com/w3c/aria-at-app/compare/v1.24.0...v1.25.0) (2025-11-06)
+
+
+### Features
+
+* open new tab, close tab and return to open queue on save ([#1605](https://github.com/w3c/aria-at-app/issues/1605)) ([ed52cfe](https://github.com/w3c/aria-at-app/commit/ed52cfe4c438c0d85ac1f27c379b7e63e5650636))
+* Support for subfolders in `/aria-at/tests/*` ([#1613](https://github.com/w3c/aria-at-app/issues/1613)) ([849301d](https://github.com/w3c/aria-at-app/commit/849301d58ad6f800eeba71427f5c5725b9147f41))
+
+
+### Bug Fixes
+
+* Consistent column order for ARIA and HTML Features tabs ([#1620](https://github.com/w3c/aria-at-app/issues/1620)) ([eabc6e0](https://github.com/w3c/aria-at-app/commit/eabc6e04aa250e25e18f03726a8d2232161c1190))
+* Prefer "No Data" instead of "None" on reports pages ([#1622](https://github.com/w3c/aria-at-app/issues/1622)) ([9e89b8a](https://github.com/w3c/aria-at-app/commit/9e89b8ad228ea96cf11422a13ddf254c77f5cf3a))
+* Support dynamic renames of `aria-at/support.json/references` properties ([#1617](https://github.com/w3c/aria-at-app/issues/1617)) ([f5d92fe](https://github.com/w3c/aria-at-app/commit/f5d92fe3fc9d1692af0e3ec5ec86ca9587980696)), closes [#1618](https://github.com/w3c/aria-at-app/issues/1618)
+
+## [1.24.0](https://github.com/w3c/aria-at-app/compare/v1.23.0...v1.24.0) (2025-11-04)
+
+
+### Features
+
+* `AtBugs` for tracking known AT issues ([#1577](https://github.com/w3c/aria-at-app/issues/1577)) ([a92724e](https://github.com/w3c/aria-at-app/commit/a92724eff3897087c1875111d696aee4f54df533))
+* tab urls ([#1606](https://github.com/w3c/aria-at-app/issues/1606)) ([d3262e6](https://github.com/w3c/aria-at-app/commit/d3262e628e951f6a461850e7d13c17fd3fe1d55a))
+
+
+### Bug Fixes
+
+* aria/html feature front end fixes ([#1598](https://github.com/w3c/aria-at-app/issues/1598)) ([52841bc](https://github.com/w3c/aria-at-app/commit/52841bc550894ae74517e4001f496eb9f80e1ce8))
+* Incorrect sort order on reports page Test Plans tab ([#1612](https://github.com/w3c/aria-at-app/issues/1612)) ([144e797](https://github.com/w3c/aria-at-app/commit/144e7972a8035a99fa6e2788295039818ecf6d33))
+* Show untestable vs passing/failing assertions as conflicts ([#1599](https://github.com/w3c/aria-at-app/issues/1599)) ([4cb0793](https://github.com/w3c/aria-at-app/commit/4cb079316241f1dd1dbbed0afff4120696caf2da))
+
+## [1.23.0](https://github.com/w3c/aria-at-app/compare/v1.22.0...v1.23.0) (2025-10-30)
+
+
+### Features
+
+* Change main home page to reports page ([#1604](https://github.com/w3c/aria-at-app/issues/1604)) ([48066d3](https://github.com/w3c/aria-at-app/commit/48066d3156d86f22e82c31c9321bbb8732dde66a))
+
+
+### Bug Fixes
+
+* give node process 1g memory on deploys ([#1602](https://github.com/w3c/aria-at-app/issues/1602)) ([59380f4](https://github.com/w3c/aria-at-app/commit/59380f4fe0a3ded2a81a746916c5f623821d49dc))
+* max node heap on deploy to 2g, use swap ([0343a2a](https://github.com/w3c/aria-at-app/commit/0343a2ad97196a8605c88c42a6c586d986492696))
+
+## [1.22.0](https://github.com/w3c/aria-at-app/compare/v1.21.1...v1.22.0) (2025-10-30)
+
+
+### Features
+
+* Add Key Metrics banner to homepage ([#1546](https://github.com/w3c/aria-at-app/issues/1546)) ([47d8018](https://github.com/w3c/aria-at-app/commit/47d801888864f384a9137cea36d2d209b08c10b5))
+* Allow tester reassignment and expand `UpdateEvent` table ([#1547](https://github.com/w3c/aria-at-app/issues/1547)) ([fd5026a](https://github.com/w3c/aria-at-app/commit/fd5026ad25005f6311e96be855fbcf1d87e2e36a))
+* ARIA/HTML support tables ([#1583](https://github.com/w3c/aria-at-app/issues/1583)) ([8ce1c43](https://github.com/w3c/aria-at-app/commit/8ce1c43bf5010fb2c67d24e9ac486795c8e8e14e))
+* cross-browser verdict copying ([#1586](https://github.com/w3c/aria-at-app/issues/1586)) ([397669c](https://github.com/w3c/aria-at-app/commit/397669c769264273b84dc6c1e8dd088b9df64971))
+* Display mappings of ARIA and HTML features ([#1594](https://github.com/w3c/aria-at-app/issues/1594)) ([494ef54](https://github.com/w3c/aria-at-app/commit/494ef54e6ed93fbc7654e807c803e6c678f8ef7f))
+* Enable Edge for Testing ([#1587](https://github.com/w3c/aria-at-app/issues/1587)) ([2f87784](https://github.com/w3c/aria-at-app/commit/2f8778421ecfbb564fe52fe25c31435de452fb63))
+
+
+### Bug Fixes
+
+* browser correction for edge support on automation ([#1597](https://github.com/w3c/aria-at-app/issues/1597)) ([ec043dc](https://github.com/w3c/aria-at-app/commit/ec043dc6b2d3752fc91fd01aff78d9ac3a352110))
+* correctly determine assertion priority in report feature rows ([#1595](https://github.com/w3c/aria-at-app/issues/1595)) ([2f2536b](https://github.com/w3c/aria-at-app/commit/2f2536b8568cd766950c05e421dcec0f18049166))
+* remove alert role from key metrics banner ([#1596](https://github.com/w3c/aria-at-app/issues/1596)) ([e507789](https://github.com/w3c/aria-at-app/commit/e507789376442f40184a38ace096ac0e7b55c679))
+* silence error messages in CI by waiting for modal close ([#1564](https://github.com/w3c/aria-at-app/issues/1564)) ([cf7e353](https://github.com/w3c/aria-at-app/commit/cf7e3530c6270b00e88d8666ba5e463f6056fb3a))
+* Support unavailable results for ARIA or HTML feature target on reports page ([#1591](https://github.com/w3c/aria-at-app/issues/1591)) ([758b4d5](https://github.com/w3c/aria-at-app/commit/758b4d5bf0cbb68287326d7123e60a2d2444182c))
+
 ### [1.21.1](https://github.com/w3c/aria-at-app/compare/v1.21.0...v1.21.1) (2025-10-02)
 
 

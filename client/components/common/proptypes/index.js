@@ -371,3 +371,17 @@ export const UntestablePropType = PropTypes.shape({
   value: PropTypes.bool.isRequired,
   focus: PropTypes.bool.isRequired
 });
+
+export const EventPropType = PropTypes.shape({
+  __typename: PropTypes.string,
+  id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  type: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
+  timestamp: PropTypes.string.isRequired,
+  performedBy: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    username: PropTypes.string.isRequired
+  }).isRequired,
+  entityId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  metadata: PropTypes.object
+});

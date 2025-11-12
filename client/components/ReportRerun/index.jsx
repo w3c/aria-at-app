@@ -35,6 +35,16 @@ const ReportRerun = ({ onQueueUpdate, onTotalRunsAvailable }) => {
   const { data: { updateEvents = [] } = {}, refetch: refetchEvents } = useQuery(
     GET_UPDATE_EVENTS,
     {
+      variables: {
+        types: [
+          'GENERAL',
+          'COLLECTION_JOB_CREATION',
+          'COLLECTION_JOB_START',
+          'COLLECTION_JOB_COMPLETION',
+          'COLLECTION_JOB_FAILURE',
+          'COLLECTION_JOB_TEST_PLAN_REPORT'
+        ]
+      },
       pollInterval: 10000,
       onCompleted: data => {
         const currentCount = data?.updateEvents?.length || 0;

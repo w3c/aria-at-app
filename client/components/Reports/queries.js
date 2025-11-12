@@ -35,6 +35,80 @@ export const REPORTS_PAGE_QUERY = gql`
         }
       }
     }
+    ariaHtmlFeaturesMetrics {
+      ariaFeaturesPassedCount
+      ariaFeaturesCount
+      ariaFeaturesFailedCount
+      ariaFeaturesUntestableCount
+      htmlFeaturesPassedCount
+      htmlFeaturesCount
+      htmlFeaturesFailedCount
+      htmlFeaturesUntestableCount
+      ariaFeatures {
+        refId
+        type
+        linkText
+        rawLinkText
+        value
+        rawValue
+        total
+        passed
+        failed
+        untestable
+        passedPercentage
+        formatted
+      }
+      htmlFeatures {
+        refId
+        type
+        linkText
+        rawLinkText
+        value
+        rawValue
+        total
+        passed
+        failed
+        untestable
+        passedPercentage
+        formatted
+      }
+      ariaFeaturesByAtBrowser {
+        refId
+        type
+        linkText
+        rawLinkText
+        value
+        rawValue
+        total
+        passed
+        failed
+        untestable
+        passedPercentage
+        formatted
+        atName
+        browserName
+        atId
+        browserId
+      }
+      htmlFeaturesByAtBrowser {
+        refId
+        type
+        linkText
+        rawLinkText
+        value
+        rawValue
+        total
+        passed
+        failed
+        untestable
+        passedPercentage
+        formatted
+        atName
+        browserName
+        atId
+        browserId
+      }
+    }
   }
 `;
 
@@ -109,6 +183,73 @@ export const REPORT_PAGE_QUERY = gql`
             }
           }
         }
+      }
+    }
+  }
+`;
+
+export const ARIA_HTML_FEATURE_DETAIL_REPORT_QUERY = gql`
+  ${AT_FIELDS}
+  ${BROWSER_FIELDS}
+  query AriaHtmlFeatureDetailReport(
+    $refId: String!
+    $refType: String
+    $atId: ID!
+    $browserId: ID!
+  ) {
+    ariaHtmlFeatureDetailReport(
+      refId: $refId
+      refType: $refType
+      atId: $atId
+      browserId: $browserId
+    ) {
+      feature {
+        refId
+        type
+        linkText
+        value
+        total
+        passed
+        failed
+        untestable
+        passedPercentage
+        formatted
+      }
+      at {
+        ...AtFields
+      }
+      browser {
+        ...BrowserFields
+      }
+      assertionStatistics {
+        label
+        passingCount
+        passingTotal
+        failingCount
+        failingTotal
+        untestableCount
+        untestableTotal
+        passingPercentage
+        failingPercentage
+        untestablePercentage
+      }
+      rows {
+        testPlanName
+        testPlanVersion
+        testPlanVersionId
+        testPlanReportId
+        testTitle
+        testId
+        testResultId
+        commandSequence
+        assertionPriority
+        assertionPhrase
+        result
+        testedOn
+        atVersion
+        browserVersion
+        severeSideEffectsCount
+        moderateSideEffectsCount
       }
     }
   }

@@ -46,8 +46,8 @@ const App = () => {
           <Navbar.Brand
             className="logo"
             as={Link}
-            to="/"
-            aria-current={location.pathname === '/'}
+            to="/reports"
+            aria-current={location.pathname === '/reports'}
           >
             ARIA-AT
           </Navbar.Brand>
@@ -61,8 +61,20 @@ const App = () => {
               <li>
                 <Nav.Link
                   as={Link}
+                  to="/about"
+                  aria-current={location.pathname.startsWith('/about')}
+                >
+                  About
+                </Nav.Link>
+              </li>
+              <li>
+                <Nav.Link
+                  as={Link}
                   to="/reports"
-                  aria-current={location.pathname.startsWith('/report')}
+                  aria-current={
+                    location.pathname.startsWith('/report') ||
+                    location.pathname.startsWith('/aria-html-feature')
+                  }
                 >
                   AT Interoperability Reports
                 </Nav.Link>

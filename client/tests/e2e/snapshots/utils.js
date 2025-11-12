@@ -1,22 +1,22 @@
 const prettier = require('prettier');
 
 const snapshotRoutes = [
-  '/',
-  '/signup-instructions',
-  '/account/settings',
-  '/test-queue',
-  '/reports',
-  '/candidate-review',
-  '/data-management',
-  '/404',
-  '/test-plan-report/1',
-  '/test-review/8',
-  '/run/2',
-  '/data-management/meter',
-  '/candidate-test-plan/24/1',
-  '/candidate-test-plan/24/1#summary-failures',
-  '/test-queue/2/conflicts',
-  '/report/67/targets/20'
+  { route: '/about', waitForSelectors: ['p[data-test-id=keyMetrics]'] },
+  { route: '/signup-instructions' },
+  { route: '/account/settings' },
+  { route: '/test-queue' },
+  { route: '/reports', waitForSelectors: ['p[data-test-id=keyMetrics]'] },
+  { route: '/candidate-review' },
+  { route: '/data-management' },
+  { route: '/404' },
+  { route: '/test-plan-report/1' },
+  { route: '/test-review/8' },
+  { route: '/run/2' },
+  { route: '/data-management/apg/meter' },
+  { route: '/candidate-test-plan/24/1' },
+  { route: '/candidate-test-plan/24/1#summary-failures' },
+  { route: '/test-queue/2/conflicts' },
+  { route: '/report/67/targets/20' }
 ];
 
 async function cleanAndNormalizeSnapshot(page) {

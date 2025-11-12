@@ -32,7 +32,11 @@ const getIssues = async ({ testPlanReport, testPlan, context }) => {
 
         return (
           hiddenIssueMetadata &&
-          hiddenIssueMetadata.testPlanDirectory === testPlanVersion.directory &&
+          // TODO: Support a more robust back-support search
+          (hiddenIssueMetadata.testPlanDirectory ===
+            testPlanVersion.directory ||
+            `apg/${hiddenIssueMetadata.testPlanDirectory}` ===
+              testPlanVersion.directory) &&
           hiddenIssueMetadata.versionString === testPlanVersion.versionString &&
           hiddenIssueMetadata.atName === at.name &&
           (!hiddenIssueMetadata.browserName ||
@@ -41,7 +45,10 @@ const getIssues = async ({ testPlanReport, testPlan, context }) => {
       } else if (testPlan) {
         return (
           hiddenIssueMetadata &&
-          hiddenIssueMetadata.testPlanDirectory === testPlan.directory
+          // TODO: Support a more robust back-support search
+          (hiddenIssueMetadata.testPlanDirectory === testPlan.directory ||
+            `apg/${hiddenIssueMetadata.testPlanDirectory}` ===
+              testPlan.directory)
         );
       }
     })

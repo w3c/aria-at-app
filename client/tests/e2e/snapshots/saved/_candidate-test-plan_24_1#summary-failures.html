@@ -16,7 +16,8 @@
         <nav
           aria-label="Menu"
           class="navbar navbar-expand-xl navbar-light bg-light">
-          <a aria-current="false" class="logo navbar-brand" href="/">ARIA-AT</a
+          <a aria-current="false" class="logo navbar-brand" href="/reports"
+            >ARIA-AT</a
           ><a class="skip-link" href="#main">Skip to main content</a
           ><button
             aria-controls="basic-navbar-nav"
@@ -29,6 +30,9 @@
             class="justify-content-end navbar-collapse collapse"
             id="basic-navbar-nav">
             <div class="navbar-nav">
+              <li>
+                <a aria-current="false" class="nav-link" href="/about">About</a>
+              </li>
               <li>
                 <a aria-current="false" class="nav-link" href="/reports"
                   >AT Interoperability Reports</a
@@ -408,6 +412,7 @@
                                     <th>Assertion Priority</th>
                                     <th>Assertion</th>
                                     <th>JAWS Response</th>
+                                    <th>Bug Reports</th>
                                   </tr>
                                 </thead>
                                 <tbody>
@@ -421,6 +426,25 @@
                                     <td>MUST</td>
                                     <td>Role 'button' is conveyed</td>
                                     <td>automatically seeded sample output</td>
+                                    <td class="">
+                                      <ul class="mb-2"></ul>
+                                      <div class="bug-reports-button-container">
+                                        <div class="mb-1">
+                                          <button
+                                            type="button"
+                                            class="btn btn-primary btn-sm">
+                                            Link JAWS Bug
+                                          </button>
+                                        </div>
+                                        <div>
+                                          <button
+                                            type="button"
+                                            class="btn btn-secondary btn-sm">
+                                            Report JAWS Bug
+                                          </button>
+                                        </div>
+                                      </div>
+                                    </td>
                                   </tr>
                                   <tr>
                                     <td>
@@ -433,6 +457,25 @@
                                     <td>MUST</td>
                                     <td>Role 'button' is conveyed</td>
                                     <td>automatically seeded sample output</td>
+                                    <td class="">
+                                      <ul class="mb-2"></ul>
+                                      <div class="bug-reports-button-container">
+                                        <div class="mb-1">
+                                          <button
+                                            type="button"
+                                            class="btn btn-primary btn-sm">
+                                            Link JAWS Bug
+                                          </button>
+                                        </div>
+                                        <div>
+                                          <button
+                                            type="button"
+                                            class="btn btn-secondary btn-sm">
+                                            Report JAWS Bug
+                                          </button>
+                                        </div>
+                                      </div>
+                                    </td>
                                   </tr>
                                   <tr>
                                     <td>
@@ -447,10 +490,16 @@
                                       not cause moderate negative side effects
                                     </td>
                                     <td>Other</td>
+                                    <td class="text-muted">
+                                      <span class="text-muted">N/A</span>
+                                    </td>
                                   </tr>
                                 </tbody>
                               </table>
                             </div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
                           </div>
                           <h2 id="negative-side-effects-heading">
                             Summary of Negative Side Effects (0 severe, 1
@@ -469,6 +518,7 @@
                                     <th>Side Effect</th>
                                     <th>Details</th>
                                     <th>Impact</th>
+                                    <th>Bug Reports</th>
                                   </tr>
                                 </thead>
                                 <tbody>
@@ -483,10 +533,32 @@
                                     <td>Other</td>
                                     <td>Seeded other negative side effect</td>
                                     <td>MODERATE</td>
+                                    <td>
+                                      <ul class="mb-2"></ul>
+                                      <div class="bug-reports-button-container">
+                                        <div class="mb-1">
+                                          <button
+                                            type="button"
+                                            class="btn btn-primary btn-sm">
+                                            Link JAWS Bug
+                                          </button>
+                                        </div>
+                                        <div>
+                                          <button
+                                            type="button"
+                                            class="btn btn-secondary btn-sm">
+                                            Report JAWS Bug
+                                          </button>
+                                        </div>
+                                      </div>
+                                    </td>
                                   </tr>
                                 </tbody>
                               </table>
                             </div>
+                            <div></div>
+                            <div></div>
+                            <div></div>
                           </div>
                         </div>
                       </div>
@@ -520,7 +592,7 @@
                             <a
                               role="button"
                               tabindex="0"
-                              href="https://github.com/bocoup/aria-at/issues/new?title=JAWS%20General%20Feedback:%20Modal%20Dialog%20Example%20V22.05.26%20for%20Candidate%20Report&amp;labels=candidate-review,jaws,changes-requested&amp;body=%23%23%20Description%20of%20Behavior%0A%0A%3C!--%20Write%20your%20description%20here%20--%3E%0A%0A%3C!--%20The%20following%20data%20allows%20the%20issue%20to%20be%20imported%20into%20the%20ARIA%20AT%20App%20--%3E%0A%3C!--%20ARIA_AT_APP_ISSUE_DATA%20%3D%20%7B%22testPlanDirectory%22%3A%22modal-dialog%22%2C%22versionString%22%3A%22V22.05.26%22%2C%22atName%22%3A%22JAWS%22%2C%22browserName%22%3Anull%2C%22testRowNumber%22%3Anull%2C%22testSequenceNumber%22%3Anull%2C%22isCandidateReview%22%3Atrue%2C%22isCandidateReviewChangesRequested%22%3Atrue%7D%20--%3E"
+                              href="https://github.com/bocoup/aria-at/issues/new?title=JAWS%20General%20Feedback:%20Modal%20Dialog%20Example%20V22.05.26%20for%20Candidate%20Report&amp;labels=candidate-review,jaws,changes-requested&amp;body=%23%23%20Description%20of%20Behavior%0A%0A%3C!--%20Write%20your%20description%20here%20--%3E%0A%0A%3C!--%20The%20following%20data%20allows%20the%20issue%20to%20be%20imported%20into%20the%20ARIA%20AT%20App%20--%3E%0A%3C!--%20ARIA_AT_APP_ISSUE_DATA%20%3D%20%7B%22testPlanDirectory%22%3A%22apg%2Fmodal-dialog%22%2C%22versionString%22%3A%22V22.05.26%22%2C%22atName%22%3A%22JAWS%22%2C%22browserName%22%3Anull%2C%22testRowNumber%22%3Anull%2C%22testSequenceNumber%22%3Anull%2C%22isCandidateReview%22%3Atrue%2C%22isCandidateReviewChangesRequested%22%3Atrue%7D%20--%3E"
                               target="_blank"
                               aria-disabled="false"
                               class="option-btn btn btn-secondary"
@@ -531,7 +603,7 @@
                             <a
                               role="button"
                               tabindex="0"
-                              href="https://github.com/bocoup/aria-at/issues/new?title=JAWS%20General%20Feedback:%20Modal%20Dialog%20Example%20V22.05.26%20for%20Candidate%20Report&amp;labels=candidate-review,jaws,feedback&amp;body=%23%23%20Description%20of%20Behavior%0A%0A%3C!--%20Write%20your%20description%20here%20--%3E%0A%0A%3C!--%20The%20following%20data%20allows%20the%20issue%20to%20be%20imported%20into%20the%20ARIA%20AT%20App%20--%3E%0A%3C!--%20ARIA_AT_APP_ISSUE_DATA%20%3D%20%7B%22testPlanDirectory%22%3A%22modal-dialog%22%2C%22versionString%22%3A%22V22.05.26%22%2C%22atName%22%3A%22JAWS%22%2C%22browserName%22%3Anull%2C%22testRowNumber%22%3Anull%2C%22testSequenceNumber%22%3Anull%2C%22isCandidateReview%22%3Atrue%2C%22isCandidateReviewChangesRequested%22%3Afalse%7D%20--%3E"
+                              href="https://github.com/bocoup/aria-at/issues/new?title=JAWS%20General%20Feedback:%20Modal%20Dialog%20Example%20V22.05.26%20for%20Candidate%20Report&amp;labels=candidate-review,jaws,feedback&amp;body=%23%23%20Description%20of%20Behavior%0A%0A%3C!--%20Write%20your%20description%20here%20--%3E%0A%0A%3C!--%20The%20following%20data%20allows%20the%20issue%20to%20be%20imported%20into%20the%20ARIA%20AT%20App%20--%3E%0A%3C!--%20ARIA_AT_APP_ISSUE_DATA%20%3D%20%7B%22testPlanDirectory%22%3A%22apg%2Fmodal-dialog%22%2C%22versionString%22%3A%22V22.05.26%22%2C%22atName%22%3A%22JAWS%22%2C%22browserName%22%3Anull%2C%22testRowNumber%22%3Anull%2C%22testSequenceNumber%22%3Anull%2C%22isCandidateReview%22%3Atrue%2C%22isCandidateReviewChangesRequested%22%3Afalse%7D%20--%3E"
                               target="_blank"
                               aria-disabled="false"
                               class="option-btn btn btn-secondary"

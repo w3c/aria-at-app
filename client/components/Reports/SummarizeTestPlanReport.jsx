@@ -53,7 +53,7 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
     atVersion: recommendedAtVersion
   };
 
-  const none = None();
+  const none = None('No Data');
 
   const renderVersionsSummaryTable = () => {
     if (testPlanVersion.phase !== 'RECOMMENDED') return null;
@@ -184,6 +184,7 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
         <FailingAssertionsSummaryTable
           testPlanReport={testPlanReport}
           atName={testPlanReport.at.name}
+          testPlanVersion={testPlanVersion}
           getLinkUrl={assertion =>
             `/report/${testPlanVersion.id}/targets/${testPlanReport.id}#result-${assertion.testResultId}`
           }
@@ -203,6 +204,7 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
         <NegativeSideEffectsSummaryTable
           testPlanReport={testPlanReport}
           atName={testPlanReport.at.name}
+          testPlanVersion={testPlanVersion}
           getLinkUrl={assertion =>
             `/report/${testPlanVersion.id}/targets/${testPlanReport.id}#result-${assertion.testResultId}`
           }
@@ -315,11 +317,12 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
       {renderUntestableAssertionsSummary()}
       {testPlanReport.finalizedTestResults.map((testResult, index) => {
         const test = testResult.test;
+        const testPlanDirectory = testPlanVersion.testPlan.directory;
 
         const reportLink = `https://aria-at.w3.org${location.pathname}#result-${testResult.id}`;
         const issueLink = createIssueLink({
           testPlanTitle: testPlanVersion.title,
-          testPlanDirectory: testPlanVersion.testPlan.directory,
+          testPlanDirectory,
           versionString: testPlanVersion.versionString,
           testTitle: test.title,
           testRowNumber: test.rowNumber,
@@ -333,11 +336,18 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
           reportLink
         });
 
-        // TODO: fix renderedUrl
+        // TODO: fix renderedUrl source
         let modifiedRenderedUrl = test.renderedUrl.replace(
           /.+(?=\/tests)/,
           'https://aria-at.netlify.app'
         );
+        if (!modifiedRenderedUrl.includes(testPlanDirectory)) {
+          const lastDirectorySegment = testPlanDirectory.split('/').pop();
+          modifiedRenderedUrl = modifiedRenderedUrl.replace(
+            new RegExp(`/${lastDirectorySegment}/`),
+            `/${testPlanDirectory}/`
+          );
+        }
 
         const assertionsSummary = summarizeAssertions(
           getMetrics({
@@ -387,6 +397,7 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
                 testResult={testResult}
                 optionalHeader={<h3>Results for each command</h3>}
                 commandHeadingLevel={4}
+                showAriaHtmlFeatures
               />
             </div>
 

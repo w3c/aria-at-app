@@ -147,7 +147,10 @@ describe('graphql', () => {
       'CollectionJobTestStatus',
       'ReviewerStatus',
       'ScenarioResultMatchSource',
-      'ScenarioResultMatch'
+      'ScenarioResultMatch',
+      'NegativeSideEffect',
+      'NegativeSideEffectRecord',
+      'Reference'
     ];
     const excludedTypeNameAndField = [
       // Items formatted like this:
@@ -158,6 +161,7 @@ describe('graphql', () => {
       ['TestPlanReport', 'issues'],
       ['TestPlanReport', 'historicalReport'],
       ['TestPlanReport', 'vendorReviewStatus'],
+      ['TestPlanReport', 'events'],
       ['Command', 'atOperatingMode'], // TODO: Include when v2 test format CI tests are done
       ['CollectionJob', 'testPlanRun'],
       ['CollectionJob', 'externalLogsUrl'],
@@ -165,12 +169,26 @@ describe('graphql', () => {
       ['User', 'company'],
       ['Query', 'reviewerStatus'],
       ['Query', 'reviewerStatuses'],
+      // None in fresh DB
+      ['Query', 'atBug'],
+      ['Query', 'atBugs'],
       // These interact with Response Scheduler API
       // which is mocked in other tests.
       ['Mutation', 'scheduleCollectionJob'],
       ['Mutation', 'restartCollectionJob'],
+      ['Mutation', 'createAtBug'],
+      ['Mutation', 'linkAtBugsToNegativeSideEffect'],
+      ['Mutation', 'unlinkAtBugsFromNegativeSideEffect'],
       ['CollectionJobOperations', 'retryCanceledCollections'],
-      ['ScenarioResult', 'match']
+      ['ScenarioResult', 'match'],
+      ['Assertion', 'phrase'],
+      ['Assertion', 'atBugs'],
+      ['AtBug', 'assertions'],
+      ['UpdateEvent', 'performedBy'],
+      ['UpdateEvent', 'entityId'],
+      ['UpdateEvent', 'metadata'],
+      ['Assertion', 'references'],
+      ['AtBug', 'commandIds']
     ];
     ({
       typeAwareQuery,
@@ -205,6 +223,149 @@ describe('graphql', () => {
             verdictsLast90Count
             testsCount
             suitesCount
+          }
+          ariaHtmlFeaturesMetrics {
+            __typename
+            ariaFeaturesPassedCount
+            ariaFeaturesCount
+            ariaFeaturesFailedCount
+            ariaFeaturesUntestableCount
+            htmlFeaturesPassedCount
+            htmlFeaturesCount
+            htmlFeaturesFailedCount
+            htmlFeaturesUntestableCount
+            ariaFeatures {
+              __typename
+              refId
+              type
+              linkText
+              rawLinkText
+              value
+              rawValue
+              total
+              passed
+              failed
+              untestable
+              passedPercentage
+              formatted
+            }
+            ariaFeaturesByAtBrowser {
+              __typename
+              refId
+              type
+              linkText
+              rawLinkText
+              value
+              rawValue
+              total
+              passed
+              failed
+              untestable
+              passedPercentage
+              formatted
+              atName
+              browserName
+              atId
+              browserId
+            }
+            htmlFeatures {
+              __typename
+              refId
+              type
+              linkText
+              rawLinkText
+              value
+              rawValue
+              total
+              passed
+              failed
+              untestable
+              passedPercentage
+              formatted
+            }
+            htmlFeaturesByAtBrowser {
+              __typename
+              refId
+              type
+              linkText
+              rawLinkText
+              value
+              rawValue
+              total
+              passed
+              failed
+              untestable
+              passedPercentage
+              formatted
+              atName
+              browserName
+              atId
+              browserId
+            }
+          }
+          ariaHtmlFeatureDetailReport(
+            refId: "aria-expanded"
+            atId: 1
+            browserId: 1
+          ) {
+            __typename
+            feature {
+              __typename
+              refId
+              type
+              linkText
+              value
+              total
+              passed
+              failed
+              untestable
+              passedPercentage
+              formatted
+            }
+            at {
+              __typename
+              id
+              name
+              key
+            }
+            browser {
+              __typename
+              id
+              name
+              key
+            }
+            assertionStatistics {
+              __typename
+              label
+              passingCount
+              passingTotal
+              failingCount
+              failingTotal
+              untestableCount
+              untestableTotal
+              passingPercentage
+              failingPercentage
+              untestablePercentage
+            }
+            rows {
+              __typename
+              testPlanName
+              testPlanVersion
+              testPlanVersionId
+              testPlanReportId
+              testTitle
+              testId
+              testResultId
+              commandSequence
+              assertionPriority
+              assertionPhrase
+              result
+              testedOn
+              atVersion
+              browserVersion
+              severeSideEffectsCount
+              moderateSideEffectsCount
+            }
           }
           browsers {
             __typename
@@ -338,13 +499,31 @@ describe('graphql', () => {
               assertions {
                 __typename
                 phrase
+                atBugs {
+                  __typename
+                  id
+                  title
+                  url
+                }
               }
             }
           }
           latestTestPlanVersion {
             id
+            tests {
+              assertions {
+                __typename
+                references {
+                  __typename
+                  refId
+                  type
+                  value
+                  linkText
+                }
+              }
+            }
           }
-          testPlan(id: "checkbox") {
+          testPlan(id: "apg/checkbox") {
             __typename
             id
             directory
@@ -385,6 +564,13 @@ describe('graphql', () => {
                   id
                   priority
                   text
+                  phrase
+                  atBugs {
+                    __typename
+                    id
+                    title
+                    url
+                  }
                 }
                 testFormatVersion
               }
@@ -563,6 +749,14 @@ describe('graphql', () => {
                     text
                     impact
                     details
+                    highlightRequired
+                    encodedId
+                    atBugs {
+                      __typename
+                      id
+                      title
+                      url
+                    }
                   }
                 }
               }
@@ -713,6 +907,23 @@ describe('graphql', () => {
               }
             }
           }
+          atBugs {
+            __typename
+            id
+            title
+            url
+            createdAt
+            updatedAt
+            at {
+              id
+              name
+            }
+            assertions {
+              id
+              text
+            }
+            commandIds
+          }
         }
       `,
       { transaction: false }
@@ -728,6 +939,44 @@ describe('graphql', () => {
         browserVersionId
       } = await getMutationInputs();
 
+      // Create a test AtBug for testing mutations
+      const testAtBug = await db.AtBug.create(
+        {
+          title: 'Test Bug for GraphQL Tests',
+          url: `https://example.com/bug/TEST-BUG-${Date.now()}`,
+          atId: 1 // Use JAWS AT
+        },
+        { transaction }
+      );
+
+      // Test the created AtBug
+      await typeAwareQuery(
+        gql`
+          query TestAtBug($testAtBugId: ID!) {
+            atBug(id: $testAtBugId) {
+              __typename
+              id
+              title
+              url
+              createdAt
+              updatedAt
+              at {
+                id
+                name
+              }
+              assertions {
+                id
+                text
+              }
+            }
+          }
+        `,
+        {
+          variables: { testAtBugId: testAtBug.id },
+          transaction
+        }
+      );
+
       // eslint-disable-next-line no-unused-vars
       const mutationResults = await typeAwareMutate(
         gql`
@@ -740,6 +989,7 @@ describe('graphql', () => {
             $testPlanRun1TestId: ID!
             $atVersionId: ID!
             $browserVersionId: ID!
+            $testAtBugId: ID!
           ) {
             __typename
             createTestPlanReport(
@@ -918,6 +1168,31 @@ describe('graphql', () => {
               }
               message
             }
+            updateAtBug(
+              id: $testAtBugId
+              input: { title: "Updated Test Bug Title" }
+            ) {
+              __typename
+              id
+              title
+            }
+            linkAtBugsToAssertion(
+              assertionId: "1"
+              atBugIds: [$testAtBugId]
+              commandId: "test-command"
+            ) {
+              __typename
+              id
+            }
+            unlinkAtBugsFromAssertion(
+              assertionId: "1"
+              atBugIds: [$testAtBugId]
+              commandId: "test-command"
+            ) {
+              __typename
+              id
+            }
+            deleteAtBug(id: $testAtBugId)
           }
         `,
         {
@@ -929,7 +1204,8 @@ describe('graphql', () => {
             testPlanRun1DeletableTestResultId,
             testPlanRun1TestId,
             atVersionId,
-            browserVersionId
+            browserVersionId,
+            testAtBugId: testAtBug.id
           },
           transaction
         }
@@ -1080,6 +1356,16 @@ const getMutationInputs = async () => {
           negativeSideEffects {
             id
             details
+            text
+            impact
+            highlightRequired
+            encodedId
+            atBugs {
+              id
+              title
+              url
+              commandIds
+            }
           }
         }
       }

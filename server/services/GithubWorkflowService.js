@@ -164,7 +164,9 @@ const createGithubWorkflow = async ({ job, directory, gitSha, atVersion }) => {
     throw new Error(`Unsupported AT workflow for ${atKey}`);
   }
 
-  const browser = job.testPlanRun.testPlanReport.browser.name.toLowerCase();
+  let browser = job.testPlanRun.testPlanReport.browser.key;
+  // not sure why this "key" doesn't match, but the rest do.
+  if (browser == 'safari_macos') browser = 'safari';
   const inputs = {
     callback_url: `https://${callbackUrlHostname}/api/jobs/${job.id}/test/:testRowNumber`,
     status_url: `https://${callbackUrlHostname}/api/jobs/${job.id}`,

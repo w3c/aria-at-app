@@ -5,14 +5,36 @@ const { calculatePercentage, trimDecimals } = require('../calculations');
 // eslint-disable-next-line jest/no-mocks-import
 const testPlanReport = require('./__mocks__/testPlanReportForMetricsFromLiveData.json');
 
-const generateRandomNumber = (max, min = 1) => {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-};
-
 function generateTestPlanReport(reportSpec) {
   let idCount = 0;
   const id = () => String(++idCount);
-  const boolToAssertion = passed => ({ passed });
+
+  const createAssertion = (
+    passed,
+    ariaFeatures = [],
+    htmlFeatures = [],
+    featureIndex = 0
+  ) => {
+    const references = [];
+    if (ariaFeatures[featureIndex]) {
+      references.push({
+        type: 'aria',
+        ...ariaFeatures[featureIndex]
+      });
+    }
+    if (htmlFeatures[featureIndex]) {
+      references.push({
+        type: 'htmlAam',
+        ...htmlFeatures[featureIndex]
+      });
+    }
+
+    return {
+      passed,
+      assertion: { references }
+    };
+  };
+
   return {
     id: id(),
     runnableTests: Array(reportSpec.length)
@@ -22,17 +44,37 @@ function generateTestPlanReport(reportSpec) {
       return {
         id: id(),
         scenarioResults: testSpec.map(scenarioSpec => {
-          const { must, should, may, untestable, unexpected } = scenarioSpec;
+          let {
+            must,
+            should,
+            may,
+            untestable,
+            unexpected,
+            ariaFeatures = [],
+            htmlFeatures = []
+          } = scenarioSpec;
+
+          let featureIndex = 0;
+          must = must.map(passed =>
+            createAssertion(passed, ariaFeatures, htmlFeatures, featureIndex++)
+          );
+          should = should.map(passed =>
+            createAssertion(passed, ariaFeatures, htmlFeatures, featureIndex++)
+          );
+          may = may.map(passed =>
+            createAssertion(passed, ariaFeatures, htmlFeatures, featureIndex++)
+          );
+
           return {
             id: id(),
             scenario: {
               commands: [{ id: 's' }]
             },
             untestable,
-            assertionResults: [...must, ...should, ...may].map(boolToAssertion),
-            mustAssertionResults: must.map(boolToAssertion),
-            shouldAssertionResults: should.map(boolToAssertion),
-            mayAssertionResults: may.map(boolToAssertion),
+            assertionResults: [...must, ...should, ...may],
+            mustAssertionResults: must,
+            shouldAssertionResults: should,
+            mayAssertionResults: may,
             negativeSideEffects: unexpected.map(impact => ({
               id: id(),
               impact
@@ -44,15 +86,15 @@ function generateTestPlanReport(reportSpec) {
   };
 }
 
-const generateRandomizedTestPlanReport = () => {
+const generateStructuredTestPlanReport = () => {
   let testPlanReport = {
-    id: generateRandomNumber(200)
+    id: 500
   };
 
   let runnableTests = [];
   let finalizedTestResults = [];
 
-  const testsCount = generateRandomNumber(12);
+  const testsCount = 12;
   let testsPassedCount = 0;
   let mustAssertionsCount = 0;
   let mustAssertionsPassedCount = 0;
@@ -75,7 +117,7 @@ const generateRandomizedTestPlanReport = () => {
     let isTestPassed = true;
 
     let scenarioResults = [];
-    const scenariosCount = generateRandomNumber(5);
+    const scenariosCount = 5;
     for (
       let scenarioResultId = 1;
       scenarioResultId <= scenariosCount;
@@ -89,17 +131,17 @@ const generateRandomizedTestPlanReport = () => {
       let mayAssertionResults = [];
       let negativeSideEffects = [];
 
-      const commandsLength = generateRandomNumber(6);
+      const commandsLength = 6;
       for (let commandId = 1; commandId <= commandsLength; commandId++) {
         let command = { id: commandId };
         scenario.commands.push(command);
       }
 
-      const mustLength = generateRandomNumber(4, 1);
+      const mustLength = 5;
       for (let mustIndex = 0; mustIndex < mustLength; mustIndex++) {
         mustAssertionsCount++;
         // To increase the chance of having at least 1 passed MUST assertion
-        const passed = Math.random() < 0.9;
+        const passed = mustIndex % 2 === 0;
         if (passed) mustAssertionsPassedCount++;
         else {
           mustAssertionsFailedCount++;
@@ -110,10 +152,10 @@ const generateRandomizedTestPlanReport = () => {
         mustAssertionResults.push(assertion);
       }
 
-      const shouldLength = generateRandomNumber(4, 0);
+      const shouldLength = 5;
       for (let shouldIndex = 0; shouldIndex < shouldLength; shouldIndex++) {
         shouldAssertionsCount++;
-        const passed = Math.random() < 0.5;
+        const passed = shouldIndex % 2 === 0;
         if (passed) shouldAssertionsPassedCount++;
         else {
           shouldAssertionsFailedCount++;
@@ -124,10 +166,10 @@ const generateRandomizedTestPlanReport = () => {
         shouldAssertionResults.push(assertion);
       }
 
-      const mayLength = generateRandomNumber(3, 0);
+      const mayLength = 3;
       for (let mayIndex = 1; mayIndex <= mayLength; mayIndex++) {
         mayAssertionsCount++;
-        const passed = Math.random() < 0.5;
+        const passed = mayIndex % 2 === 0;
         if (passed) mayAssertionsPassedCount++;
         else {
           mayAssertionsFailedCount++;
@@ -138,7 +180,7 @@ const generateRandomizedTestPlanReport = () => {
         mayAssertionResults.push(assertion);
       }
 
-      const negativeSideEffectsLength = generateRandomNumber(2, 0);
+      const negativeSideEffectsLength = 3;
       negativeSideEffectCount += negativeSideEffectsLength;
       for (
         let negativeSideEffectIndex = 0;
@@ -146,7 +188,7 @@ const generateRandomizedTestPlanReport = () => {
         negativeSideEffectIndex++
       ) {
         // otherwise, do moderate
-        const doSevere = Math.random() < 0.5;
+        const doSevere = negativeSideEffectIndex % 2 === 0;
         const impact = doSevere ? 'SEVERE' : 'MODERATE';
 
         const negativeSideEffect = { impact };
@@ -227,7 +269,7 @@ describe('getMetrics', () => {
       negativeSideEffectCount,
       severeImpactFailedAssertionCount,
       moderateImpactFailedAssertionCount
-    } = generateRandomizedTestPlanReport();
+    } = generateStructuredTestPlanReport();
     const metrics = getMetrics({ testPlanReport });
 
     const testsFailedCount = testsCount - testsPassedCount;
@@ -290,6 +332,14 @@ describe('getMetrics', () => {
         moderateImpactPassedAssertionCount,
         moderateImpactFailedAssertionCount,
         commandsCount,
+        ariaFeaturesPassedCount: 0,
+        ariaFeaturesCount: 0,
+        ariaFeaturesFailedCount: 0,
+        ariaFeaturesUntestableCount: 0,
+        htmlFeaturesPassedCount: 0,
+        htmlFeaturesCount: 0,
+        htmlFeaturesFailedCount: 0,
+        htmlFeaturesUntestableCount: 0,
         mustFormatted: `${mustAssertionsPassedCount} of ${mustAssertionsCount} passed`,
         shouldFormatted:
           shouldAssertionsCount === 0
@@ -303,6 +353,10 @@ describe('getMetrics', () => {
           negativeSideEffectCount === 0
             ? false
             : `${negativeSideEffectCount} found`,
+        ariaFeaturesFormatted: false,
+        htmlFeaturesFormatted: false,
+        ariaFeatures: [],
+        htmlFeatures: [],
         supportLevel,
         supportPercent
       })
@@ -345,7 +399,19 @@ describe('getMetrics', () => {
         severeImpactFailedAssertionCount: 7,
         severeImpactPassedAssertionCount: 13,
         moderateImpactFailedAssertionCount: 0,
-        moderateImpactPassedAssertionCount: 20
+        moderateImpactPassedAssertionCount: 20,
+        ariaFeaturesPassedCount: 0,
+        ariaFeaturesCount: 0,
+        ariaFeaturesFailedCount: 0,
+        ariaFeaturesUntestableCount: 0,
+        htmlFeaturesPassedCount: 0,
+        htmlFeaturesCount: 0,
+        htmlFeaturesFailedCount: 0,
+        htmlFeaturesUntestableCount: 0,
+        ariaFeaturesFormatted: false,
+        htmlFeaturesFormatted: false,
+        ariaFeatures: [],
+        htmlFeatures: []
       })
     );
   });
@@ -381,10 +447,22 @@ describe('getMetrics', () => {
       moderateImpactPassedAssertionCount: 1,
       moderateImpactFailedAssertionCount: 0,
       commandsCount: 1,
+      ariaFeaturesPassedCount: 0,
+      ariaFeaturesCount: 0,
+      ariaFeaturesFailedCount: 0,
+      ariaFeaturesUntestableCount: 0,
+      htmlFeaturesPassedCount: 0,
+      htmlFeaturesCount: 0,
+      htmlFeaturesFailedCount: 0,
+      htmlFeaturesUntestableCount: 0,
       mustFormatted: '2 of 2 passed',
       shouldFormatted: '1 of 1 passed',
       mayFormatted: '1 of 1 supported',
       negativeSideEffectsFormatted: false,
+      ariaFeaturesFormatted: false,
+      htmlFeaturesFormatted: false,
+      ariaFeatures: [],
+      htmlFeatures: [],
       supportLevel: 'FULL',
       supportPercent: 100
     });
@@ -421,10 +499,22 @@ describe('getMetrics', () => {
       moderateImpactPassedAssertionCount: 3,
       moderateImpactFailedAssertionCount: 0,
       commandsCount: 3,
+      ariaFeaturesPassedCount: 0,
+      ariaFeaturesCount: 0,
+      ariaFeaturesFailedCount: 0,
+      ariaFeaturesUntestableCount: 0,
+      htmlFeaturesPassedCount: 0,
+      htmlFeaturesCount: 0,
+      htmlFeaturesFailedCount: 0,
+      htmlFeaturesUntestableCount: 0,
       mustFormatted: '5 of 7 passed',
       shouldFormatted: '6 of 7 passed',
       mayFormatted: '2 of 3 supported',
       negativeSideEffectsFormatted: false,
+      ariaFeaturesFormatted: false,
+      htmlFeaturesFormatted: false,
+      ariaFeatures: [],
+      htmlFeatures: [],
       supportLevel: 'FAILING',
       supportPercent: 78
     });
@@ -461,10 +551,22 @@ describe('getMetrics', () => {
       moderateImpactPassedAssertionCount: 3,
       moderateImpactFailedAssertionCount: 0,
       commandsCount: 3,
+      ariaFeaturesPassedCount: 0,
+      ariaFeaturesCount: 0,
+      ariaFeaturesFailedCount: 0,
+      ariaFeaturesUntestableCount: 0,
+      htmlFeaturesPassedCount: 0,
+      htmlFeaturesCount: 0,
+      htmlFeaturesFailedCount: 0,
+      htmlFeaturesUntestableCount: 0,
       mustFormatted: '4 of 7 passed',
       shouldFormatted: '6 of 7 passed',
       mayFormatted: '2 of 3 supported',
       negativeSideEffectsFormatted: '1 found',
+      ariaFeaturesFormatted: false,
+      htmlFeaturesFormatted: false,
+      ariaFeatures: [],
+      htmlFeatures: [],
       supportLevel: 'FAILING',
       supportPercent: 71
     });
@@ -508,10 +610,22 @@ describe('getMetrics', () => {
       moderateImpactPassedAssertionCount: 2,
       moderateImpactFailedAssertionCount: 1,
       commandsCount: 3,
+      ariaFeaturesPassedCount: 0,
+      ariaFeaturesCount: 0,
+      ariaFeaturesFailedCount: 0,
+      ariaFeaturesUntestableCount: 0,
+      htmlFeaturesPassedCount: 0,
+      htmlFeaturesCount: 0,
+      htmlFeaturesFailedCount: 0,
+      htmlFeaturesUntestableCount: 0,
       mustFormatted: '4 of 7 passed',
       shouldFormatted: '5 of 7 passed',
       mayFormatted: '2 of 3 supported',
       negativeSideEffectsFormatted: '2 found',
+      ariaFeaturesFormatted: false,
+      htmlFeaturesFormatted: false,
+      ariaFeatures: [],
+      htmlFeatures: [],
       supportLevel: 'FAILING',
       supportPercent: 64
     });
@@ -556,12 +670,416 @@ describe('getMetrics', () => {
       moderateImpactPassedAssertionCount: 3,
       moderateImpactFailedAssertionCount: 0,
       commandsCount: 3,
+      ariaFeaturesPassedCount: 0,
+      ariaFeaturesCount: 0,
+      ariaFeaturesFailedCount: 0,
+      ariaFeaturesUntestableCount: 0,
+      htmlFeaturesPassedCount: 0,
+      htmlFeaturesCount: 0,
+      htmlFeaturesFailedCount: 0,
+      htmlFeaturesUntestableCount: 0,
       mustFormatted: '3 of 7 passed',
       shouldFormatted: '5 of 7 passed',
       mayFormatted: '1 of 3 supported',
       negativeSideEffectsFormatted: '1 found',
+      ariaFeaturesFormatted: false,
+      htmlFeaturesFormatted: false,
+      ariaFeatures: [],
+      htmlFeatures: [],
       supportLevel: 'FAILING',
       supportPercent: 57
+    });
+  });
+
+  it('returns expected metrics object for testPlanReport with ARIA features', () => {
+    const testPlanReport = generateTestPlanReport([
+      [
+        {
+          must: [true, false],
+          should: [true],
+          may: [false],
+          unexpected: [],
+          ariaFeatures: [
+            { refId: 'aria-expanded' },
+            { refId: 'aria-controls' }
+          ],
+          htmlFeatures: []
+        }
+      ]
+    ]);
+    expect(getMetrics({ testPlanReport })).toEqual({
+      assertionsPassedCount: 4,
+      assertionsFailedCount: 2,
+      assertionsUntestableCount: 0,
+      mustAssertionsPassedCount: 2,
+      mustAssertionsCount: 3,
+      mustAssertionsFailedCount: 1,
+      mustAssertionsUntestableCount: 0,
+      shouldAssertionsPassedCount: 2,
+      shouldAssertionsCount: 2,
+      shouldAssertionsFailedCount: 0,
+      shouldAssertionsUntestableCount: 0,
+      mayAssertionsPassedCount: 0,
+      mayAssertionsCount: 1,
+      mayAssertionsFailedCount: 1,
+      mayAssertionsUntestableCount: 0,
+      testsPassedCount: 0,
+      testsCount: 1,
+      testsFailedCount: 1,
+      negativeSideEffectCount: 0,
+      severeImpactPassedAssertionCount: 1,
+      severeImpactFailedAssertionCount: 0,
+      moderateImpactPassedAssertionCount: 1,
+      moderateImpactFailedAssertionCount: 0,
+      commandsCount: 1,
+      ariaFeaturesPassedCount: 1,
+      ariaFeaturesCount: 2,
+      ariaFeaturesFailedCount: 1,
+      ariaFeaturesUntestableCount: 0,
+      htmlFeaturesPassedCount: 0,
+      htmlFeaturesCount: 0,
+      htmlFeaturesFailedCount: 0,
+      htmlFeaturesUntestableCount: 0,
+      mustFormatted: '2 of 3 passed',
+      shouldFormatted: '2 of 2 passed',
+      mayFormatted: '0 of 1 supported',
+      negativeSideEffectsFormatted: false,
+      ariaFeaturesFormatted: '50% of passing',
+      htmlFeaturesFormatted: false,
+      ariaFeatures: [
+        {
+          refId: 'aria-expanded',
+          type: 'aria',
+          linkText: undefined,
+          value: undefined,
+          rawLinkText: '',
+          rawValue: '',
+          total: 1,
+          passed: 1,
+          failed: 0,
+          untestable: 0,
+          passedPercentage: 100,
+          formatted: '100% of passing'
+        },
+        {
+          refId: 'aria-controls',
+          type: 'aria',
+          linkText: undefined,
+          value: undefined,
+          rawLinkText: '',
+          rawValue: '',
+          total: 1,
+          passed: 0,
+          failed: 1,
+          untestable: 0,
+          passedPercentage: 0,
+          formatted: '0% of passing'
+        }
+      ],
+      htmlFeatures: [],
+      supportLevel: 'FAILING',
+      supportPercent: 80
+    });
+  });
+
+  it('returns expected metrics object for testPlanReport with HTML features', () => {
+    const testPlanReport = generateTestPlanReport([
+      [
+        {
+          must: [true],
+          should: [false, true],
+          may: [true],
+          unexpected: [],
+          ariaFeatures: [],
+          htmlFeatures: [
+            { refId: 'button' },
+            { refId: 'input' },
+            { refId: 'select' }
+          ]
+        }
+      ]
+    ]);
+    expect(getMetrics({ testPlanReport })).toEqual({
+      assertionsPassedCount: 5,
+      assertionsFailedCount: 1,
+      assertionsUntestableCount: 0,
+      mustAssertionsPassedCount: 2,
+      mustAssertionsCount: 2,
+      mustAssertionsFailedCount: 0,
+      mustAssertionsUntestableCount: 0,
+      shouldAssertionsPassedCount: 2,
+      shouldAssertionsCount: 3,
+      shouldAssertionsFailedCount: 1,
+      shouldAssertionsUntestableCount: 0,
+      mayAssertionsPassedCount: 1,
+      mayAssertionsCount: 1,
+      mayAssertionsFailedCount: 0,
+      mayAssertionsUntestableCount: 0,
+      testsPassedCount: 0,
+      testsCount: 1,
+      testsFailedCount: 1,
+      negativeSideEffectCount: 0,
+      severeImpactPassedAssertionCount: 1,
+      severeImpactFailedAssertionCount: 0,
+      moderateImpactPassedAssertionCount: 1,
+      moderateImpactFailedAssertionCount: 0,
+      commandsCount: 1,
+      ariaFeaturesPassedCount: 0,
+      ariaFeaturesCount: 0,
+      ariaFeaturesFailedCount: 0,
+      ariaFeaturesUntestableCount: 0,
+      htmlFeaturesPassedCount: 2,
+      htmlFeaturesCount: 3,
+      htmlFeaturesFailedCount: 1,
+      htmlFeaturesUntestableCount: 0,
+      mustFormatted: '2 of 2 passed',
+      shouldFormatted: '2 of 3 passed',
+      mayFormatted: '1 of 1 supported',
+      negativeSideEffectsFormatted: false,
+      ariaFeaturesFormatted: false,
+      htmlFeaturesFormatted: '66% of passing',
+      ariaFeatures: [],
+      htmlFeatures: [
+        {
+          refId: 'button',
+          type: 'htmlAam',
+          linkText: undefined,
+          value: undefined,
+          rawLinkText: '',
+          rawValue: '',
+          total: 1,
+          passed: 1,
+          failed: 0,
+          untestable: 0,
+          passedPercentage: 100,
+          formatted: '100% of passing'
+        },
+        {
+          refId: 'input',
+          type: 'htmlAam',
+          linkText: undefined,
+          value: undefined,
+          rawLinkText: '',
+          rawValue: '',
+          total: 1,
+          passed: 0,
+          failed: 1,
+          untestable: 0,
+          passedPercentage: 0,
+          formatted: '0% of passing'
+        },
+        {
+          refId: 'select',
+          type: 'htmlAam',
+          linkText: undefined,
+          value: undefined,
+          rawLinkText: '',
+          rawValue: '',
+          total: 1,
+          passed: 1,
+          failed: 0,
+          untestable: 0,
+          passedPercentage: 100,
+          formatted: '100% of passing'
+        }
+      ],
+      supportLevel: 'ALL_REQUIRED',
+      supportPercent: 80
+    });
+  });
+
+  it('returns expected metrics object for testPlanReport with untestable ARIA features', () => {
+    const testPlanReport = generateTestPlanReport([
+      [
+        {
+          must: [true, false],
+          should: [true],
+          may: [false],
+          untestable: true,
+          unexpected: [],
+          ariaFeatures: [
+            { refId: 'aria-expanded' },
+            { refId: 'aria-controls' }
+          ],
+          htmlFeatures: []
+        }
+      ]
+    ]);
+    expect(getMetrics({ testPlanReport })).toEqual({
+      assertionsPassedCount: 2,
+      assertionsFailedCount: 0,
+      assertionsUntestableCount: 4,
+      mustAssertionsPassedCount: 1,
+      mustAssertionsCount: 3,
+      mustAssertionsFailedCount: 0,
+      mustAssertionsUntestableCount: 2,
+      shouldAssertionsPassedCount: 1,
+      shouldAssertionsCount: 2,
+      shouldAssertionsFailedCount: 0,
+      shouldAssertionsUntestableCount: 1,
+      mayAssertionsPassedCount: 0,
+      mayAssertionsCount: 1,
+      mayAssertionsFailedCount: 0,
+      mayAssertionsUntestableCount: 1,
+      testsPassedCount: 0,
+      testsCount: 1,
+      testsFailedCount: 1,
+      negativeSideEffectCount: 0,
+      severeImpactPassedAssertionCount: 1,
+      severeImpactFailedAssertionCount: 0,
+      moderateImpactPassedAssertionCount: 1,
+      moderateImpactFailedAssertionCount: 0,
+      commandsCount: 1,
+      ariaFeaturesPassedCount: 0,
+      ariaFeaturesCount: 2,
+      ariaFeaturesFailedCount: 0,
+      ariaFeaturesUntestableCount: 2,
+      htmlFeaturesPassedCount: 0,
+      htmlFeaturesCount: 0,
+      htmlFeaturesFailedCount: 0,
+      htmlFeaturesUntestableCount: 0,
+      mustFormatted: '1 of 3 passed',
+      shouldFormatted: '1 of 2 passed',
+      mayFormatted: '0 of 1 supported',
+      negativeSideEffectsFormatted: false,
+      ariaFeaturesFormatted: '0% of passing',
+      htmlFeaturesFormatted: false,
+      ariaFeatures: [
+        {
+          refId: 'aria-expanded',
+          type: 'aria',
+          linkText: undefined,
+          value: undefined,
+          rawLinkText: '',
+          rawValue: '',
+          total: 1,
+          passed: 0,
+          failed: 0,
+          untestable: 1,
+          passedPercentage: 0,
+          formatted: '0% of passing'
+        },
+        {
+          refId: 'aria-controls',
+          type: 'aria',
+          linkText: undefined,
+          value: undefined,
+          rawLinkText: '',
+          rawValue: '',
+          total: 1,
+          passed: 0,
+          failed: 0,
+          untestable: 1,
+          passedPercentage: 0,
+          formatted: '0% of passing'
+        }
+      ],
+      htmlFeatures: [],
+      supportLevel: 'FULL',
+      supportPercent: 40
+    });
+  });
+
+  it('returns expected metrics object for testPlanReport with mixed ARIA and HTML features', () => {
+    const testPlanReport = generateTestPlanReport([
+      [
+        {
+          must: [true, false],
+          should: [true],
+          may: [false],
+          unexpected: [],
+          ariaFeatures: [{ refId: 'aria-expanded' }],
+          htmlFeatures: [{ refId: 'button' }, { refId: 'input' }]
+        }
+      ]
+    ]);
+    expect(getMetrics({ testPlanReport })).toEqual({
+      assertionsPassedCount: 4,
+      assertionsFailedCount: 2,
+      assertionsUntestableCount: 0,
+      mustAssertionsPassedCount: 2,
+      mustAssertionsCount: 3,
+      mustAssertionsFailedCount: 1,
+      mustAssertionsUntestableCount: 0,
+      shouldAssertionsPassedCount: 2,
+      shouldAssertionsCount: 2,
+      shouldAssertionsFailedCount: 0,
+      shouldAssertionsUntestableCount: 0,
+      mayAssertionsPassedCount: 0,
+      mayAssertionsCount: 1,
+      mayAssertionsFailedCount: 1,
+      mayAssertionsUntestableCount: 0,
+      testsPassedCount: 0,
+      testsCount: 1,
+      testsFailedCount: 1,
+      negativeSideEffectCount: 0,
+      severeImpactPassedAssertionCount: 1,
+      severeImpactFailedAssertionCount: 0,
+      moderateImpactPassedAssertionCount: 1,
+      moderateImpactFailedAssertionCount: 0,
+      commandsCount: 1,
+      ariaFeaturesPassedCount: 1,
+      ariaFeaturesCount: 1,
+      ariaFeaturesFailedCount: 0,
+      ariaFeaturesUntestableCount: 0,
+      htmlFeaturesPassedCount: 1,
+      htmlFeaturesCount: 2,
+      htmlFeaturesFailedCount: 1,
+      htmlFeaturesUntestableCount: 0,
+      mustFormatted: '2 of 3 passed',
+      shouldFormatted: '2 of 2 passed',
+      mayFormatted: '0 of 1 supported',
+      negativeSideEffectsFormatted: false,
+      ariaFeaturesFormatted: '100% of passing',
+      htmlFeaturesFormatted: '50% of passing',
+      ariaFeatures: [
+        {
+          refId: 'aria-expanded',
+          type: 'aria',
+          linkText: undefined,
+          value: undefined,
+          rawLinkText: '',
+          rawValue: '',
+          total: 1,
+          passed: 1,
+          failed: 0,
+          untestable: 0,
+          passedPercentage: 100,
+          formatted: '100% of passing'
+        }
+      ],
+      htmlFeatures: [
+        {
+          refId: 'button',
+          type: 'htmlAam',
+          linkText: undefined,
+          value: undefined,
+          rawLinkText: '',
+          rawValue: '',
+          total: 1,
+          passed: 1,
+          failed: 0,
+          untestable: 0,
+          passedPercentage: 100,
+          formatted: '100% of passing'
+        },
+        {
+          refId: 'input',
+          type: 'htmlAam',
+          linkText: undefined,
+          value: undefined,
+          rawLinkText: '',
+          rawValue: '',
+          total: 1,
+          passed: 0,
+          failed: 1,
+          untestable: 0,
+          passedPercentage: 0,
+          formatted: '0% of passing'
+        }
+      ],
+      supportLevel: 'FAILING',
+      supportPercent: 80
     });
   });
 });

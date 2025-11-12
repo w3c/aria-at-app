@@ -1,8 +1,24 @@
 const ats = require('../../resources/ats.json');
+const support = require('../../resources/support.json');
 const {
   getCommandV1,
   getCommandV2
 } = require('../../resolvers/helpers/retrieveCommands');
+
+const mutateReference = reference => {
+  if (!reference || !reference.type) return reference;
+
+  const supportReferenceObj = support.references[reference.type];
+  const fragmentId = supportReferenceObj?.fragmentIds[reference.value];
+  if (fragmentId) {
+    reference.rawValue = reference.value;
+    reference.rawLinkText = reference.linkText;
+    reference.value = `${supportReferenceObj.baseUrl}${fragmentId}`;
+    reference.linkText = `${reference.linkText} ${supportReferenceObj.linkText}`;
+  }
+
+  return reference;
+};
 
 const getTests = parentRecord => {
   let testPlanVersion;
@@ -57,11 +73,37 @@ const getTests = parentRecord => {
         })
       };
     }),
-    assertions: test.assertions.map(assertion => ({
-      ...assertion,
-      text: isV2 ? assertion.assertionStatement : assertion.text,
-      phrase: isV2 ? assertion.assertionPhrase : null
-    }))
+    assertions: test.assertions.map(assertion => {
+      const renderableContentAssertion =
+        isV2 &&
+        test.renderableContent.assertions.find(
+          a => a.assertionId === assertion.rawAssertionId
+        );
+      if (isV2 && !renderableContentAssertion)
+        throw new Error(
+          `unexpected.renderableContentAssertion.found: ${assertion.rawAssertionId}`
+        );
+
+      let references =
+        isV2 && renderableContentAssertion.refIds.trim() !== ''
+          ? renderableContentAssertion.refIds
+              .trim()
+              .split(' ')
+              .map(refId => {
+                const reference = test.renderableContent.info.references.find(
+                  r => r.refId === refId
+                );
+                return mutateReference(reference);
+              })
+          : null;
+
+      return {
+        ...assertion,
+        text: isV2 ? assertion.assertionStatement : assertion.text,
+        phrase: isV2 ? assertion.assertionPhrase : null,
+        references
+      };
+    })
   }));
 };
 

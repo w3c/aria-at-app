@@ -1,6 +1,9 @@
+// TODO: Rename to 'Event'
+const MODEL_NAME = 'UpdateEvent';
+
 module.exports = function (sequelize, DataTypes) {
   const Model = sequelize.define(
-    'UpdateEvent',
+    MODEL_NAME,
     {
       id: {
         type: DataTypes.INTEGER,
@@ -19,22 +22,46 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: false
       },
       type: {
-        type: DataTypes.ENUM(
-          'COLLECTION_JOB',
-          'GENERAL',
-          'TEST_PLAN_RUN',
-          'TEST_PLAN_REPORT'
-        ),
+        type: DataTypes.STRING,
         allowNull: false,
+        // Defined in server/util/eventTypes.js
         defaultValue: 'GENERAL'
+      },
+      performedByUserId: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+          model: 'User',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
+      },
+      entityId: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+      },
+      metadata: {
+        type: DataTypes.JSONB,
+        allowNull: true,
+        defaultValue: {}
       }
     },
     {
       timestamps: false,
-      tableName: 'UpdateEvent',
-      schema: 'public'
+      tableName: MODEL_NAME
     }
   );
+
+  Model.PERFORMED_BY_USER_ASSOCIATION = { foreignKey: 'performedByUserId' };
+
+  Model.associate = function (models) {
+    Model.belongsTo(models.User, {
+      ...Model.PERFORMED_BY_USER_ASSOCIATION,
+      targetKey: 'id',
+      as: 'performedBy'
+    });
+  };
 
   return Model;
 };

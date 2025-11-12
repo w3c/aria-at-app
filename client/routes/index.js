@@ -5,6 +5,7 @@ import Home from '@components/Home';
 import InvalidRequest from '@components/InvalidRequest';
 import NotFound from '@components/NotFound';
 import { Reports, Report } from '@components/Reports';
+import AriaHtmlFeatureDetailReport from '@components/Reports/AriaHtmlFeatureDetailReport';
 import CandidateReview from '@components/CandidateReview';
 import SignupInstructions from '@components/SignupInstructions';
 import TestQueue from '@components/TestQueue';
@@ -18,7 +19,8 @@ import TestQueueConflicts from '../components/TestQueue/Conflicts';
 
 export default () => (
   <Routes>
-    <Route index path="/" exact element={<Home />} />
+    <Route path="/" element={<Navigate to="/reports" replace />} />
+    <Route exact path="/about" element={<Home />} />
     <Route exact path="/signup-instructions" element={<SignupInstructions />} />
     <Route
       exact
@@ -38,12 +40,11 @@ export default () => (
         </ConfirmAuth>
       }
     />
-    <Route exact path="/test-queue" element={<TestQueue />} />
     <Route
-      exact
       path="/test-queue/:testPlanReportId/conflicts"
       element={<TestQueueConflicts />}
     />
+    <Route path="/test-queue/*" element={<TestQueue />} />
     <Route
       exact
       path="/test-plan-report/:testPlanReportId"
@@ -55,8 +56,18 @@ export default () => (
       path="/test-review/:testPlanVersionId"
       element={<TestReview />}
     />
-    <Route exact path="/reports" element={<Reports />} />
+    <Route path="/reports/*" element={<Reports />} />
     <Route exact path="/report/:testPlanVersionId/*" element={<Report />} />
+    <Route
+      exact
+      path="/aria-html-feature/:atId/:browserId/:refId"
+      element={<AriaHtmlFeatureDetailReport />}
+    />
+    <Route
+      exact
+      path="/aria-html-feature/:atId/:browserId/:refId/:refType"
+      element={<AriaHtmlFeatureDetailReport />}
+    />
     <Route
       exact
       path="/candidate-review"
@@ -67,11 +78,7 @@ export default () => (
       }
     />
     <Route exact path="/data-management" element={<DataManagement />} />
-    <Route
-      exact
-      path="/data-management/:testPlanDirectory/"
-      element={<TestPlanVersionsPage />}
-    />
+    <Route path="/data-management/*" element={<TestPlanVersionsPage />} />
     <Route exact path="/invalid-request" element={<InvalidRequest />} />
     <Route exact path="/404" element={<NotFound />} />
     <Route exact path="*" element={<Navigate to="/404" replace />} />

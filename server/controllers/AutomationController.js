@@ -21,11 +21,8 @@ const {
   findOrCreateBrowserVersion
 } = require('../models/services/BrowserService');
 const { HttpQueryError } = require('apollo-server-core');
-const {
-  COLLECTION_JOB_STATUS,
-  isJobStatusFinal,
-  UPDATE_EVENT_TYPE
-} = require('../util/enums');
+const { COLLECTION_JOB_STATUS, isJobStatusFinal } = require('../util/enums');
+const { EVENT_TYPES } = require('../util/eventTypes');
 const { getTestResults } = require('../models/services/TestResultReadService');
 const http = require('http');
 const { NO_OUTPUT_STRING } = require('../util/constants');
@@ -39,7 +36,7 @@ const {
 const {
   getTestPlanVersionById
 } = require('../models/services/TestPlanVersionService');
-const { createUpdateEvent } = require('../models/services/UpdateEventService');
+const { createEvent } = require('../models/services/EventService');
 const { updatePercentComplete } = require('../util/updatePercentComplete');
 const httpAgent = new http.Agent({ family: 4 });
 
@@ -540,10 +537,10 @@ const finalizeTestPlanReportIfAllTestsMatchHistoricalResults = async ({
         transaction
       });
 
-      await createUpdateEvent({
+      await createEvent({
         values: {
           description: `Test plan report for ${updatedReport.testPlanVersion.title} ${updatedReport.testPlanVersion.versionString} with ${updatedReport.at.name} ${updatedReport.exactAtVersion.name} and ${updatedReport.browser.name} had identical outputs to the previous finalized report, verdicts were copied, and the report was finalized`,
-          type: UPDATE_EVENT_TYPE.TEST_PLAN_REPORT
+          type: EVENT_TYPES.COLLECTION_JOB_TEST_PLAN_REPORT
         },
         transaction
       });
@@ -553,7 +550,7 @@ const finalizeTestPlanReportIfAllTestsMatchHistoricalResults = async ({
         transaction
       });
       // Not all outputs match, but job is complete - create completion event
-      await createUpdateEvent({
+      await createEvent({
         values: {
           description: `Automated update for ${
             updatedReport.testPlanVersion.title
@@ -564,7 +561,7 @@ const finalizeTestPlanReportIfAllTestsMatchHistoricalResults = async ({
           } is 100% complete with ${differentResponsesCount} different response${
             differentResponsesCount === 1 ? '' : 's'
           }`,
-          type: UPDATE_EVENT_TYPE.TEST_PLAN_REPORT
+          type: EVENT_TYPES.COLLECTION_JOB_TEST_PLAN_REPORT
         },
         transaction
       });

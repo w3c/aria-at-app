@@ -14,7 +14,8 @@
         <nav
           aria-label="Menu"
           class="navbar navbar-expand-xl navbar-light bg-light">
-          <a aria-current="false" class="logo navbar-brand" href="/">ARIA-AT</a
+          <a aria-current="false" class="logo navbar-brand" href="/reports"
+            >ARIA-AT</a
           ><a class="skip-link" href="#main">Skip to main content</a
           ><button
             aria-controls="basic-navbar-nav"
@@ -27,6 +28,9 @@
             class="justify-content-end navbar-collapse collapse"
             id="basic-navbar-nav">
             <div class="navbar-nav">
+              <li>
+                <a aria-current="false" class="nav-link" href="/about">About</a>
+              </li>
               <li>
                 <a aria-current="false" class="nav-link" href="/reports"
                   >AT Interoperability Reports</a
@@ -219,22 +223,22 @@
                       >Test Plan</label
                     ><select class="form-select">
                       <option value="81">Accordion</option>
-                      <option value="90">
+                      <option value="92">
                         Action Menu Button Example Using aria-activedescendant
                       </option>
-                      <option value="89">
+                      <option value="91">
                         Action Menu Button Example Using element.focus()
                       </option>
                       <option value="82">Alert Example</option>
                       <option value="34">Banner Landmark</option>
                       <option value="66">Breadcrumb Example</option>
                       <option value="67">Checkbox Example (Mixed-State)</option>
-                      <option value="36">Checkbox Example (Two State)</option>
-                      <option value="86">Color Viewer Slider</option>
+                      <option value="83">Checkbox Example (Two State)</option>
+                      <option value="87">Color Viewer Slider</option>
                       <option value="38">
                         Combobox with Both List and Inline Autocomplete Example
                       </option>
-                      <option value="83">Command Button Example</option>
+                      <option value="84">Command Button Example</option>
                       <option value="41">Complementary Landmark</option>
                       <option value="42">Contentinfo Landmark</option>
                       <option value="55">
@@ -243,53 +247,54 @@
                       <option value="43">
                         Date Picker Spin Button Example
                       </option>
-                      <option value="85">
+                      <option value="86">
                         Disclosure Navigation Menu Example
                       </option>
-                      <option value="84">
+                      <option value="85">
                         Disclosure of Answers to Frequently Asked Questions
                         Example
                       </option>
                       <option value="53">Editor Menubar Example</option>
                       <option value="46">Form Landmark</option>
                       <option value="75">Horizontal Multi-Thumb Slider</option>
-                      <option value="78">
+                      <option value="90">
                         Link Example 1 (span element with text content)
                       </option>
-                      <option value="88">
+                      <option value="89">
                         Link Example 2 (img element with alt attribute)
                       </option>
-                      <option value="87">
+                      <option value="88">
                         Link Example 3 (CSS :before content property on a span
                         element)
                       </option>
                       <option value="49">Main Landmark</option>
-                      <option value="96">Media Seek Slider</option>
+                      <option value="98">Media Seek Slider</option>
                       <option value="54">Meter</option>
-                      <option value="92">Modal Dialog Example</option>
-                      <option value="91">Navigation Menu Button</option>
-                      <option value="94">
+                      <option value="94">Modal Dialog Example</option>
+                      <option value="93">Navigation Menu Button</option>
+                      <option value="96">
                         Radio Group Example Using Roving tabindex
                       </option>
-                      <option value="93">
+                      <option value="95">
                         Radio Group Example Using aria-activedescendant
                       </option>
-                      <option value="95">Rating Radio Group</option>
+                      <option value="97">Rating Radio Group</option>
                       <option value="59">Rating Slider</option>
                       <option value="39">Select Only Combobox Example</option>
-                      <option value="97">Switch Example</option>
-                      <option value="98">
+                      <option value="99">Switch Example</option>
+                      <option value="100">
                         Switch Example Using HTML Button
                       </option>
-                      <option value="99">
+                      <option value="101">
                         Switch Example Using HTML Checkbox Input
                       </option>
-                      <option value="100">
+                      <option value="102">
                         Tabs with Automatic Activation
                       </option>
-                      <option value="101">Tabs with Manual Activation</option>
-                      <option value="102">Toggle Button</option>
-                      <option value="103">Vertical Temperature Slider</option>
+                      <option value="103">Tabs with Manual Activation</option>
+                      <option value="104">Toggle Button</option>
+                      <option value="105">Vertical Temperature Slider</option>
+                      <option value="106">aria-required on a Text Input</option>
                     </select>
                   </div>
                   <div class="form-group">
@@ -389,7 +394,7 @@
                 data-testid="filter-all"
                 aria-pressed="true"
                 class="filter-button btn active btn-secondary">
-                All Plans (40)
+                All Plans (41)
               </button>
             </li>
             <li>
@@ -398,7 +403,7 @@
                 data-testid="filter-rd"
                 aria-pressed="false"
                 class="filter-button btn btn-secondary">
-                R&amp;D Complete (36)
+                R&amp;D Complete (37)
               </button>
             </li>
             <li>
@@ -432,7 +437,7 @@
           <div class="table-responsive">
             <table
               aria-label="Test Plans Status Summary Table"
-              aria-rowcount="40"
+              aria-rowcount="41"
               class="data-management table table-bordered table-hover">
               <thead>
                 <tr>
@@ -509,7 +514,7 @@
                 <tr aria-rowindex="0">
                   <th>
                     <a
-                      href="/data-management/menu-button-actions-active-descendant"
+                      href="/data-management/apg/menu-button-actions-active-descendant"
                       ><b
                         >Action Menu Button Example Using
                         aria-activedescendant</b
@@ -548,7 +553,7 @@
                             <path
                               fill="currentColor"
                               d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
-                          ><b>V25.02.13</b></span
+                          ><b>V25.11.06</b></span
                         ></span
                       ><span role="listitem" class="review-complete"
                         >Review Completed&nbsp;<b>Sep 22, 2024</b></span
@@ -572,7 +577,7 @@
                             <path
                               fill="currentColor"
                               d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
-                          ><b>V25.02.13</b></span
+                          ><b>V25.11.06</b></span
                         ></span
                       ><span role="listitem" class="review-complete"
                         >Review Completed&nbsp;<b>Sep 23, 2024</b></span
@@ -582,7 +587,7 @@
                   <td>
                     <div class="phase-cell" role="list">
                       <span class="styled-pill full-width auto-width"
-                        ><a href="/test-review/90"
+                        ><a href="/test-review/92"
                           ><span
                             ><svg
                               aria-hidden="true"
@@ -597,7 +602,7 @@
                               <path
                                 fill="currentColor"
                                 d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
-                            ><b>V25.02.13</b></span
+                            ><b>V25.11.06</b></span
                           ></a
                         ></span
                       ><span role="listitem"
@@ -619,7 +624,7 @@
                 </tr>
                 <tr aria-rowindex="1">
                   <th>
-                    <a href="/data-management/checkbox-tri-state"
+                    <a href="/data-management/apg/checkbox-tri-state"
                       ><b>Checkbox Example (Tri State)</b></a
                     >
                   </th>
@@ -727,7 +732,7 @@
                 </tr>
                 <tr aria-rowindex="2">
                   <th>
-                    <a href="/data-management/modal-dialog"
+                    <a href="/data-management/apg/modal-dialog"
                       ><b>Modal Dialog Example</b></a
                     >
                   </th>
@@ -753,7 +758,7 @@
                   <td>
                     <div class="phase-cell" role="list" aria-setsize="3">
                       <span class="styled-pill full-width auto-width"
-                        ><a href="/test-review/92"
+                        ><a href="/test-review/94"
                           ><span
                             ><svg
                               aria-hidden="true"
@@ -768,7 +773,7 @@
                               <path
                                 fill="currentColor"
                                 d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
-                            ><b>V24.06.07</b></span
+                            ><b>V25.11.06</b></span
                           ></a
                         ></span
                       ><span role="listitem"
@@ -825,7 +830,8 @@
                       ><span class="more"
                         ><span role="listitem" class="more-issues-container"
                           ><span class="report-status-dot issues"></span
-                          ><a href="/data-management/modal-dialog#github-issues"
+                          ><a
+                            href="/data-management/apg/modal-dialog#github-issues"
                             >2 Open Issues</a
                           >
                           from 2 ATs</span
@@ -837,7 +843,9 @@
                 </tr>
                 <tr aria-rowindex="3">
                   <th>
-                    <a href="/data-management/alert"><b>Alert Example</b></a>
+                    <a href="/data-management/apg/alert"
+                      ><b>Alert Example</b></a
+                    >
                   </th>
                   <td>
                     <div>
@@ -875,7 +883,7 @@
                               <path
                                 fill="currentColor"
                                 d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
-                            ><b>V24.04.26</b></span
+                            ><b>V25.11.06</b></span
                           ></a
                         ></span
                       ><button
@@ -927,7 +935,7 @@
                 </tr>
                 <tr aria-rowindex="4">
                   <th>
-                    <a href="/data-management/horizontal-slider"
+                    <a href="/data-management/apg/horizontal-slider"
                       ><b>Color Viewer Slider</b></a
                     >
                   </th>
@@ -949,7 +957,7 @@
                   <td>
                     <div class="phase-cell" role="list" aria-setsize="3">
                       <span class="styled-pill full-width auto-width"
-                        ><a href="/test-review/86"
+                        ><a href="/test-review/87"
                           ><span
                             ><svg
                               aria-hidden="true"
@@ -964,7 +972,7 @@
                               <path
                                 fill="currentColor"
                                 d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
-                            ><b>V24.12.04</b></span
+                            ><b>V25.11.06</b></span
                           ></a
                         ></span
                       ><span role="listitem"
@@ -989,7 +997,7 @@
                 </tr>
                 <tr aria-rowindex="5">
                   <th>
-                    <a href="/data-management/command-button"
+                    <a href="/data-management/apg/command-button"
                       ><b>Command Button Example</b></a
                     >
                   </th>
@@ -1014,7 +1022,7 @@
                   <td>
                     <div class="phase-cell" role="list" aria-setsize="2">
                       <span class="styled-pill full-width auto-width"
-                        ><a href="/test-review/83"
+                        ><a href="/test-review/84"
                           ><span
                             ><svg
                               aria-hidden="true"
@@ -1029,7 +1037,7 @@
                               <path
                                 fill="currentColor"
                                 d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
-                            ><b>V24.03.12</b></span
+                            ><b>V25.11.06</b></span
                           ></a
                         ></span
                       ><button
@@ -1085,7 +1093,7 @@
                 </tr>
                 <tr aria-rowindex="6">
                   <th>
-                    <a href="/data-management/combobox-select-only"
+                    <a href="/data-management/apg/combobox-select-only"
                       ><b>Select Only Combobox Example</b></a
                     >
                   </th>
@@ -1177,7 +1185,7 @@
                 </tr>
                 <tr aria-rowindex="7">
                   <th>
-                    <a href="/data-management/toggle-button"
+                    <a href="/data-management/apg/toggle-button"
                       ><b>Toggle Button</b></a
                     >
                   </th>
@@ -1202,7 +1210,7 @@
                   <td>
                     <div class="phase-cell" role="list" aria-setsize="2">
                       <span class="styled-pill full-width auto-width"
-                        ><a href="/test-review/102"
+                        ><a href="/test-review/104"
                           ><span
                             ><svg
                               aria-hidden="true"
@@ -1217,7 +1225,7 @@
                               <path
                                 fill="currentColor"
                                 d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
-                            ><b>V24.10.22</b></span
+                            ><b>V25.11.06</b></span
                           ></a
                         ></span
                       ><button
@@ -1269,7 +1277,9 @@
                 </tr>
                 <tr aria-rowindex="8">
                   <th>
-                    <a href="/data-management/accordion"><b>Accordion</b></a>
+                    <a href="/data-management/apg/accordion"
+                      ><b>Accordion</b></a
+                    >
                   </th>
                   <td>
                     <div>
@@ -1280,7 +1290,7 @@
                   <td>
                     <div class="status-cell">
                       <span class="pill full-width rd">R&amp;D</span>
-                      <p class="review-text">Complete <b>Jul 14, 2025</b></p>
+                      <p class="review-text">Complete <b>Nov 6, 2025</b></p>
                     </div>
                   </td>
                   <td>
@@ -1301,7 +1311,7 @@
                               <path
                                 fill="currentColor"
                                 d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
-                            ><b>V25.07.14</b></span
+                            ><b>V25.11.06</b></span
                           ></a
                         ></span
                       ><button
@@ -1321,7 +1331,7 @@
                 </tr>
                 <tr aria-rowindex="9">
                   <th>
-                    <a href="/data-management/menu-button-actions"
+                    <a href="/data-management/apg/menu-button-actions"
                       ><b
                         >Action Menu Button Example Using element.focus()</b
                       ></a
@@ -1336,13 +1346,13 @@
                   <td>
                     <div class="status-cell">
                       <span class="pill full-width rd">R&amp;D</span>
-                      <p class="review-text">Complete <b>Feb 13, 2025</b></p>
+                      <p class="review-text">Complete <b>Nov 6, 2025</b></p>
                     </div>
                   </td>
                   <td>
                     <div class="phase-cell" role="list" aria-setsize="2">
                       <span class="styled-pill full-width auto-width"
-                        ><a href="/test-review/89"
+                        ><a href="/test-review/91"
                           ><span
                             ><svg
                               aria-hidden="true"
@@ -1357,7 +1367,7 @@
                               <path
                                 fill="currentColor"
                                 d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
-                            ><b>V25.02.13</b></span
+                            ><b>V25.11.06</b></span
                           ></a
                         ></span
                       ><button
@@ -1377,7 +1387,9 @@
                 </tr>
                 <tr aria-rowindex="10">
                   <th>
-                    <a href="/data-management/banner"><b>Banner Landmark</b></a>
+                    <a href="/data-management/apg/banner"
+                      ><b>Banner Landmark</b></a
+                    >
                   </th>
                   <td>
                     <div>
@@ -1429,7 +1441,7 @@
                 </tr>
                 <tr aria-rowindex="11">
                   <th>
-                    <a href="/data-management/breadcrumb"
+                    <a href="/data-management/apg/breadcrumb"
                       ><b>Breadcrumb Example</b></a
                     >
                   </th>
@@ -1483,7 +1495,7 @@
                 </tr>
                 <tr aria-rowindex="12">
                   <th>
-                    <a href="/data-management/checkbox"
+                    <a href="/data-management/apg/checkbox"
                       ><b>Checkbox Example (Two State)</b></a
                     >
                   </th>
@@ -1496,13 +1508,13 @@
                   <td>
                     <div class="status-cell">
                       <span class="pill full-width rd">R&amp;D</span>
-                      <p class="review-text">Complete <b>Mar 17, 2022</b></p>
+                      <p class="review-text">Complete <b>Nov 6, 2025</b></p>
                     </div>
                   </td>
                   <td>
                     <div class="phase-cell" role="list" aria-setsize="2">
                       <span class="styled-pill full-width auto-width"
-                        ><a href="/test-review/36"
+                        ><a href="/test-review/83"
                           ><span
                             ><svg
                               aria-hidden="true"
@@ -1517,7 +1529,7 @@
                               <path
                                 fill="currentColor"
                                 d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
-                            ><b>V22.03.17-1</b></span
+                            ><b>V25.11.06</b></span
                           ></a
                         ></span
                       ><button
@@ -1538,7 +1550,7 @@
                 <tr aria-rowindex="13">
                   <th>
                     <a
-                      href="/data-management/combobox-autocomplete-both-updated"
+                      href="/data-management/apg/combobox-autocomplete-both-updated"
                       ><b
                         >Combobox with Both List and Inline Autocomplete
                         Example</b
@@ -1595,7 +1607,7 @@
                 </tr>
                 <tr aria-rowindex="14">
                   <th>
-                    <a href="/data-management/complementary"
+                    <a href="/data-management/apg/complementary"
                       ><b>Complementary Landmark</b></a
                     >
                   </th>
@@ -1649,7 +1661,7 @@
                 </tr>
                 <tr aria-rowindex="15">
                   <th>
-                    <a href="/data-management/contentinfo"
+                    <a href="/data-management/apg/contentinfo"
                       ><b>Contentinfo Landmark</b></a
                     >
                   </th>
@@ -1703,7 +1715,7 @@
                 </tr>
                 <tr aria-rowindex="16">
                   <th>
-                    <a href="/data-management/minimal-data-grid"
+                    <a href="/data-management/apg/minimal-data-grid"
                       ><b>Data Grid Example 1: Minimal Data Grid</b></a
                     >
                   </th>
@@ -1757,7 +1769,7 @@
                 </tr>
                 <tr aria-rowindex="17">
                   <th>
-                    <a href="/data-management/datepicker-spin-button"
+                    <a href="/data-management/apg/datepicker-spin-button"
                       ><b>Date Picker Spin Button Example</b></a
                     >
                   </th>
@@ -1811,7 +1823,7 @@
                 </tr>
                 <tr aria-rowindex="18">
                   <th>
-                    <a href="/data-management/disclosure-navigation"
+                    <a href="/data-management/apg/disclosure-navigation"
                       ><b>Disclosure Navigation Menu Example</b></a
                     >
                   </th>
@@ -1824,7 +1836,64 @@
                   <td>
                     <div class="status-cell">
                       <span class="pill full-width rd">R&amp;D</span>
-                      <p class="review-text">Complete <b>Mar 6, 2025</b></p>
+                      <p class="review-text">Complete <b>Nov 6, 2025</b></p>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="phase-cell" role="list" aria-setsize="2">
+                      <span class="styled-pill full-width auto-width"
+                        ><a href="/test-review/86"
+                          ><span
+                            ><svg
+                              aria-hidden="true"
+                              focusable="false"
+                              data-prefix="fas"
+                              data-icon="circle-check"
+                              class="svg-inline--fa fa-circle-check check"
+                              role="img"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 512 512"
+                              color="var(--positive-green)">
+                              <path
+                                fill="currentColor"
+                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                            ><b>V25.11.06</b></span
+                          ></a
+                        ></span
+                      ><button
+                        type="button"
+                        class="advance-button btn btn-secondary">
+                        Advance to Draft
+                      </button>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="none centered absolute">Not Started</span>
+                  </td>
+                  <td>
+                    <span class="none centered absolute">Not Started</span>
+                  </td>
+                  <td><span class="none centered absolute">None Yet</span></td>
+                </tr>
+                <tr aria-rowindex="19">
+                  <th>
+                    <a href="/data-management/apg/disclosure-faq"
+                      ><b
+                        >Disclosure of Answers to Frequently Asked Questions
+                        Example</b
+                      ></a
+                    >
+                  </th>
+                  <td>
+                    <div>
+                      <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
+                      ><b>VoiceOver for macOS</b>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="status-cell">
+                      <span class="pill full-width rd">R&amp;D</span>
+                      <p class="review-text">Complete <b>Nov 6, 2025</b></p>
                     </div>
                   </td>
                   <td>
@@ -1845,64 +1914,7 @@
                               <path
                                 fill="currentColor"
                                 d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
-                            ><b>V25.03.06</b></span
-                          ></a
-                        ></span
-                      ><button
-                        type="button"
-                        class="advance-button btn btn-secondary">
-                        Advance to Draft
-                      </button>
-                    </div>
-                  </td>
-                  <td>
-                    <span class="none centered absolute">Not Started</span>
-                  </td>
-                  <td>
-                    <span class="none centered absolute">Not Started</span>
-                  </td>
-                  <td><span class="none centered absolute">None Yet</span></td>
-                </tr>
-                <tr aria-rowindex="19">
-                  <th>
-                    <a href="/data-management/disclosure-faq"
-                      ><b
-                        >Disclosure of Answers to Frequently Asked Questions
-                        Example</b
-                      ></a
-                    >
-                  </th>
-                  <td>
-                    <div>
-                      <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
-                      ><b>VoiceOver for macOS</b>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="status-cell">
-                      <span class="pill full-width rd">R&amp;D</span>
-                      <p class="review-text">Complete <b>Aug 28, 2025</b></p>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="phase-cell" role="list" aria-setsize="2">
-                      <span class="styled-pill full-width auto-width"
-                        ><a href="/test-review/84"
-                          ><span
-                            ><svg
-                              aria-hidden="true"
-                              focusable="false"
-                              data-prefix="fas"
-                              data-icon="circle-check"
-                              class="svg-inline--fa fa-circle-check check"
-                              role="img"
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 512 512"
-                              color="var(--positive-green)">
-                              <path
-                                fill="currentColor"
-                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
-                            ><b>V25.08.28</b></span
+                            ><b>V25.11.06</b></span
                           ></a
                         ></span
                       ><button
@@ -1922,7 +1934,7 @@
                 </tr>
                 <tr aria-rowindex="20">
                   <th>
-                    <a href="/data-management/menubar-editor"
+                    <a href="/data-management/apg/menubar-editor"
                       ><b>Editor Menubar Example</b></a
                     >
                   </th>
@@ -1976,7 +1988,7 @@
                 </tr>
                 <tr aria-rowindex="21">
                   <th>
-                    <a href="/data-management/form"><b>Form Landmark</b></a>
+                    <a href="/data-management/apg/form"><b>Form Landmark</b></a>
                   </th>
                   <td>
                     <div>
@@ -2028,7 +2040,7 @@
                 </tr>
                 <tr aria-rowindex="22">
                   <th>
-                    <a href="/data-management/slider-multithumb"
+                    <a href="/data-management/apg/slider-multithumb"
                       ><b>Horizontal Multi-Thumb Slider</b></a
                     >
                   </th>
@@ -2082,7 +2094,7 @@
                 </tr>
                 <tr aria-rowindex="23">
                   <th>
-                    <a href="/data-management/link-span-text"
+                    <a href="/data-management/apg/link-span-text"
                       ><b>Link Example 1 (span element with text content)</b></a
                     >
                   </th>
@@ -2095,13 +2107,13 @@
                   <td>
                     <div class="status-cell">
                       <span class="pill full-width rd">R&amp;D</span>
-                      <p class="review-text">Complete <b>Dec 13, 2023</b></p>
+                      <p class="review-text">Complete <b>Nov 6, 2025</b></p>
                     </div>
                   </td>
                   <td>
                     <div class="phase-cell" role="list" aria-setsize="2">
                       <span class="styled-pill full-width auto-width"
-                        ><a href="/test-review/78"
+                        ><a href="/test-review/90"
                           ><span
                             ><svg
                               aria-hidden="true"
@@ -2116,7 +2128,7 @@
                               <path
                                 fill="currentColor"
                                 d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
-                            ><b>V23.12.13</b></span
+                            ><b>V25.11.06</b></span
                           ></a
                         ></span
                       ><button
@@ -2136,7 +2148,7 @@
                 </tr>
                 <tr aria-rowindex="24">
                   <th>
-                    <a href="/data-management/link-img-alt"
+                    <a href="/data-management/apg/link-img-alt"
                       ><b>Link Example 2 (img element with alt attribute)</b></a
                     >
                   </th>
@@ -2149,7 +2161,64 @@
                   <td>
                     <div class="status-cell">
                       <span class="pill full-width rd">R&amp;D</span>
-                      <p class="review-text">Complete <b>Jan 23, 2025</b></p>
+                      <p class="review-text">Complete <b>Nov 6, 2025</b></p>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="phase-cell" role="list" aria-setsize="2">
+                      <span class="styled-pill full-width auto-width"
+                        ><a href="/test-review/89"
+                          ><span
+                            ><svg
+                              aria-hidden="true"
+                              focusable="false"
+                              data-prefix="fas"
+                              data-icon="circle-check"
+                              class="svg-inline--fa fa-circle-check check"
+                              role="img"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 512 512"
+                              color="var(--positive-green)">
+                              <path
+                                fill="currentColor"
+                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                            ><b>V25.11.06</b></span
+                          ></a
+                        ></span
+                      ><button
+                        type="button"
+                        class="advance-button btn btn-secondary">
+                        Advance to Draft
+                      </button>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="none centered absolute">Not Started</span>
+                  </td>
+                  <td>
+                    <span class="none centered absolute">Not Started</span>
+                  </td>
+                  <td><span class="none centered absolute">None Yet</span></td>
+                </tr>
+                <tr aria-rowindex="25">
+                  <th>
+                    <a href="/data-management/apg/link-css"
+                      ><b
+                        >Link Example 3 (CSS :before content property on a span
+                        element)</b
+                      ></a
+                    >
+                  </th>
+                  <td>
+                    <div>
+                      <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
+                      ><b>VoiceOver for macOS</b>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="status-cell">
+                      <span class="pill full-width rd">R&amp;D</span>
+                      <p class="review-text">Complete <b>Nov 6, 2025</b></p>
                     </div>
                   </td>
                   <td>
@@ -2170,64 +2239,7 @@
                               <path
                                 fill="currentColor"
                                 d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
-                            ><b>V25.01.23</b></span
-                          ></a
-                        ></span
-                      ><button
-                        type="button"
-                        class="advance-button btn btn-secondary">
-                        Advance to Draft
-                      </button>
-                    </div>
-                  </td>
-                  <td>
-                    <span class="none centered absolute">Not Started</span>
-                  </td>
-                  <td>
-                    <span class="none centered absolute">Not Started</span>
-                  </td>
-                  <td><span class="none centered absolute">None Yet</span></td>
-                </tr>
-                <tr aria-rowindex="25">
-                  <th>
-                    <a href="/data-management/link-css"
-                      ><b
-                        >Link Example 3 (CSS :before content property on a span
-                        element)</b
-                      ></a
-                    >
-                  </th>
-                  <td>
-                    <div>
-                      <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
-                      ><b>VoiceOver for macOS</b>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="status-cell">
-                      <span class="pill full-width rd">R&amp;D</span>
-                      <p class="review-text">Complete <b>Jan 23, 2025</b></p>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="phase-cell" role="list" aria-setsize="2">
-                      <span class="styled-pill full-width auto-width"
-                        ><a href="/test-review/87"
-                          ><span
-                            ><svg
-                              aria-hidden="true"
-                              focusable="false"
-                              data-prefix="fas"
-                              data-icon="circle-check"
-                              class="svg-inline--fa fa-circle-check check"
-                              role="img"
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 512 512"
-                              color="var(--positive-green)">
-                              <path
-                                fill="currentColor"
-                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
-                            ><b>V25.01.23</b></span
+                            ><b>V25.11.06</b></span
                           ></a
                         ></span
                       ><button
@@ -2247,7 +2259,7 @@
                 </tr>
                 <tr aria-rowindex="26">
                   <th>
-                    <a href="/data-management/main"><b>Main Landmark</b></a>
+                    <a href="/data-management/apg/main"><b>Main Landmark</b></a>
                   </th>
                   <td>
                     <div>
@@ -2299,7 +2311,7 @@
                 </tr>
                 <tr aria-rowindex="27">
                   <th>
-                    <a href="/data-management/seek-slider"
+                    <a href="/data-management/apg/seek-slider"
                       ><b>Media Seek Slider</b></a
                     >
                   </th>
@@ -2312,13 +2324,13 @@
                   <td>
                     <div class="status-cell">
                       <span class="pill full-width rd">R&amp;D</span>
-                      <p class="review-text">Complete <b>Mar 14, 2025</b></p>
+                      <p class="review-text">Complete <b>Nov 6, 2025</b></p>
                     </div>
                   </td>
                   <td>
                     <div class="phase-cell" role="list" aria-setsize="2">
                       <span class="styled-pill full-width auto-width"
-                        ><a href="/test-review/96"
+                        ><a href="/test-review/98"
                           ><span
                             ><svg
                               aria-hidden="true"
@@ -2333,7 +2345,7 @@
                               <path
                                 fill="currentColor"
                                 d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
-                            ><b>V25.03.14</b></span
+                            ><b>V25.11.06</b></span
                           ></a
                         ></span
                       ><button
@@ -2353,7 +2365,7 @@
                 </tr>
                 <tr aria-rowindex="28">
                   <th>
-                    <a href="/data-management/meter"><b>Meter</b></a>
+                    <a href="/data-management/apg/meter"><b>Meter</b></a>
                   </th>
                   <td>
                     <div>
@@ -2405,7 +2417,7 @@
                 </tr>
                 <tr aria-rowindex="29">
                   <th>
-                    <a href="/data-management/menu-button-navigation"
+                    <a href="/data-management/apg/menu-button-navigation"
                       ><b>Navigation Menu Button</b></a
                     >
                   </th>
@@ -2418,115 +2430,7 @@
                   <td>
                     <div class="status-cell">
                       <span class="pill full-width rd">R&amp;D</span>
-                      <p class="review-text">Complete <b>Feb 13, 2025</b></p>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="phase-cell" role="list" aria-setsize="2">
-                      <span class="styled-pill full-width auto-width"
-                        ><a href="/test-review/91"
-                          ><span
-                            ><svg
-                              aria-hidden="true"
-                              focusable="false"
-                              data-prefix="fas"
-                              data-icon="circle-check"
-                              class="svg-inline--fa fa-circle-check check"
-                              role="img"
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 512 512"
-                              color="var(--positive-green)">
-                              <path
-                                fill="currentColor"
-                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
-                            ><b>V25.02.13</b></span
-                          ></a
-                        ></span
-                      ><button
-                        type="button"
-                        class="advance-button btn btn-secondary">
-                        Advance to Draft
-                      </button>
-                    </div>
-                  </td>
-                  <td>
-                    <span class="none centered absolute">Not Started</span>
-                  </td>
-                  <td>
-                    <span class="none centered absolute">Not Started</span>
-                  </td>
-                  <td><span class="none centered absolute">None Yet</span></td>
-                </tr>
-                <tr aria-rowindex="30">
-                  <th>
-                    <a href="/data-management/radiogroup-roving-tabindex"
-                      ><b>Radio Group Example Using Roving tabindex</b></a
-                    >
-                  </th>
-                  <td>
-                    <div>
-                      <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
-                      ><b>VoiceOver for macOS</b>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="status-cell">
-                      <span class="pill full-width rd">R&amp;D</span>
-                      <p class="review-text">Complete <b>Feb 12, 2025</b></p>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="phase-cell" role="list" aria-setsize="2">
-                      <span class="styled-pill full-width auto-width"
-                        ><a href="/test-review/94"
-                          ><span
-                            ><svg
-                              aria-hidden="true"
-                              focusable="false"
-                              data-prefix="fas"
-                              data-icon="circle-check"
-                              class="svg-inline--fa fa-circle-check check"
-                              role="img"
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 512 512"
-                              color="var(--positive-green)">
-                              <path
-                                fill="currentColor"
-                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
-                            ><b>V25.02.12</b></span
-                          ></a
-                        ></span
-                      ><button
-                        type="button"
-                        class="advance-button btn btn-secondary">
-                        Advance to Draft
-                      </button>
-                    </div>
-                  </td>
-                  <td>
-                    <span class="none centered absolute">Not Started</span>
-                  </td>
-                  <td>
-                    <span class="none centered absolute">Not Started</span>
-                  </td>
-                  <td><span class="none centered absolute">None Yet</span></td>
-                </tr>
-                <tr aria-rowindex="31">
-                  <th>
-                    <a href="/data-management/radiogroup-aria-activedescendant"
-                      ><b>Radio Group Example Using aria-activedescendant</b></a
-                    >
-                  </th>
-                  <td>
-                    <div>
-                      <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
-                      ><b>VoiceOver for macOS</b>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="status-cell">
-                      <span class="pill full-width rd">R&amp;D</span>
-                      <p class="review-text">Complete <b>Feb 12, 2025</b></p>
+                      <p class="review-text">Complete <b>Nov 6, 2025</b></p>
                     </div>
                   </td>
                   <td>
@@ -2547,7 +2451,7 @@
                               <path
                                 fill="currentColor"
                                 d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
-                            ><b>V25.02.12</b></span
+                            ><b>V25.11.06</b></span
                           ></a
                         ></span
                       ><button
@@ -2565,10 +2469,10 @@
                   </td>
                   <td><span class="none centered absolute">None Yet</span></td>
                 </tr>
-                <tr aria-rowindex="32">
+                <tr aria-rowindex="30">
                   <th>
-                    <a href="/data-management/rating-radio-group"
-                      ><b>Rating Radio Group</b></a
+                    <a href="/data-management/apg/radiogroup-roving-tabindex"
+                      ><b>Radio Group Example Using Roving tabindex</b></a
                     >
                   </th>
                   <td>
@@ -2580,7 +2484,62 @@
                   <td>
                     <div class="status-cell">
                       <span class="pill full-width rd">R&amp;D</span>
-                      <p class="review-text">Complete <b>Apr 22, 2025</b></p>
+                      <p class="review-text">Complete <b>Nov 6, 2025</b></p>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="phase-cell" role="list" aria-setsize="2">
+                      <span class="styled-pill full-width auto-width"
+                        ><a href="/test-review/96"
+                          ><span
+                            ><svg
+                              aria-hidden="true"
+                              focusable="false"
+                              data-prefix="fas"
+                              data-icon="circle-check"
+                              class="svg-inline--fa fa-circle-check check"
+                              role="img"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 512 512"
+                              color="var(--positive-green)">
+                              <path
+                                fill="currentColor"
+                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                            ><b>V25.11.06</b></span
+                          ></a
+                        ></span
+                      ><button
+                        type="button"
+                        class="advance-button btn btn-secondary">
+                        Advance to Draft
+                      </button>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="none centered absolute">Not Started</span>
+                  </td>
+                  <td>
+                    <span class="none centered absolute">Not Started</span>
+                  </td>
+                  <td><span class="none centered absolute">None Yet</span></td>
+                </tr>
+                <tr aria-rowindex="31">
+                  <th>
+                    <a
+                      href="/data-management/apg/radiogroup-aria-activedescendant"
+                      ><b>Radio Group Example Using aria-activedescendant</b></a
+                    >
+                  </th>
+                  <td>
+                    <div>
+                      <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
+                      ><b>VoiceOver for macOS</b>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="status-cell">
+                      <span class="pill full-width rd">R&amp;D</span>
+                      <p class="review-text">Complete <b>Nov 6, 2025</b></p>
                     </div>
                   </td>
                   <td>
@@ -2601,7 +2560,61 @@
                               <path
                                 fill="currentColor"
                                 d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
-                            ><b>V25.04.22</b></span
+                            ><b>V25.11.06</b></span
+                          ></a
+                        ></span
+                      ><button
+                        type="button"
+                        class="advance-button btn btn-secondary">
+                        Advance to Draft
+                      </button>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="none centered absolute">Not Started</span>
+                  </td>
+                  <td>
+                    <span class="none centered absolute">Not Started</span>
+                  </td>
+                  <td><span class="none centered absolute">None Yet</span></td>
+                </tr>
+                <tr aria-rowindex="32">
+                  <th>
+                    <a href="/data-management/apg/rating-radio-group"
+                      ><b>Rating Radio Group</b></a
+                    >
+                  </th>
+                  <td>
+                    <div>
+                      <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
+                      ><b>VoiceOver for macOS</b>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="status-cell">
+                      <span class="pill full-width rd">R&amp;D</span>
+                      <p class="review-text">Complete <b>Nov 6, 2025</b></p>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="phase-cell" role="list" aria-setsize="2">
+                      <span class="styled-pill full-width auto-width"
+                        ><a href="/test-review/97"
+                          ><span
+                            ><svg
+                              aria-hidden="true"
+                              focusable="false"
+                              data-prefix="fas"
+                              data-icon="circle-check"
+                              class="svg-inline--fa fa-circle-check check"
+                              role="img"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 512 512"
+                              color="var(--positive-green)">
+                              <path
+                                fill="currentColor"
+                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                            ><b>V25.11.06</b></span
                           ></a
                         ></span
                       ><button
@@ -2621,7 +2634,7 @@
                 </tr>
                 <tr aria-rowindex="33">
                   <th>
-                    <a href="/data-management/rating-slider"
+                    <a href="/data-management/apg/rating-slider"
                       ><b>Rating Slider</b></a
                     >
                   </th>
@@ -2675,60 +2688,8 @@
                 </tr>
                 <tr aria-rowindex="34">
                   <th>
-                    <a href="/data-management/switch"><b>Switch Example</b></a>
-                  </th>
-                  <td>
-                    <div>
-                      <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
-                      ><b>VoiceOver for macOS</b>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="status-cell">
-                      <span class="pill full-width rd">R&amp;D</span>
-                      <p class="review-text">Complete <b>Oct 1, 2025</b></p>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="phase-cell" role="list" aria-setsize="2">
-                      <span class="styled-pill full-width auto-width"
-                        ><a href="/test-review/97"
-                          ><span
-                            ><svg
-                              aria-hidden="true"
-                              focusable="false"
-                              data-prefix="fas"
-                              data-icon="circle-check"
-                              class="svg-inline--fa fa-circle-check check"
-                              role="img"
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 512 512"
-                              color="var(--positive-green)">
-                              <path
-                                fill="currentColor"
-                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
-                            ><b>V25.10.01</b></span
-                          ></a
-                        ></span
-                      ><button
-                        type="button"
-                        class="advance-button btn btn-secondary">
-                        Advance to Draft
-                      </button>
-                    </div>
-                  </td>
-                  <td>
-                    <span class="none centered absolute">Not Started</span>
-                  </td>
-                  <td>
-                    <span class="none centered absolute">Not Started</span>
-                  </td>
-                  <td><span class="none centered absolute">None Yet</span></td>
-                </tr>
-                <tr aria-rowindex="35">
-                  <th>
-                    <a href="/data-management/switch-button"
-                      ><b>Switch Example Using HTML Button</b></a
+                    <a href="/data-management/apg/switch"
+                      ><b>Switch Example</b></a
                     >
                   </th>
                   <td>
@@ -2740,61 +2701,7 @@
                   <td>
                     <div class="status-cell">
                       <span class="pill full-width rd">R&amp;D</span>
-                      <p class="review-text">Complete <b>Oct 1, 2025</b></p>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="phase-cell" role="list" aria-setsize="2">
-                      <span class="styled-pill full-width auto-width"
-                        ><a href="/test-review/98"
-                          ><span
-                            ><svg
-                              aria-hidden="true"
-                              focusable="false"
-                              data-prefix="fas"
-                              data-icon="circle-check"
-                              class="svg-inline--fa fa-circle-check check"
-                              role="img"
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 512 512"
-                              color="var(--positive-green)">
-                              <path
-                                fill="currentColor"
-                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
-                            ><b>V25.10.01</b></span
-                          ></a
-                        ></span
-                      ><button
-                        type="button"
-                        class="advance-button btn btn-secondary">
-                        Advance to Draft
-                      </button>
-                    </div>
-                  </td>
-                  <td>
-                    <span class="none centered absolute">Not Started</span>
-                  </td>
-                  <td>
-                    <span class="none centered absolute">Not Started</span>
-                  </td>
-                  <td><span class="none centered absolute">None Yet</span></td>
-                </tr>
-                <tr aria-rowindex="36">
-                  <th>
-                    <a href="/data-management/switch-checkbox"
-                      ><b>Switch Example Using HTML Checkbox Input</b></a
-                    >
-                  </th>
-                  <td>
-                    <div>
-                      <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
-                      ><b>VoiceOver for macOS</b>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="status-cell">
-                      <span class="pill full-width rd">R&amp;D</span>
-                      <p class="review-text">Complete <b>Oct 6, 2025</b></p>
+                      <p class="review-text">Complete <b>Nov 6, 2025</b></p>
                     </div>
                   </td>
                   <td>
@@ -2815,7 +2722,7 @@
                               <path
                                 fill="currentColor"
                                 d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
-                            ><b>V25.10.06</b></span
+                            ><b>V25.11.06</b></span
                           ></a
                         ></span
                       ><button
@@ -2833,10 +2740,10 @@
                   </td>
                   <td><span class="none centered absolute">None Yet</span></td>
                 </tr>
-                <tr aria-rowindex="37">
+                <tr aria-rowindex="35">
                   <th>
-                    <a href="/data-management/tabs-automatic-activation"
-                      ><b>Tabs with Automatic Activation</b></a
+                    <a href="/data-management/apg/switch-button"
+                      ><b>Switch Example Using HTML Button</b></a
                     >
                   </th>
                   <td>
@@ -2848,7 +2755,7 @@
                   <td>
                     <div class="status-cell">
                       <span class="pill full-width rd">R&amp;D</span>
-                      <p class="review-text">Complete <b>Aug 21, 2025</b></p>
+                      <p class="review-text">Complete <b>Nov 6, 2025</b></p>
                     </div>
                   </td>
                   <td>
@@ -2869,7 +2776,7 @@
                               <path
                                 fill="currentColor"
                                 d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
-                            ><b>V25.08.21</b></span
+                            ><b>V25.11.06</b></span
                           ></a
                         ></span
                       ><button
@@ -2887,10 +2794,10 @@
                   </td>
                   <td><span class="none centered absolute">None Yet</span></td>
                 </tr>
-                <tr aria-rowindex="38">
+                <tr aria-rowindex="36">
                   <th>
-                    <a href="/data-management/tabs-manual-activation"
-                      ><b>Tabs with Manual Activation</b></a
+                    <a href="/data-management/apg/switch-checkbox"
+                      ><b>Switch Example Using HTML Checkbox Input</b></a
                     >
                   </th>
                   <td>
@@ -2902,7 +2809,7 @@
                   <td>
                     <div class="status-cell">
                       <span class="pill full-width rd">R&amp;D</span>
-                      <p class="review-text">Complete <b>Oct 1, 2025</b></p>
+                      <p class="review-text">Complete <b>Nov 6, 2025</b></p>
                     </div>
                   </td>
                   <td>
@@ -2923,7 +2830,7 @@
                               <path
                                 fill="currentColor"
                                 d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
-                            ><b>V25.10.01</b></span
+                            ><b>V25.11.06</b></span
                           ></a
                         ></span
                       ><button
@@ -2941,10 +2848,10 @@
                   </td>
                   <td><span class="none centered absolute">None Yet</span></td>
                 </tr>
-                <tr aria-rowindex="39">
+                <tr aria-rowindex="37">
                   <th>
-                    <a href="/data-management/vertical-temperature-slider"
-                      ><b>Vertical Temperature Slider</b></a
+                    <a href="/data-management/apg/tabs-automatic-activation"
+                      ><b>Tabs with Automatic Activation</b></a
                     >
                   </th>
                   <td>
@@ -2956,7 +2863,61 @@
                   <td>
                     <div class="status-cell">
                       <span class="pill full-width rd">R&amp;D</span>
-                      <p class="review-text">Complete <b>Jul 24, 2025</b></p>
+                      <p class="review-text">Complete <b>Nov 6, 2025</b></p>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="phase-cell" role="list" aria-setsize="2">
+                      <span class="styled-pill full-width auto-width"
+                        ><a href="/test-review/102"
+                          ><span
+                            ><svg
+                              aria-hidden="true"
+                              focusable="false"
+                              data-prefix="fas"
+                              data-icon="circle-check"
+                              class="svg-inline--fa fa-circle-check check"
+                              role="img"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 512 512"
+                              color="var(--positive-green)">
+                              <path
+                                fill="currentColor"
+                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                            ><b>V25.11.06</b></span
+                          ></a
+                        ></span
+                      ><button
+                        type="button"
+                        class="advance-button btn btn-secondary">
+                        Advance to Draft
+                      </button>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="none centered absolute">Not Started</span>
+                  </td>
+                  <td>
+                    <span class="none centered absolute">Not Started</span>
+                  </td>
+                  <td><span class="none centered absolute">None Yet</span></td>
+                </tr>
+                <tr aria-rowindex="38">
+                  <th>
+                    <a href="/data-management/apg/tabs-manual-activation"
+                      ><b>Tabs with Manual Activation</b></a
+                    >
+                  </th>
+                  <td>
+                    <div>
+                      <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
+                      ><b>VoiceOver for macOS</b>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="status-cell">
+                      <span class="pill full-width rd">R&amp;D</span>
+                      <p class="review-text">Complete <b>Nov 6, 2025</b></p>
                     </div>
                   </td>
                   <td>
@@ -2977,7 +2938,115 @@
                               <path
                                 fill="currentColor"
                                 d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
-                            ><b>V25.07.24</b></span
+                            ><b>V25.11.06</b></span
+                          ></a
+                        ></span
+                      ><button
+                        type="button"
+                        class="advance-button btn btn-secondary">
+                        Advance to Draft
+                      </button>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="none centered absolute">Not Started</span>
+                  </td>
+                  <td>
+                    <span class="none centered absolute">Not Started</span>
+                  </td>
+                  <td><span class="none centered absolute">None Yet</span></td>
+                </tr>
+                <tr aria-rowindex="39">
+                  <th>
+                    <a href="/data-management/apg/vertical-temperature-slider"
+                      ><b>Vertical Temperature Slider</b></a
+                    >
+                  </th>
+                  <td>
+                    <div>
+                      <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
+                      ><b>VoiceOver for macOS</b>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="status-cell">
+                      <span class="pill full-width rd">R&amp;D</span>
+                      <p class="review-text">Complete <b>Nov 6, 2025</b></p>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="phase-cell" role="list" aria-setsize="2">
+                      <span class="styled-pill full-width auto-width"
+                        ><a href="/test-review/105"
+                          ><span
+                            ><svg
+                              aria-hidden="true"
+                              focusable="false"
+                              data-prefix="fas"
+                              data-icon="circle-check"
+                              class="svg-inline--fa fa-circle-check check"
+                              role="img"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 512 512"
+                              color="var(--positive-green)">
+                              <path
+                                fill="currentColor"
+                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                            ><b>V25.11.06</b></span
+                          ></a
+                        ></span
+                      ><button
+                        type="button"
+                        class="advance-button btn btn-secondary">
+                        Advance to Draft
+                      </button>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="none centered absolute">Not Started</span>
+                  </td>
+                  <td>
+                    <span class="none centered absolute">Not Started</span>
+                  </td>
+                  <td><span class="none centered absolute">None Yet</span></td>
+                </tr>
+                <tr aria-rowindex="40">
+                  <th>
+                    <a href="/data-management/aria/aria-required-text-input"
+                      ><b>aria-required on a Text Input</b></a
+                    >
+                  </th>
+                  <td>
+                    <div>
+                      <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
+                      ><b>VoiceOver for macOS</b>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="status-cell">
+                      <span class="pill full-width rd">R&amp;D</span>
+                      <p class="review-text">Complete <b>Nov 10, 2025</b></p>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="phase-cell" role="list" aria-setsize="2">
+                      <span class="styled-pill full-width auto-width"
+                        ><a href="/test-review/106"
+                          ><span
+                            ><svg
+                              aria-hidden="true"
+                              focusable="false"
+                              data-prefix="fas"
+                              data-icon="circle-check"
+                              class="svg-inline--fa fa-circle-check check"
+                              role="img"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 512 512"
+                              color="var(--positive-green)">
+                              <path
+                                fill="currentColor"
+                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                            ><b>V25.11.10</b></span
                           ></a
                         ></span
                       ><button
