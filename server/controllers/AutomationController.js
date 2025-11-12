@@ -12,6 +12,9 @@ const saveTestResultCommon = require('../resolvers/TestResultOperations/saveTest
 const {
   findOrCreateAtVersion
 } = require('../models/services/AtVersionService');
+const {
+  promoteAutomationSupportedVersion
+} = require('../models/services/AtVersionService');
 const { getAts } = require('../models/services/AtService');
 const {
   getBrowsers,
@@ -417,6 +420,14 @@ const updateJobResults = async (req, res) => {
           transaction
         })
       ]);
+
+      const isVoiceOver = at.id === 3;
+      if (isVoiceOver) {
+        await promoteAutomationSupportedVersion({
+          atVersionId: atVersion.id,
+          transaction
+        });
+      }
 
       const processedResponses =
         convertEmptyStringsToNoOutputMessages(responses);
