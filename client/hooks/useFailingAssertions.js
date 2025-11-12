@@ -3,6 +3,36 @@ import { NEGATIVE_SIDE_EFFECT_ASSERTION_PHRASES } from '../utils/constants';
 import getAssertionPhraseOrText from '../utils/getAssertionPhraseOrText';
 import summarizeScenario from '../utils/summarizeScenario';
 
+/**
+ * @typedef {Object} FailingAssertion
+ * @property {string} testResultId - Test result ID
+ * @property {number} testIndex - Test index
+ * @property {string} testTitle - Test title
+ * @property {string} scenarioCommands - Scenario commands
+ * @property {string} commandId - Command ID
+ * @property {'MUST'|'SHOULD'|'N/A'} priority - Priority level
+ * @property {string} assertionText - The assertion phrase or text
+ * @property {string} output - Scenario output or negative side effect text
+ * @property {string} [assertionId] - The assertion ID (for regular assertions)
+ * @property {Array} assertionAtBugs - Array of bugs filtered by commandId
+ * @property {boolean} [isNegativeSideEffect] - True if this is a negative side effect
+ * @property {string} [negativeSideEffectId] - Negative side effect ID
+ * @property {string} [negativeSideEffectImpact] - Impact level
+ * @property {string} [negativeSideEffectDetails] - Negative side effect details
+ * @property {number} [uniqueCommandsCount] - Number of unique command sequences with failures (added to array)
+ * @property {number} [uniqueAssertionStatementsCount] - Number of unique assertion statements (added to array)
+ * @property {number} [totalAssertionsCount] - Total number of assertions including implicit ones (added to array)
+ */
+
+/**
+ * Hook to extract and process all failing assertions from a test plan report's
+ * finalized test results. Includes both failed MUST/SHOULD assertions and negative
+ * side effects. Filters bugs by commandId for each assertion. Adds statistics
+ * properties to the returned array.
+ *
+ * @param {Object} testPlanReport - The test plan report object containing finalizedTestResults
+ * @returns {Array<FailingAssertion>} Array of failing assertion objects
+ */
 export const useFailingAssertions = testPlanReport => {
   return useMemo(() => {
     if (!testPlanReport?.finalizedTestResults) {

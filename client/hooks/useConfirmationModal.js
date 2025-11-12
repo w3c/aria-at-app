@@ -4,6 +4,14 @@ import useForceUpdate from './useForceUpdate';
 
 const ConfirmationContext = createContext();
 
+/**
+ * Provider component for confirmation modal context. Manages modal content state
+ * and provides show/hide functions to child components.
+ *
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} props.children - Child components
+ * @returns {React.ReactElement} Provider component
+ */
 const ConfirmationModalProvider = ({ children }) => {
   const forceUpdate = useForceUpdate();
   const modalContent = useRef();
@@ -32,6 +40,18 @@ ConfirmationModalProvider.propTypes = {
   children: PropTypes.node.isRequired
 };
 
+/**
+ * @typedef {Object} UseConfirmationModalReturn
+ * @property {Function} showConfirmationModal - Function to show the modal (modalContent) => void
+ * @property {Function} hideConfirmationModal - Async function to hide the modal () => Promise<void>
+ */
+
+/**
+ * Hook to access the confirmation modal context. Provides functions to show and hide
+ * a confirmation modal. Must be used within a ConfirmationModalProvider.
+ *
+ * @returns {UseConfirmationModalReturn}
+ */
 const useConfirmationModal = () => {
   const { showConfirmationModal, hideConfirmationModal } =
     useContext(ConfirmationContext);
