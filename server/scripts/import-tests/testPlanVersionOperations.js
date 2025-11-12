@@ -112,39 +112,79 @@ const buildTestsAndCreateTestPlanVersions = async (
     await updateAtsJson({ ats, supportAts: support.ats });
   }
 
-  for (const directory of fse.readdirSync(localBuiltTestsDirectory)) {
-    if (directory === 'resources') continue;
+  // https://github.com/w3c/aria-at/commit/9d73d6bb274b3fe75b9a8825e020c0546a33a162
+  // This is the date of the last commit before the build folder removal.
+  // Meant to support backward compatability until the existing tests can
+  // be updated to the current structure
+  const buildRemovalDate = new Date('2022-03-10 18:08:36.000000 +00:00');
+  const useBuildInAppAppUrlPath =
+    gitCommitDate.getTime() <= buildRemovalDate.getTime();
 
-    const builtDirectoryPath = path.join(localBuiltTestsDirectory, directory);
-    if (!fse.statSync(builtDirectoryPath).isDirectory()) continue;
-    const sourceDirectoryPath = path.join(testsDirectory, directory);
-
-    // https://github.com/w3c/aria-at/commit/9d73d6bb274b3fe75b9a8825e020c0546a33a162
-    // This is the date of the last commit before the build folder removal.
-    // Meant to support backward compatability until the existing tests can
-    // be updated to the current structure
-    const buildRemovalDate = new Date('2022-03-10 18:08:36.000000 +00:00');
-    const useBuildInAppAppUrlPath =
-      gitCommitDate.getTime() <= buildRemovalDate.getTime();
+  /**
+   * Recursively processes test directories, checking for references.csv
+   * to determine if a directory is ready to be processed.
+   * @param {string} relativeDirectoryPath - Relative path from tests root (e.g., "apg/alert")
+   * @returns {Promise<void>}
+   */
+  const processTestDirectoriesRecursively = async relativeDirectoryPath => {
+    const builtDirectoryPath = relativeDirectoryPath
+      ? path.join(localBuiltTestsDirectory, relativeDirectoryPath)
+      : localBuiltTestsDirectory;
+    const sourceDirectoryPath = relativeDirectoryPath
+      ? path.join(testsDirectory, relativeDirectoryPath)
+      : testsDirectory;
 
     if (
       !(
         fse.existsSync(sourceDirectoryPath) &&
+        fse.existsSync(builtDirectoryPath) &&
         fse.statSync(builtDirectoryPath).isDirectory()
       )
     ) {
-      continue;
+      return;
     }
 
-    await processTestPlanVersion({
-      directory,
-      builtDirectoryPath,
+    // Check if this directory has a references.csv (indicates it's a test directory)
+    const referencesCsvPath = path.join(
       sourceDirectoryPath,
-      useBuildInAppAppUrlPath,
-      ats,
-      transaction
-    });
-  }
+      'data',
+      'references.csv'
+    );
+
+    if (fse.existsSync(referencesCsvPath)) {
+      // This is a test directory, process it
+      await processTestPlanVersion({
+        // The expectation going forward is that tests will be within
+        // subfolders coming from aria-at
+        // If none exists, then most likely this is an older test which came
+        // directly from the APG
+        directory: relativeDirectoryPath.includes('/')
+          ? relativeDirectoryPath
+          : `apg/${relativeDirectoryPath}`,
+        builtDirectoryPath,
+        sourceDirectoryPath,
+        useBuildInAppAppUrlPath,
+        ats,
+        transaction
+      });
+    } else {
+      // This is a subfolder, recursively search deeper
+      const entries = fse.readdirSync(builtDirectoryPath);
+      for (const entry of entries) {
+        if (entry === 'resources') continue;
+        const entryBuiltPath = path.join(builtDirectoryPath, entry);
+        if (!fse.statSync(entryBuiltPath).isDirectory()) continue;
+
+        const nextRelativePath = relativeDirectoryPath
+          ? path.join(relativeDirectoryPath, entry)
+          : entry;
+        await processTestDirectoriesRecursively(nextRelativePath);
+      }
+    }
+  };
+
+  // Start processing from the root of the tests directory
+  await processTestDirectoriesRecursively('');
 
   // To ensure build folder is clean when multiple commits are being processed
   // to prevent `EPERM` errors
@@ -363,21 +403,25 @@ async function createAssertionsForTestPlanVersion({
  * Imports the harness files from the test directory to the client resources.
  */
 const importHarness = () => {
-  const sourceFolder = path.resolve(`${testsDirectory}/resources`);
-  const targetFolder = path.resolve(
+  let sourceFolder = path.resolve(`${gitCloneDirectory}/resources`);
+  sourceFolder = fse.existsSync(sourceFolder)
+    ? sourceFolder
+    : path.resolve(`${testsDirectory}/resources`);
+  const targetClientFolder = path.resolve(
     __dirname,
     '../../../',
     'client',
     'resources'
   );
+  const targetServerFolder = path.resolve(__dirname, '../../', 'resources');
   console.info(
-    `Updating harness directory, copying from ${sourceFolder} to ${targetFolder} ...`
+    `Updating harness directory, copying from ${sourceFolder} to ${targetClientFolder} ...`
   );
-  fse.rmSync(targetFolder, { recursive: true, force: true });
+  fse.rmSync(targetClientFolder, { recursive: true, force: true });
 
   // Copy source folder
   console.info('Importing latest harness files ...');
-  fse.copySync(sourceFolder, targetFolder, {
+  fse.copySync(sourceFolder, targetClientFolder, {
     filter: src => {
       if (fse.lstatSync(src).isDirectory()) {
         return true;
@@ -394,13 +438,23 @@ const importHarness = () => {
   if (fse.existsSync(`${testsDirectory}/${commandsJson}`)) {
     fse.copyFileSync(
       `${testsDirectory}/${commandsJson}`,
-      `${targetFolder}/${commandsJson}`
+      `${targetClientFolder}/${commandsJson}`
     );
   }
-  fse.copyFileSync(
-    `${testsDirectory}/${supportJson}`,
-    `${targetFolder}/${supportJson}`
-  );
+  if (fse.existsSync(`${testsDirectory}/${supportJson}`)) {
+    fse.copyFileSync(
+      `${testsDirectory}/${supportJson}`,
+      `${targetClientFolder}/${supportJson}`
+    );
+
+    console.info(
+      `Updating server/resources/support.json, copying from ${sourceFolder} to ${targetServerFolder} ...`
+    );
+    fse.copyFileSync(
+      `${testsDirectory}/${supportJson}`,
+      `${targetServerFolder}/${supportJson}`
+    );
+  }
   console.info('Harness files update complete.');
 };
 
@@ -464,19 +518,26 @@ const flattenObject = (obj, parentKey = '') => {
  * @returns {Promise<Object>} An object containing the parsed support data.
  */
 const updateJsons = async () => {
-  // Commands path info for v1 format
-  const keysMjsPath = pathToFileURL(
-    path.join(testsDirectory, 'resources', 'keys.mjs')
-  );
-  const commands = Object.entries(await import(keysMjsPath)).map(
-    ([id, text]) => ({ id, text })
-  );
+  try {
+    // Commands path info for v1 format
+    let keysMjsPath = pathToFileURL(
+      path.join(gitCloneDirectory, 'resources', 'keys.mjs')
+    );
+    keysMjsPath = fse.existsSync(keysMjsPath)
+      ? keysMjsPath
+      : pathToFileURL(path.join(testsDirectory, 'resources', 'keys.mjs'));
+    const commands = Object.entries(await import(keysMjsPath)).map(
+      ([id, text]) => ({ id, text })
+    );
 
-  // Write commands for v1 format
-  await fse.writeFile(
-    path.resolve(__dirname, '../../resources/commandsV1.json'),
-    JSON.stringify(commands, null, 2) + '\n'
-  );
+    // Write commands for v1 format
+    await fse.writeFile(
+      path.resolve(__dirname, '../../resources/commandsV1.json'),
+      JSON.stringify(commands, null, 2) + '\n'
+    );
+  } catch (error) {
+    console.error('Unable to process keys.mjs for v1 test format');
+  }
 
   try {
     // Commands path info for v2 format
@@ -492,15 +553,27 @@ const updateJsons = async () => {
       JSON.stringify(flattenObject(commandsV2Parsed), null, 2) + '\n'
     );
   } catch (error) {
-    console.error('commands.json for v2 test format may not exist');
+    console.error(
+      'Unable to process commands.json for v2 test format (file may not exist for aria-at commit)'
+    );
   }
 
-  // Path info for support.json
-  const supportPath = pathToFileURL(path.join(testsDirectory, 'support.json'));
-  const supportPathString = fse.readFileSync(supportPath, 'utf8');
-  const supportParsed = JSON.parse(supportPathString);
+  try {
+    // Path info for support.json
+    const supportPath = pathToFileURL(
+      path.join(testsDirectory, 'support.json')
+    );
+    const supportPathString = fse.readFileSync(supportPath, 'utf8');
+    const supportParsed = JSON.parse(supportPathString);
 
-  return { support: supportParsed };
+    return { support: supportParsed };
+  } catch (error) {
+    throw new Error(
+      `Unable to process support.json from ${pathToFileURL(
+        path.join(testsDirectory, 'support.json')
+      )}`
+    );
+  }
 };
 
 /**

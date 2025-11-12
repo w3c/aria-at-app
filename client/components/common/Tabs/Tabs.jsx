@@ -7,6 +7,7 @@ const Tabs = ({ tabs, onSelectedTabChange, basePath }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const tabRefs = useRef([]);
+  const focusRef = useRef(null);
 
   const getTabIndexFromPath = () => {
     if (!basePath) return 0;
@@ -27,6 +28,23 @@ const Tabs = ({ tabs, onSelectedTabChange, basePath }) => {
   }, [tabs]);
 
   useEffect(() => {
+    const targetIndex = focusRef.current;
+    if (
+      targetIndex !== null &&
+      targetIndex === selectedTab &&
+      tabRefs.current[targetIndex]
+    ) {
+      // setTimeout to ensure focus happens after DOM updates and path changes
+      setTimeout(() => {
+        if (tabRefs.current[targetIndex]) {
+          tabRefs.current[targetIndex].focus();
+        }
+        focusRef.current = null;
+      }, 0);
+    }
+  }, [selectedTab, location.pathname]);
+
+  useEffect(() => {
     if (!basePath) return;
 
     const pathSegments = location.pathname.split('/').filter(Boolean);
@@ -45,7 +63,9 @@ const Tabs = ({ tabs, onSelectedTabChange, basePath }) => {
     }
 
     const pathIndex = getTabIndexFromPath();
-    if (pathIndex !== selectedTab) {
+    // Don't update selectedTab if we're in the middle of a programmatic nav
+    // (indicated by focusTargetRef being set)
+    if (pathIndex !== selectedTab && focusRef.current === null) {
       setSelectedTab(pathIndex);
     }
   }, [location.pathname, tabs, basePath, selectedTab, navigate]);
@@ -92,8 +112,8 @@ const Tabs = ({ tabs, onSelectedTabChange, basePath }) => {
     }
 
     event.preventDefault();
+    focusRef.current = newIndex;
     updateSelectedTab(newIndex);
-    tabRefs.current[newIndex]?.focus();
   };
 
   return (

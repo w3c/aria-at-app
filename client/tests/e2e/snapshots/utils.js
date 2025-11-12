@@ -12,7 +12,7 @@ const snapshotRoutes = [
   { route: '/test-plan-report/1' },
   { route: '/test-review/8' },
   { route: '/run/2' },
-  { route: '/data-management/meter' },
+  { route: '/data-management/apg/meter' },
   { route: '/candidate-test-plan/24/1' },
   { route: '/candidate-test-plan/24/1#summary-failures' },
   { route: '/test-queue/2/conflicts' },

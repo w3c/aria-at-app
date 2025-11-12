@@ -1,3 +1,33 @@
+### [1.25.2](https://github.com/w3c/aria-at-app/compare/v1.25.1...v1.25.2) (2025-11-10)
+
+
+### Bug Fixes
+
+* Support older imported TestPlanVersions in automation ([#1634](https://github.com/w3c/aria-at-app/issues/1634)) ([77ba1d4](https://github.com/w3c/aria-at-app/commit/77ba1d452c8ee396c8188d5cef7b8c54e2b801bf))
+
+### [1.25.1](https://github.com/w3c/aria-at-app/compare/v1.25.0...v1.25.1) (2025-11-07)
+
+
+### Bug Fixes
+
+* Tabs component loses focus to tab when programmatically navigating ([#1630](https://github.com/w3c/aria-at-app/issues/1630)) ([35ad3e2](https://github.com/w3c/aria-at-app/commit/35ad3e2a6bfbd2035319b3a108237aca7feaf89e))
+* Update path to aria-at test page for reports pages and issues creation ([#1629](https://github.com/w3c/aria-at-app/issues/1629)) ([f564ada](https://github.com/w3c/aria-at-app/commit/f564adafcc9c11dba1b83ac5d41c091d0b93b7b4))
+
+## [1.25.0](https://github.com/w3c/aria-at-app/compare/v1.24.0...v1.25.0) (2025-11-06)
+
+
+### Features
+
+* open new tab, close tab and return to open queue on save ([#1605](https://github.com/w3c/aria-at-app/issues/1605)) ([ed52cfe](https://github.com/w3c/aria-at-app/commit/ed52cfe4c438c0d85ac1f27c379b7e63e5650636))
+* Support for subfolders in `/aria-at/tests/*` ([#1613](https://github.com/w3c/aria-at-app/issues/1613)) ([849301d](https://github.com/w3c/aria-at-app/commit/849301d58ad6f800eeba71427f5c5725b9147f41))
+
+
+### Bug Fixes
+
+* Consistent column order for ARIA and HTML Features tabs ([#1620](https://github.com/w3c/aria-at-app/issues/1620)) ([eabc6e0](https://github.com/w3c/aria-at-app/commit/eabc6e04aa250e25e18f03726a8d2232161c1190))
+* Prefer "No Data" instead of "None" on reports pages ([#1622](https://github.com/w3c/aria-at-app/issues/1622)) ([9e89b8a](https://github.com/w3c/aria-at-app/commit/9e89b8ad228ea96cf11422a13ddf254c77f5cf3a))
+* Support dynamic renames of `aria-at/support.json/references` properties ([#1617](https://github.com/w3c/aria-at-app/issues/1617)) ([f5d92fe](https://github.com/w3c/aria-at-app/commit/f5d92fe3fc9d1692af0e3ec5ec86ca9587980696)), closes [#1618](https://github.com/w3c/aria-at-app/issues/1618)
+
 ## [1.24.0](https://github.com/w3c/aria-at-app/compare/v1.23.0...v1.24.0) (2025-11-04)
 
 

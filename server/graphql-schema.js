@@ -700,8 +700,14 @@ const graphqlSchema = gql`
     """
     The value of the reference. This could be link, an identifier such as an
     email or just text.
+    It's returned mutated according to these reference calculations:
+    https://github.com/w3c/aria-at/wiki/Test-Format-Definition-V2#reference-link-calculation
     """
     value: String!
+    """
+    The non-mutated value.
+    """
+    rawValue: String!
     """
     The type of the reference, such as "htmlAam", "aria", "metadata", etc.
     """
@@ -709,8 +715,14 @@ const graphqlSchema = gql`
     """
     The link text of the reference if value is, or will be transformed into a
     link.
+    It's returned mutated according to these reference calculations:
+    https://github.com/w3c/aria-at/wiki/Test-Format-Definition-V2#reference-link-calculation
     """
     linkText: String
+    """
+    The non-mutated linkText.
+    """
+    rawLinkText: String
   }
 
   """
@@ -1723,6 +1735,7 @@ const graphqlSchema = gql`
     """
     ariaHtmlFeatureDetailReport(
       refId: String!
+      refType: String
       atId: ID!
       browserId: ID!
     ): ARIAHTMLFeatureDetailReport
@@ -2096,7 +2109,9 @@ const graphqlSchema = gql`
     refId: String!
     type: String!
     linkText: String!
+    rawLinkText: String!
     value: String!
+    rawValue: String!
     total: Int!
     passed: Int!
     failed: Int!

@@ -102,7 +102,7 @@ const downloadARIAHtmlFeaturesCSV = async (req, res, next) => {
 
 const downloadARIAHtmlFeaturesDetailsCSV = async (req, res, next) => {
   try {
-    const { at, browser, refId } = req.query;
+    const { at, browser, refId, refType } = req.query;
 
     if (!refId) {
       return res.status(400).json({
@@ -136,7 +136,8 @@ const downloadARIAHtmlFeaturesDetailsCSV = async (req, res, next) => {
           populatedTestPlanReport,
           report.id,
           finalizedTestResults,
-          refId
+          refId,
+          refType
         );
 
         allRows.push(...extractedRows);

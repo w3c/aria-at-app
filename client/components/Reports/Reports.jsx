@@ -45,7 +45,7 @@ const Reports = () => {
         <KeyMetricsBanner />
         <section className={clsx(reportsStyles.contentSection)}>
           <h1>Assistive Technology Interoperability Reports</h1>
-          <p>Loading...</p>
+          <p className="loading">Loading ...</p>
         </section>
       </Container>
     );

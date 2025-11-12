@@ -35,7 +35,6 @@ export const REPORTS_PAGE_QUERY = gql`
         }
       }
     }
-
     ariaHtmlFeaturesMetrics {
       ariaFeaturesPassedCount
       ariaFeaturesCount
@@ -49,7 +48,9 @@ export const REPORTS_PAGE_QUERY = gql`
         refId
         type
         linkText
+        rawLinkText
         value
+        rawValue
         total
         passed
         failed
@@ -61,7 +62,9 @@ export const REPORTS_PAGE_QUERY = gql`
         refId
         type
         linkText
+        rawLinkText
         value
+        rawValue
         total
         passed
         failed
@@ -73,7 +76,9 @@ export const REPORTS_PAGE_QUERY = gql`
         refId
         type
         linkText
+        rawLinkText
         value
+        rawValue
         total
         passed
         failed
@@ -89,7 +94,9 @@ export const REPORTS_PAGE_QUERY = gql`
         refId
         type
         linkText
+        rawLinkText
         value
+        rawValue
         total
         passed
         failed
@@ -186,11 +193,13 @@ export const ARIA_HTML_FEATURE_DETAIL_REPORT_QUERY = gql`
   ${BROWSER_FIELDS}
   query AriaHtmlFeatureDetailReport(
     $refId: String!
+    $refType: String
     $atId: ID!
     $browserId: ID!
   ) {
     ariaHtmlFeatureDetailReport(
       refId: $refId
+      refType: $refType
       atId: $atId
       browserId: $browserId
     ) {

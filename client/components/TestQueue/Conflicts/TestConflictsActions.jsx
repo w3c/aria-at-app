@@ -37,6 +37,18 @@ const TestConflictsActions = ({
             <Dropdown.Item
               key={testPlanRun.id}
               href={`/run/${testPlanRun.id}?user=${testPlanRun.tester.id}#${testIndex}`}
+              target="_blank"
+              onClick={e => {
+                e.preventDefault();
+                if (window.PUPPETEER_TESTING) {
+                  window.location.href = `/run/${testPlanRun.id}?user=${testPlanRun.tester.id}#${testIndex}`;
+                } else {
+                  window.open(
+                    `/run/${testPlanRun.id}?user=${testPlanRun.tester.id}#${testIndex}`,
+                    '_blank'
+                  );
+                }
+              }}
             >
               {testPlanRun.tester.username}
             </Dropdown.Item>
