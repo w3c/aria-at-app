@@ -45,19 +45,38 @@ export const useAddTestPlansData = isOpen => {
       });
     }
 
+    const normalizeVersion = (version, testPlanDirectory) => ({
+      ...version,
+      testPlan: { directory: testPlanDirectory },
+      gitSha: gitDataMap[version.id]?.gitSha,
+      gitMessage: gitDataMap[version.id]?.gitMessage
+    });
+
     const allTestPlanVersions = [];
-    mainQueryData.testPlans.forEach(testPlan => {
-      testPlan.testPlanVersions.forEach(version => {
+
+    if (mainQueryData.testPlanVersions) {
+      mainQueryData.testPlanVersions.forEach(version => {
         if (version.testPlanReports && version.testPlanReports.length > 0) {
-          allTestPlanVersions.push({
-            ...version,
-            testPlan: { directory: testPlan.directory },
-            gitSha: gitDataMap[version.id]?.gitSha,
-            gitMessage: gitDataMap[version.id]?.gitMessage
-          });
+          const testPlanDirectory = version.testPlan?.directory;
+          if (testPlanDirectory) {
+            allTestPlanVersions.push(
+              normalizeVersion(version, testPlanDirectory)
+            );
+          }
         }
       });
-    });
+    } else if (mainQueryData.testPlans) {
+      mainQueryData.testPlans.forEach(testPlan => {
+        const versions = testPlan.testPlanVersions || [];
+        versions.forEach(version => {
+          if (version.testPlanReports && version.testPlanReports.length > 0) {
+            allTestPlanVersions.push(
+              normalizeVersion(version, testPlan.directory)
+            );
+          }
+        });
+      });
+    }
 
     const allTestPlans = allTestPlanVersions
       .filter(
