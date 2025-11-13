@@ -1,6 +1,6 @@
 import React, { useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Button } from 'react-bootstrap';
+import { Button, Alert } from 'react-bootstrap';
 import BasicModal from '../common/BasicModal';
 import { useMutation, useQuery, useApolloClient } from '@apollo/client';
 import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
@@ -36,6 +36,7 @@ function AddTestToQueueWithConfirmation({
     useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [canUseOldResults, setCanUseOldResults] = useState(false);
+  const [showAlreadyExistsAlert, setShowAlreadyExistsAlert] = useState(false);
 
   const [addTestPlanReport] = useMutation(ADD_TEST_QUEUE_MUTATION, {
     refetchQueries: [
@@ -168,14 +169,14 @@ function AddTestToQueueWithConfirmation({
         label: 'Add and run later',
         onClick: async () => {
           try {
-            await addTestToQueue(
+            const testPlanReport = await addTestToQueue(
               canUseOldResults
                 ? {
                     copyResultsFromTestPlanVersionId: latestOldVersion.id
                   }
                 : {}
             );
-            await closeWithUpdate();
+            if (testPlanReport) await closeWithUpdate();
           } catch (e) {
             console.error(e);
           }
@@ -195,8 +196,10 @@ function AddTestToQueueWithConfirmation({
                     }
                   : {}
               );
-              await scheduleCollectionJob(testPlanReport);
-              await closeWithUpdate();
+              if (testPlanReport) {
+                await scheduleCollectionJob(testPlanReport);
+                await closeWithUpdate();
+              }
             } catch (e) {
               console.error(e);
             }
@@ -288,11 +291,17 @@ function AddTestToQueueWithConfirmation({
           copyResultsFromTestPlanVersionId
         }
       });
+      const alreadyExisted =
+        res?.data?.createTestPlanReport?.alreadyExisted ?? false;
       const testPlanReport =
-        res?.data?.createTestPlanReport?.testPlanReport ?? null;
+        res?.data?.createTestPlanReport?.populatedData?.testPlanReport ?? null;
       tpr = testPlanReport;
+      if (alreadyExisted) {
+        setShowAlreadyExistsAlert(true);
+        // Don't show confirmation modal if report already existed
+        setShowConfirmation(false);
+      } else setShowConfirmation(true);
     }, 'Adding Test Plan to Test Queue');
-    setShowConfirmation(true);
     return tpr;
   };
 
@@ -331,6 +340,16 @@ function AddTestToQueueWithConfirmation({
 
   return (
     <LoadingStatus message={loadingMessage}>
+      {showAlreadyExistsAlert && (
+        <Alert
+          variant="info"
+          dismissible
+          onClose={() => setShowAlreadyExistsAlert(false)}
+        >
+          This report already exists in the Test Queue (under Manual Test Runs
+          or Automated updates). No new report was created.
+        </Alert>
+      )}
       <Button
         ref={buttonRef}
         disabled={disabled}

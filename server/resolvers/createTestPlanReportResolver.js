@@ -23,6 +23,7 @@ const createTestPlanReportResolver = async (_, { input }, context) => {
   const { copyResultsFromTestPlanVersionId, ...values } = input;
 
   let testPlanReport;
+  let alreadyExisted = false;
   const existingTestPlanReport = await getTestPlanReportByQuery({
     where: values,
     transaction
@@ -42,9 +43,13 @@ const createTestPlanReportResolver = async (_, { input }, context) => {
     if (updatedTestPlanReports?.length) {
       // Expecting only to get back the single requested combination
       testPlanReport = updatedTestPlanReports[0];
+      // If processCopiedReports returned reports, they already existed
+      alreadyExisted = true;
     } else {
-      if (existingTestPlanReport) testPlanReport = existingTestPlanReport;
-      else {
+      if (existingTestPlanReport) {
+        testPlanReport = existingTestPlanReport;
+        alreadyExisted = true;
+      } else {
         testPlanReport = await createTestPlanReport({
           values,
           transaction
@@ -52,14 +57,23 @@ const createTestPlanReportResolver = async (_, { input }, context) => {
       }
     }
   } else {
-    if (existingTestPlanReport) testPlanReport = existingTestPlanReport;
-    else testPlanReport = await createTestPlanReport({ values, transaction });
+    if (existingTestPlanReport) {
+      testPlanReport = existingTestPlanReport;
+      alreadyExisted = true;
+    } else testPlanReport = await createTestPlanReport({ values, transaction });
   }
 
   const locationOfData = { testPlanReportId: testPlanReport.id };
   const preloaded = { testPlanReport };
+  const populatedData = await populateData(locationOfData, {
+    preloaded,
+    context
+  });
 
-  return populateData(locationOfData, { preloaded, context });
+  return {
+    populatedData,
+    alreadyExisted
+  };
 };
 
 module.exports = createTestPlanReportResolver;
