@@ -88,7 +88,6 @@ const AddTestPlans = ({
         const matchingVersions = allTestPlanVersions
           .filter(
             version =>
-              version.title === selectedPlan.title &&
               version.testPlan.directory === selectedPlan.directory &&
               version.phase !== 'DEPRECATED' &&
               version.phase !== 'RD'

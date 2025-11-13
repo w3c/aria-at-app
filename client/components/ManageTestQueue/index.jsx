@@ -4,7 +4,7 @@ import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
 import DisclosureComponent from '../common/DisclosureComponent';
 import ManageAtVersions from '@components/ManageTestQueue/ManageAtVersions';
 import AddTestPlans from '@components/ManageTestQueue/AddTestPlans';
-import { AtPropType, TestPlanVersionPropType } from '../common/proptypes';
+import { AtPropType } from '../common/proptypes';
 
 const ManageTestQueue = ({ ats = [], triggerUpdate = () => {} }) => {
   const { loadingMessage } = useTriggerLoad();
@@ -45,7 +45,6 @@ const ManageTestQueue = ({ ats = [], triggerUpdate = () => {} }) => {
 
 ManageTestQueue.propTypes = {
   ats: PropTypes.arrayOf(AtPropType).isRequired,
-  testPlanVersions: PropTypes.arrayOf(TestPlanVersionPropType),
   triggerUpdate: PropTypes.func
 };
 
