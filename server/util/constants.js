@@ -2,9 +2,18 @@
 const NO_OUTPUT_STRING = 'No output was detected.';
 
 const VENDOR_NAME_TO_AT_MAPPING = {
-  vispero: ['JAWS'],
-  nvAccess: ['NVDA'],
-  apple: ['VoiceOver for macOS']
+  vispero: {
+    id: 1,
+    ats: ['JAWS']
+  },
+  apple: {
+    id: 4,
+    ats: ['VoiceOver for macOS']
+  },
+  nvAccess: {
+    id: 6,
+    ats: ['NVDA']
+  }
 };
 
 module.exports = {
