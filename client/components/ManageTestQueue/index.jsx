@@ -6,11 +6,7 @@ import ManageAtVersions from '@components/ManageTestQueue/ManageAtVersions';
 import AddTestPlans from '@components/ManageTestQueue/AddTestPlans';
 import { AtPropType, TestPlanVersionPropType } from '../common/proptypes';
 
-const ManageTestQueue = ({
-  ats = [],
-  testPlanVersions = [],
-  triggerUpdate = () => {}
-}) => {
+const ManageTestQueue = ({ ats = [], triggerUpdate = () => {} }) => {
   const { loadingMessage } = useTriggerLoad();
 
   const [showManageATs, setShowManageATs] = useState(false);
