@@ -53,10 +53,13 @@ const getKnownScenariosAndCommandIdsForTest = testPlanVersionTest => {
 };
 
 /**
- * Determine which tests between an 'old' and 'new' TestPlanVersion is the same between both
- * @param oldTestPlanVersion
- * @param newTestPlanVersion
- * @returns {{}}
+ * Identifies unchanged tests between two TestPlanVersions via hash comparison.
+ * Hashes each new test and matches against old tests using forUpdateCompare mode.
+ * Returns mapping with test IDs and known scenario/assertion IDs for result preservation.
+ *
+ * @param {Object} oldTestPlanVersion - Source TestPlanVersion
+ * @param {Object} newTestPlanVersion - Destination TestPlanVersion
+ * @returns {Object.<string, Object>} Hash → {newTestId, oldTestId, known scenario/assertion IDs}
  */
 const getKeptTestsByTestHash = (oldTestPlanVersion, newTestPlanVersion) => {
   const updateOptions = { forUpdateCompare: true };
@@ -109,10 +112,13 @@ const getKeptTestsByTestHash = (oldTestPlanVersion, newTestPlanVersion) => {
 };
 
 /**
- * Determine which old version's test result should be preserved and which new result it connects to
- * @param testResults
- * @param keptTestsByTestHash
- * @returns {{}}
+ * Maps old test results to new test IDs for unchanged tests.
+ * Checks each old result's testId against keptTestsByTestHash and creates mapping
+ * with result data + known scenario/assertion IDs for granular preservation.
+ *
+ * @param {Array<Object>} testResults - Old TestPlanVersion test results
+ * @param {Object.<string, Object>} keptTestsByTestHash - From getKeptTestsByTestHash
+ * @returns {Object.<string, Object>} New testId → old result + known IDs
  */
 const getKeptTestResultsByTestId = (testResults, keptTestsByTestHash) => {
   const keptTestResultsByTestId = {};
@@ -148,12 +154,16 @@ const getKeptTestResultsByTestId = (testResults, keptTestsByTestHash) => {
 };
 
 /**
- * Updates metrics and markedFinalAt status for newly created TestPlanReports after copying process
- * @param newTestPlanReport
- * @param testPlanRun
- * @param testResults
- * @param context
- * @param transaction
+ * Recalculates metrics for a TestPlanReport after copying results.
+ * Updates completion %, conflicts count, and nullifies markedFinalAt.
+ * Priority: conflicts → no finalized results → full metrics.
+ *
+ * @param {Object} params
+ * @param {Object} params.newTestPlanReport - TestPlanReport receiving results
+ * @param {Object} params.testPlanRun - TestPlanRun with copied results
+ * @param {Array<Object>} params.testResults - Copied test results
+ * @param {Object} params.context - GraphQL context
+ * @param {Object} params.transaction - DB transaction
  * @returns {Promise<void>}
  */
 const updateMetricsAndMarkedFinalAtForTestPlanReport = async ({
@@ -249,6 +259,20 @@ const updateMetricsAndMarkedFinalAtForTestPlanReport = async ({
   });
 };
 
+/**
+ * Copies test results from old TestPlanVersion to new when tests haven't changed.
+ * Uses hash comparison to identify unchanged tests, preserves outputs/assertions/vendor statuses.
+ * Handles partial changes by nullifying completedAt. Skips bots. Recalculates metrics.
+ * Resets markedFinalAt and vendor approvals if any scenarios/assertions couldn't be preserved.
+ *
+ * @param {Object} params
+ * @param {string} params.oldTestPlanVersionId - Source version ID
+ * @param {string} params.newTestPlanVersionId - Destination version ID
+ * @param {Array<Object>} params.newTestPlanReports - Existing reports (avoid duplicates)
+ * @param {Array<Object>} [params.atBrowserCombinationsToInclude=[]] - Optional AT/Browser filter
+ * @param {Object} params.context - GraphQL context with transaction
+ * @returns {Promise<Object>} {oldTestPlanVersion, newTestPlanReportIds, updatedTestPlanReports}
+ */
 const processCopiedReports = async ({
   oldTestPlanVersionId,
   newTestPlanVersionId,

@@ -21,11 +21,14 @@ const {
 } = require('../../models/services/NegativeSideEffectService');
 
 /**
- * Creates negative side effects in the database for a test result
+ * Persists negative side effects to DB, avoiding duplicates.
+ * Creates unique IDs (testResultId+scenarioResultId+negativeSideEffectId), filters existing, bulk creates.
+ * Non-critical operation - errors logged but not thrown.
+ *
  * @param {Object} options
  * @param {number} options.testPlanRunId - TestPlanRun ID
- * @param {Object} options.testResult - Test result object
- * @param {import('sequelize').Transaction} options.transaction - Sequelize transaction
+ * @param {Object} options.testResult - Test result with scenarioResults
+ * @param {import('sequelize').Transaction} options.transaction - Transaction
  */
 const createNegativeSideEffectsForTestResult = async ({
   testPlanRunId,
@@ -109,6 +112,20 @@ const createNegativeSideEffectsForTestResult = async ({
   }
 };
 
+/**
+ * Saves/submits test results with validation and metrics updates.
+ * Steps: load state → merge changes → validate structure → validate content (if submit) → persist → update metrics/conflicts.
+ * Sets completedAt on submit, nullifies on draft. Throws if structure corrupted or required fields missing on submit.
+ *
+ * @param {Object} params
+ * @param {string} params.testResultId - Test result ID
+ * @param {Object} params.input - Partial changes to merge
+ * @param {boolean} params.isSubmit - True=submit, false=draft
+ * @param {Object} params.context - GraphQL context with transaction
+ * @returns {Promise<Object>} Populated saved test result
+ * @throws {UserInputError} Structure mismatch
+ * @throws {Error} Missing required fields on submit
+ */
 const saveTestResultCommon = async ({
   testResultId,
   input,
@@ -233,6 +250,15 @@ const saveTestResultCommon = async ({
   return populateData({ testResultId }, { context });
 };
 
+/**
+ * Validates test result has all required fields before submission.
+ * Checks: assertion verdicts (except EXCLUDE), scenario outputs/negativeSideEffects, side effect impact/details.
+ * Mutates result by setting passed=false for EXCLUDE assertions.
+ *
+ * @param {Object} newTestResult - Test result to validate
+ * @param {Array<Object>} [assertions=[]] - Assertion definitions with priority
+ * @throws {Error} "Invalid Test Result" if required fields missing
+ */
 const assertTestResultIsValid = (newTestResult, assertions = []) => {
   let failed = false;
 
