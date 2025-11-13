@@ -86,12 +86,21 @@ export const useAddTestPlansFormState = allTestPlanVersions => {
     useState('');
 
   useMemo(() => {
-    if (
-      allTestPlanVersions.length &&
-      !selectedTestPlanVersionId &&
-      allTestPlanVersions[0]
-    ) {
-      setSelectedTestPlanVersionId(allTestPlanVersions[0].id);
+    if (allTestPlanVersions.length && !selectedTestPlanVersionId) {
+      const sortedVersions = [...allTestPlanVersions].sort((a, b) => {
+        if (a.title !== b.title) {
+          return a.title < b.title ? -1 : 1;
+        }
+        return new Date(b.updatedAt) - new Date(a.updatedAt);
+      });
+
+      const firstValidVersion = sortedVersions.find(
+        version => version.phase !== 'DEPRECATED' && version.phase !== 'RD'
+      );
+
+      if (firstValidVersion) {
+        setSelectedTestPlanVersionId(firstValidVersion.id);
+      }
     }
   }, [allTestPlanVersions]);
 
