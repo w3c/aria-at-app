@@ -113,7 +113,9 @@ const InstructionsRenderer = ({
 
     const defaultInstructions =
       renderableContent.target.at.raw.defaultConfigurationInstructionsHTML;
-    const setupScriptDescription = `${supportJson.testPlanStrings.openExampleInstruction} ${renderableContent.target.setupScript.scriptDescription}`;
+    const openExampleInstruction =
+      supportJson.testPlanStrings.openExampleInstruction;
+    const setupScriptDescription = `${supportJson.testPlanStrings.setupScriptDescriptionPreface} ${renderableContent.target.setupScript.scriptDescription}`;
     const testInstructions = renderableContent.instructions.instructions;
     const settingsInstructions = `${
       supportJson.testPlanStrings.commandListPreface
@@ -125,6 +127,7 @@ const InstructionsRenderer = ({
 
     allInstructions = [
       defaultInstructions,
+      openExampleInstruction,
       setupScriptDescription + '.',
       testInstructions + ' ' + settingsInstructions
     ].map(e => unescape(e));

@@ -1,6 +1,20 @@
 import { useState, useEffect } from 'react';
 import uaParser from 'ua-parser-js';
 
+/**
+ * @typedef {Object} UseDetectUaReturn
+ * @property {string} uaBrowser - Browser name (e.g., 'Chrome', 'Firefox') or 'Unknown'
+ * @property {string} uaMajor - Major version number or '0'
+ * @property {string} uaMinor - Minor version number or '0'
+ * @property {string} uaPatch - Patch version number or '0'
+ */
+
+/**
+ * Hook to detect and parse user agent information from the browser.
+ * Extracts browser name and version components (major, minor, patch).
+ *
+ * @returns {UseDetectUaReturn}
+ */
 export function useDetectUa() {
   const [uaBrowser, setUaBrowser] = useState();
   const [uaMajor, setUaMajor] = useState();

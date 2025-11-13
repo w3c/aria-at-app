@@ -8,9 +8,16 @@ const getTestPlanVersionTitle = (
   return title;
 };
 
-const getTestPlanTargetTitle = ({ at, browser, atVersion }) => {
+const getTestPlanTargetTitle = ({
+  at,
+  browser,
+  atVersion,
+  isMinimumAtVersion
+}) => {
   if (!atVersion) return `${at.name} and ${browser.name}`;
-  return `${at.name} ${atVersion.name} and ${browser.name}`;
+  return `${at.name} ${atVersion.name}${
+    isMinimumAtVersion ? ' or later' : ''
+  } and ${browser.name}`;
 };
 
 export { getTestPlanTargetTitle, getTestPlanVersionTitle };

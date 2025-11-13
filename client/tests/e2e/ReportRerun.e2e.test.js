@@ -47,6 +47,11 @@ describe('Report Rerun tab', () => {
     await getPage({ role: 'admin', url: '/test-queue' }, async page => {
       await switchToReportRerunTab(page);
 
+      await page.waitForSelector(
+        'table[aria-label="Test plan rerun events history"]',
+        { timeout: 5000 }
+      );
+
       const tableStructure = await page.evaluate(() => {
         const table = document.querySelector(
           'table[aria-label="Test plan rerun events history"]'

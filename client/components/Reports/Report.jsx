@@ -11,7 +11,8 @@ const Report = () => {
 
   const { loading, data, error } = useQuery(REPORT_PAGE_QUERY, {
     variables: { testPlanVersionId: testPlanVersionId },
-    fetchPolicy: 'cache-and-network'
+    fetchPolicy: 'cache-and-network',
+    nextFetchPolicy: 'cache-first'
   });
 
   if (error) {

@@ -7,6 +7,17 @@ const evaluateAtNameKey = atName => {
   else return atName.toLowerCase();
 };
 
+/**
+ * Prepares test for hashing by removing equivalence-irrelevant attributes.
+ * Normal mode: removes IDs/URLs, keeps semantic content.
+ * forUpdateCompare mode: aggressive filtering - removes text/settings/instructions (checks IDs only).
+ * Allows result preservation for non-structural changes (rewording) while detecting behavior changes.
+ *
+ * @param {Object} test - Test object
+ * @param {Object} options
+ * @param {boolean} [options.forUpdateCompare=false] - Aggressive filtering for version comparison
+ * @returns {Object} Test with omitted properties
+ */
 const testWithModifiedAttributes = (test, { forUpdateCompare }) => {
   let propertiesToOmit = [
     'id',
@@ -63,7 +74,15 @@ const testWithModifiedAttributes = (test, { forUpdateCompare }) => {
 // Ideally the hash of tests being imported will never change
 const hashTests = tests => objectHash(tests.map(testWithModifiedAttributes));
 
-// Generate the hash of a test.
+/**
+ * Generates deterministic hash for test equality comparison across versions.
+ * Uses object-hash on normalized attributes. Same hash = equivalent tests, enables result sharing.
+ *
+ * @param {Object} test - Test object
+ * @param {Object} [options={}]
+ * @param {boolean} [options.forUpdateCompare=false] - Aggressive filtering for version comparison
+ * @returns {string} Hash representing structural identity
+ */
 const hashTest = (test, { forUpdateCompare = false } = {}) => {
   return objectHash(testWithModifiedAttributes(test, { forUpdateCompare }));
 };

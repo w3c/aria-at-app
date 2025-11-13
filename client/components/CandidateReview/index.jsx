@@ -7,10 +7,14 @@ import { ME_QUERY } from '../App/queries';
 
 const CandidateReview = () => {
   const { loading, data, error } = useQuery(CANDIDATE_REVIEW_PAGE_QUERY, {
-    fetchPolicy: 'cache-and-network'
+    fetchPolicy: 'cache-and-network',
+    nextFetchPolicy: 'cache-first'
   });
 
-  const { data: meData } = useQuery(ME_QUERY);
+  const { data: meData } = useQuery(ME_QUERY, {
+    fetchPolicy: 'cache-and-network',
+    nextFetchPolicy: 'cache-first'
+  });
   const { me } = meData;
 
   if (error) {

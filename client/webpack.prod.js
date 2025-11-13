@@ -3,7 +3,9 @@ const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-  entry: ['babel-polyfill', './index.js'],
+  entry: {
+    bundle: ['babel-polyfill', './index.js']
+  },
   mode: 'production',
   module: {
     rules: [
@@ -22,12 +24,7 @@ module.exports = {
       },
       {
         test: /\.s[ac]ss$/i,
-        use: [
-          // Creates `style` nodes from JS strings
-          'style-loader',
-          // Translates CSS into CommonJS
-          'css-loader'
-        ]
+        use: ['style-loader', 'css-loader']
       },
       {
         test: /\.module\.css$/,
@@ -56,7 +53,8 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, './dist/'),
-    filename: 'bundle.js'
+    filename: '[name].js',
+    chunkFilename: '[name].chunk.js'
   },
   resolve: {
     alias: {
@@ -81,6 +79,43 @@ module.exports = {
       'process.env.ENVIRONMENT': JSON.stringify(process.env.ENVIRONMENT)
     })
   ],
+  optimization: {
+    minimize: true,
+    runtimeChunk: false,
+    splitChunks: {
+      chunks: 'async',
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendor',
+          chunks: 'async',
+          priority: 10,
+          reuseExistingChunk: true
+        },
+        apollo: {
+          test: /[\\/]node_modules[\\/]@apollo[\\/]/,
+          name: 'apollo',
+          chunks: 'async',
+          priority: 20,
+          reuseExistingChunk: true
+        },
+        reactBootstrap: {
+          test: /[\\/]node_modules[\\/](react-bootstrap|bootstrap)[\\/]/,
+          name: 'react-bootstrap',
+          chunks: 'async',
+          priority: 20,
+          reuseExistingChunk: true
+        },
+        common: {
+          minChunks: 2,
+          chunks: 'async',
+          priority: 5,
+          reuseExistingChunk: true,
+          name: 'common'
+        }
+      }
+    }
+  },
   performance: {
     hints: false,
     maxEntrypointSize: 512000,

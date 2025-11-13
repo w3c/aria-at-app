@@ -145,6 +145,12 @@ export const REPORT_PAGE_QUERY = gql`
         recommendedAtVersion {
           ...AtVersionFields
         }
+        exactAtVersion {
+          ...AtVersionFields
+        }
+        minimumAtVersion {
+          ...AtVersionFields
+        }
         runnableTests {
           ...TestFieldsSimple
         }

@@ -1,27 +1,28 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { Form } from 'react-bootstrap';
 import RadioBox from '@components/common/RadioBox';
 import AddTestToQueueWithConfirmation from '@components/AddTestToQueueWithConfirmation';
 import { dates } from 'shared';
 import PropTypes from 'prop-types';
+import { AtPropType } from '@components/common/proptypes';
 import {
-  AtPropType,
-  TestPlanVersionPropType
-} from '@components/common/proptypes';
+  useAddTestPlansData,
+  useAddTestPlansFormState
+} from './useAddTestPlansData';
 import styles from './ManageTestQueue.module.css';
 import commonStyles from '../common/styles.module.css';
 
 const AddTestPlans = ({
   ats = [],
-  testPlanVersions = [],
+  isOpen = false,
   triggerUpdate = () => {}
 }) => {
-  const [allTestPlans, setAllTestPlans] = useState([]);
-  const [allTestPlanVersions, setAllTestPlanVersions] = useState([]);
-
-  const [selectedTestPlanVersionId, setSelectedTestPlanVersionId] =
-    useState('');
-  const [matchingTestPlanVersions, setMatchingTestPlanVersions] = useState([]);
+  const { allTestPlans, allTestPlanVersions } = useAddTestPlansData(isOpen);
+  const {
+    selectedTestPlanVersionId,
+    setSelectedTestPlanVersionId,
+    getMatchingTestPlanVersions
+  } = useAddTestPlansFormState(allTestPlanVersions);
 
   const [selectedAtId, setSelectedAtId] = useState('');
   const [selectedBrowserId, setSelectedBrowserId] = useState('');
@@ -34,98 +35,98 @@ const AddTestPlans = ({
     setShowMinimumAtVersionErrorMessage
   ] = useState(false);
 
-  useEffect(() => {
-    // Prevent allTestPlanVersions and filteredTestPlanVersions from being unnecessarily overwritten
-    if (allTestPlanVersions.length) return;
+  const matchingTestPlanVersions = useMemo(
+    () => getMatchingTestPlanVersions(selectedTestPlanVersionId),
+    [selectedTestPlanVersionId, getMatchingTestPlanVersions]
+  );
 
-    const _allTestPlanVersions = testPlanVersions
-      .map(version => ({ ...version }))
-      .flat();
-
-    // Get valid test plans by removing duplicate entries from different
-    // test plan versions of the same test plan being imported multiple times
-    const _allTestPlans = _allTestPlanVersions
-      .filter(
-        (v, i, a) =>
-          a.findIndex(
-            t =>
-              t.title === v.title &&
-              t.testPlan.directory === v.testPlan.directory
-          ) === i
-      )
-      .map(({ id, title, testPlan }) => ({
-        id,
-        title,
-        directory: testPlan.directory
-      }))
-      // sort by the testPlanVersion titles
-      .sort((a, b) => (a.title < b.title ? -1 : 1));
-
-    // mark the first testPlanVersion as selected
-    if (_allTestPlans.length) {
-      const plan = _allTestPlans[0];
-      updateMatchingTestPlanVersions(plan.id, _allTestPlanVersions);
-    }
-
-    setAllTestPlans(_allTestPlans);
-    setAllTestPlanVersions(_allTestPlanVersions);
-  }, [testPlanVersions]);
-
-  const updateMatchingTestPlanVersions = (value, allTestPlanVersions) => {
-    // update test plan versions based on selected test plan
-    const retrievedTestPlanVersion = allTestPlanVersions.find(
-      item => item.id === value
+  const selectedTestPlan = useMemo(() => {
+    const matchingVersion = allTestPlanVersions.find(
+      version => version.id === selectedTestPlanVersionId
     );
+    if (!matchingVersion) return null;
 
-    // find the versions that apply and pre-set these
-    const matchingTestPlanVersions = allTestPlanVersions
-      .filter(
-        item =>
-          item.title === retrievedTestPlanVersion.title &&
-          item.testPlan.directory ===
-            retrievedTestPlanVersion.testPlan.directory &&
-          item.phase !== 'DEPRECATED' &&
-          item.phase !== 'RD'
-      )
-      .sort((a, b) => (new Date(a.updatedAt) > new Date(b.updatedAt) ? -1 : 1));
-    setMatchingTestPlanVersions(matchingTestPlanVersions);
+    return allTestPlans.find(
+      testPlan =>
+        testPlan.title === matchingVersion.title &&
+        testPlan.directory === matchingVersion.testPlan.directory
+    );
+  }, [allTestPlans, allTestPlanVersions, selectedTestPlanVersionId]);
 
-    if (matchingTestPlanVersions.length)
-      setSelectedTestPlanVersionId(matchingTestPlanVersions[0].id);
-    else setSelectedTestPlanVersionId(null);
-  };
+  const selectedTestPlanVersion = useMemo(
+    () =>
+      allTestPlanVersions.find(({ id }) => id === selectedTestPlanVersionId),
+    [allTestPlanVersions, selectedTestPlanVersionId]
+  );
 
-  const onTestPlanVersionChange = e => {
-    const { value } = e.target;
-    setShowMinimumAtVersionErrorMessage(false);
-    setSelectedAtVersionExactOrMinimum('Exact Version');
-    setSelectedTestPlanVersionId(value);
-  };
+  const selectedAt = useMemo(
+    () => ats.find(item => item.id === selectedAtId),
+    [ats, selectedAtId]
+  );
 
-  const onAtChange = e => {
+  const exactOrMinimumAtVersion = useMemo(
+    () =>
+      selectedAt?.atVersions.find(
+        item => item.id === selectedReportAtVersionId
+      ),
+    [selectedAt, selectedReportAtVersionId]
+  );
+
+  const selectedBrowser = useMemo(
+    () =>
+      selectedAt?.browsers.find(browser => browser.id === selectedBrowserId),
+    [selectedAt, selectedBrowserId]
+  );
+
+  const onTestPlanChange = useCallback(
+    e => {
+      const { value } = e.target;
+      setShowMinimumAtVersionErrorMessage(false);
+      setSelectedAtVersionExactOrMinimum('Exact Version');
+      const selectedPlan = allTestPlans.find(plan => plan.id === value);
+      if (selectedPlan) {
+        const matchingVersions = allTestPlanVersions
+          .filter(
+            version =>
+              version.testPlan.directory === selectedPlan.directory &&
+              version.phase !== 'DEPRECATED' &&
+              version.phase !== 'RD'
+          )
+          .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+        if (matchingVersions.length > 0) {
+          setSelectedTestPlanVersionId(matchingVersions[0].id);
+        }
+      }
+    },
+    [allTestPlans, allTestPlanVersions, setSelectedTestPlanVersionId]
+  );
+
+  const onTestPlanVersionChange = useCallback(
+    e => {
+      const { value } = e.target;
+      setShowMinimumAtVersionErrorMessage(false);
+      setSelectedAtVersionExactOrMinimum('Exact Version');
+      setSelectedTestPlanVersionId(value);
+    },
+    [setSelectedTestPlanVersionId]
+  );
+
+  const onAtChange = useCallback(e => {
     const { value } = e.target;
     setShowMinimumAtVersionErrorMessage(false);
     setSelectedAtId(value);
     setSelectedReportAtVersionId(null);
-  };
+  }, []);
 
-  const onReportAtVersionIdChange = e => {
+  const onReportAtVersionIdChange = useCallback(e => {
     const { value } = e.target;
     setSelectedReportAtVersionId(value);
-  };
+  }, []);
 
-  const onBrowserChange = e => {
+  const onBrowserChange = useCallback(e => {
     const { value } = e.target;
     setSelectedBrowserId(value);
-  };
-
-  const selectedTestPlanVersion = allTestPlanVersions.find(
-    ({ id }) => id === selectedTestPlanVersionId
-  );
-
-  const exactOrMinimumAtVersion = ats
-    .find(item => item.id === selectedAtId)
-    ?.atVersions.find(item => item.id === selectedReportAtVersionId);
+  }, []);
 
   return (
     <div className={styles.manageDisclosureContainer}>
@@ -139,12 +140,8 @@ const AddTestPlans = ({
             Test Plan
           </Form.Label>
           <Form.Select
-            onChange={e => {
-              const { value } = e.target;
-              setShowMinimumAtVersionErrorMessage(false);
-              setSelectedAtVersionExactOrMinimum('Exact Version');
-              updateMatchingTestPlanVersions(value, allTestPlanVersions);
-            }}
+            value={selectedTestPlan?.id || ''}
+            onChange={onTestPlanChange}
           >
             {allTestPlans.map(item => (
               <option key={`${item.title}-${item.id}`} value={item.id}>
@@ -165,9 +162,14 @@ const AddTestPlans = ({
           >
             {matchingTestPlanVersions.length ? (
               matchingTestPlanVersions.map(item => (
-                <option key={`${item.gitSha}-${item.id}`} value={item.id}>
+                <option
+                  key={`${item.id}-${item.versionString}`}
+                  value={item.id}
+                >
                   {dates.convertDateToString(item.updatedAt, 'MMM D, YYYY')}{' '}
-                  {item.gitMessage} ({item.gitSha.substring(0, 7)})
+                  {item.gitMessage
+                    ? `${item.gitMessage} (${item.gitSha?.substring(0, 7)})`
+                    : item.versionString}
                 </option>
               ))
             ) : (
@@ -220,13 +222,11 @@ const AddTestPlans = ({
               <option value={''} disabled>
                 Select AT Version
               </option>
-              {ats
-                .find(at => at.id === selectedAtId)
-                ?.atVersions.map(item => (
-                  <option key={`${item.name}-${item.id}`} value={item.id}>
-                    {item.name}
-                  </option>
-                ))}
+              {selectedAt?.atVersions.map(item => (
+                <option key={`${item.name}-${item.id}`} value={item.id}>
+                  {item.name}
+                </option>
+              ))}
             </Form.Select>
             {showMinimumAtVersionErrorMessage &&
             selectedTestPlanVersion?.phase === 'RECOMMENDED' ? (
@@ -249,21 +249,17 @@ const AddTestPlans = ({
             <option value={''} disabled>
               Select a Browser
             </option>
-            {ats
-              .find(at => at.id === selectedAtId)
-              ?.browsers.map(item => (
-                <option key={`${item.name}-${item.id}`} value={item.id}>
-                  {item.name}
-                </option>
-              ))}
+            {selectedAt?.browsers.map(item => (
+              <option key={`${item.name}-${item.id}`} value={item.id}>
+                {item.name}
+              </option>
+            ))}
           </Form.Select>
         </Form.Group>
       </div>
       <AddTestToQueueWithConfirmation
-        testPlanVersion={allTestPlanVersions.find(
-          item => item.id === selectedTestPlanVersionId
-        )}
-        at={ats.find(item => item.id === selectedAtId)}
+        testPlanVersion={selectedTestPlanVersion}
+        at={selectedAt}
         exactAtVersion={
           selectedAtVersionExactOrMinimum === 'Exact Version'
             ? exactOrMinimumAtVersion
@@ -274,9 +270,7 @@ const AddTestPlans = ({
             ? exactOrMinimumAtVersion
             : null
         }
-        browser={ats
-          .find(at => at.id === selectedAtId)
-          ?.browsers.find(browser => browser.id === selectedBrowserId)}
+        browser={selectedBrowser}
         triggerUpdate={triggerUpdate}
         disabled={
           !selectedTestPlanVersionId ||
@@ -291,7 +285,7 @@ const AddTestPlans = ({
 
 AddTestPlans.propTypes = {
   ats: PropTypes.arrayOf(AtPropType).isRequired,
-  testPlanVersions: PropTypes.arrayOf(TestPlanVersionPropType).isRequired,
+  isOpen: PropTypes.bool,
   triggerUpdate: PropTypes.func
 };
 

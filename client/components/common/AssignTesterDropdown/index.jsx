@@ -36,13 +36,20 @@ const AssignTesterDropdown = ({
       variables: {
         testPlanReportId: testPlanReportId
       },
-      fetchPolicy: 'cache-and-network'
+      fetchPolicy: 'cache-and-network',
+      nextFetchPolicy: 'cache-first'
     }
   );
 
-  const [removeTester] = useMutation(REMOVE_TESTER_MUTATION);
-  const [assignTester] = useMutation(ASSIGN_TESTER_MUTATION);
-  const [scheduleCollection] = useMutation(SCHEDULE_COLLECTION_JOB_MUTATION);
+  const [removeTester] = useMutation(REMOVE_TESTER_MUTATION, {
+    refetchQueries: ['TestQueuePage']
+  });
+  const [assignTester] = useMutation(ASSIGN_TESTER_MUTATION, {
+    refetchQueries: ['TestQueuePage']
+  });
+  const [scheduleCollection] = useMutation(SCHEDULE_COLLECTION_JOB_MUTATION, {
+    refetchQueries: ['TestQueuePage']
+  });
 
   const isTesterAssigned = username => {
     if (testPlanRun) {

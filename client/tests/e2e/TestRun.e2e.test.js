@@ -124,34 +124,51 @@ describe('Test Run when signed in as admin', () => {
     // Wait for the table to render
     await page.waitForSelector(testPlanTableSelector);
 
-    // Find the 'Open run as...' dropdown button from the Actions Column
+    // Wait for and click the 'Open run as...' dropdown button from the Actions Column
+    await page.waitForSelector(`${testPlanTableSelector} tbody tr td button`, {
+      timeout: 5000
+    });
+
     await page.evaluate(() => {
       const modalDialogTableSelector =
         'table[aria-label="Reports for Modal Dialog Example V25.11.06 in draft phase"]';
       const modalDialogTable = document.querySelector(modalDialogTableSelector);
+      if (!modalDialogTable) return;
 
-      // Find the 'Open run as...' button from the Actions Column
       const cells = Array.from(modalDialogTable.querySelectorAll('td'));
       const actionsColumn = cells[4];
+      if (!actionsColumn) return;
+
       const openRunAsDropdownButton = actionsColumn.querySelector(
         'div.dropdown button'
       );
-      openRunAsDropdownButton.click();
+      if (openRunAsDropdownButton) {
+        openRunAsDropdownButton.click();
+      }
     });
 
-    // Wait for the dropdown menu to appear and click the tester's name
+    // Wait for the dropdown menu to appear
     const openRunAsMenuSelector = 'div.dropdown-menu';
     await page.waitForSelector(openRunAsMenuSelector);
 
+    // Wait for the tester option to be available and click it
+    await page.waitForSelector(`${openRunAsMenuSelector} a.dropdown-item`, {
+      timeout: 5000
+    });
+
     await page.evaluate(() => {
       const openRunAsMenu = document.querySelector('div.dropdown-menu');
+      if (!openRunAsMenu) return;
+
       const testerOptions = Array.from(
         openRunAsMenu.querySelectorAll('a.dropdown-item')
       );
       const targetTesterOption = testerOptions.find(option =>
         option.innerText.includes('esmeralda-baggins')
       );
-      targetTesterOption.click();
+      if (targetTesterOption) {
+        targetTesterOption.click();
+      }
     });
 
     // Wait for navigation to Test Run page to complete
@@ -192,7 +209,12 @@ describe('Test Run when signed in as admin', () => {
       // Wait for the page to be fully rendered with all data
       await page.waitForSelector('h1 ::-p-text(Test 1)');
 
-      // Find the reassign dropdown button in the Test Options section
+      // Wait for the reassign dropdown button in the Test Options section
+      await page.waitForSelector('button[aria-label="Reassign Testers"]', {
+        timeout: 5000
+      });
+
+      // Find and click the reassign dropdown button
       await page.evaluate(() => {
         const reassignDropdownButton = document.querySelector(
           'button[aria-label="Reassign Testers"]'
@@ -206,12 +228,20 @@ describe('Test Run when signed in as admin', () => {
       const assignTestersMenuSelector = 'div [role="menu"]';
       await page.waitForSelector(assignTestersMenuSelector);
 
+      // Wait for the tester options to be available
+      await page.waitForSelector(
+        `${assignTestersMenuSelector} [role="menuitemcheckbox"]`,
+        { timeout: 5000 }
+      );
+
       // Find and click the target tester in the dropdown
       await page.evaluate(() => {
         const assignTestersMenuSelector = 'div [role="menu"]';
         const assignTestersMenu = document.querySelector(
           assignTestersMenuSelector
         );
+        if (!assignTestersMenu) return;
+
         const assignTesterOptions = Array.from(
           assignTestersMenu.querySelectorAll('[role="menuitemcheckbox"]')
         );
@@ -260,6 +290,7 @@ describe('Test Run when signed in as admin', () => {
       await page.waitForSelector('button ::-p-text(Cancel)');
 
       // Proceed with deletion and complete navigation to the test queue
+      await page.waitForSelector('button ::-p-text(Proceed)');
       await page.click('button ::-p-text(Proceed)');
       await page.waitForNavigation({
         waitUntil: ['domcontentloaded', 'networkidle0']
@@ -294,14 +325,13 @@ describe('Test Run when signed in as tester', () => {
     // Wait for the table to render
     await page.waitForSelector(testPlanTableSelector);
 
-    await page.$eval(testPlanTableSelector, el => {
-      // Find the 'Assign Yourself' button
-      const buttons = el.querySelectorAll('button');
-      const assignYourselfButton = Array.from(buttons).find(button =>
-        button.textContent.includes('Assign Yourself')
-      );
-      assignYourselfButton.click();
+    // Wait for the Assign Yourself button to be available
+    await page.waitForSelector(`${testPlanTableSelector} button`, {
+      timeout: 5000
     });
+    await page.click(
+      `${testPlanTableSelector} button ::-p-text(Assign Yourself)`
+    );
 
     await page.waitForNetworkIdle();
     await page.waitForSelector('::-p-text(Unassign Yourself)');
@@ -350,34 +380,51 @@ describe('Test Run when signed in as tester', () => {
     // Wait for the table to render
     await page.waitForSelector(testPlanTableSelector);
 
-    // Find the 'View Results for...' dropdown button from the Actions Column
+    // Wait for and click the 'View Results for...' dropdown button from the Actions Column
+    await page.waitForSelector(`${testPlanTableSelector} tbody tr td button`, {
+      timeout: 5000
+    });
+
     await page.evaluate(() => {
       const modalDialogTableSelector =
         'table[aria-label="Reports for Modal Dialog Example V25.11.06 in draft phase"]';
       const modalDialogTable = document.querySelector(modalDialogTableSelector);
+      if (!modalDialogTable) return;
 
-      // Find the 'View Results for...' button from the Actions Column
       const cells = Array.from(modalDialogTable.querySelectorAll('td'));
       const actionsColumn = cells[4];
+      if (!actionsColumn) return;
+
       const viewResultsDropdownButton = actionsColumn.querySelector(
         'div.dropdown button'
       );
-      viewResultsDropdownButton.click();
+      if (viewResultsDropdownButton) {
+        viewResultsDropdownButton.click();
+      }
     });
 
-    // Wait for the dropdown menu to appear and click the tester's name
+    // Wait for the dropdown menu to appear
     const viewResultsMenuSelector = 'div.dropdown-menu';
     await page.waitForSelector(viewResultsMenuSelector);
 
+    // Wait for the tester option to be available and click it
+    await page.waitForSelector(`${viewResultsMenuSelector} a.dropdown-item`, {
+      timeout: 5000
+    });
+
     await page.evaluate(() => {
       const openRunAsMenu = document.querySelector('div.dropdown-menu');
+      if (!openRunAsMenu) return;
+
       const testerOptions = Array.from(
         openRunAsMenu.querySelectorAll('a.dropdown-item')
       );
       const targetTesterOption = testerOptions.find(option =>
         option.innerText.includes('esmeralda-baggins')
       );
-      targetTesterOption.click();
+      if (targetTesterOption) {
+        targetTesterOption.click();
+      }
     });
 
     // Wait for navigation to Test Run page to complete
@@ -473,6 +520,11 @@ describe('Test Run when signed in as tester', () => {
       const testNavigatorListSelector = 'nav#test-navigator-nav ol';
       await page.waitForSelector(testNavigatorListSelector);
 
+      // Wait for the navigator links to be fully loaded
+      await page.waitForSelector('nav#test-navigator-nav ol li a', {
+        timeout: 10000
+      });
+
       const listItemsLength = await page.$eval(
         testNavigatorListSelector,
         el => {
@@ -485,8 +537,22 @@ describe('Test Run when signed in as tester', () => {
         // const sequence = i + 1;
         const liSelector = `nav#test-navigator-nav ol li:nth-child(${sequence})`;
 
-        // Select the next test to navigate to
-        await page.$eval(liSelector, el => el.querySelector('a').click());
+        // Wait for the navigation link to exist and be visible before clicking
+        await page.waitForSelector(`${liSelector} a`, {
+          timeout: 10000,
+          visible: true
+        });
+
+        // Select the next test to navigate to - use page.click instead of $eval for better reliability
+        const linkSelector = `${liSelector} a`;
+        try {
+          await page.click(linkSelector, { timeout: 5000 });
+        } catch (error) {
+          throw new Error(
+            `Navigation link not found or not clickable for test ${sequence}: ${error.message}`
+          );
+        }
+
         await page.waitForNetworkIdle();
 
         await page.waitForSelector(`h1 ::-p-text(Test ${sequence}:)`);
@@ -573,7 +639,8 @@ describe('Test Run when signed in as tester', () => {
         await getGeneratedCheckedAssertionCount(page);
 
       // Navigate to test 2 with navigation menu
-      await page.$eval(test2NavSelector, el => el.querySelector('a').click());
+      await page.waitForSelector(`${test2NavSelector} a`, { visible: true });
+      await page.click(`${test2NavSelector} a`);
       await page.waitForNetworkIdle();
       await page.waitForSelector('h1 ::-p-text(Test 2:)');
       await page.waitForSelector('button ::-p-text(Next Test)');
@@ -601,7 +668,8 @@ describe('Test Run when signed in as tester', () => {
       );
 
       // Navigate back to Test 1 with navigation menu
-      await page.$eval(test1NavSelector, el => el.querySelector('a').click());
+      await page.waitForSelector(`${test1NavSelector} a`, { visible: true });
+      await page.click(`${test1NavSelector} a`);
       await page.waitForNetworkIdle();
       await page.waitForSelector('h1 ::-p-text(Test 1:)');
       await page.waitForSelector('button ::-p-text(Next Test)');
@@ -837,10 +905,17 @@ describe('Test Run when signed in as tester', () => {
       await page.click(sectionButtonSelector);
       await page.waitForSelector(tableSelector);
 
-      // Toggle to On hold if not already
+      // Toggle to On hold if not already - wait for actions to be available
+      await page.waitForSelector(`${tableSelector} tbody tr button`, {
+        timeout: 5000
+      });
       const toggleWasClicked = await page.$eval(tableSelector, el => {
         const firstRow = el.querySelector('tbody tr');
-        const actionsCell = firstRow.querySelectorAll('td')[4];
+        if (!firstRow) return false;
+        const cells = firstRow.querySelectorAll('td');
+        if (cells.length < 5) return false;
+        const actionsCell = cells[4];
+        if (!actionsCell) return false;
         const btn = Array.from(actionsCell.querySelectorAll('button')).find(b =>
           /Put on hold|Ready for testing/i.test(b.innerText)
         );
@@ -852,7 +927,9 @@ describe('Test Run when signed in as tester', () => {
         }
         return false;
       });
-      if (toggleWasClicked) await page.waitForNetworkIdle();
+      if (toggleWasClicked) {
+        await page.waitForNetworkIdle();
+      }
 
       // Verify status shows On hold
       const statusText = await page.$eval(tableSelector, el => {
@@ -870,10 +947,9 @@ describe('Test Run when signed in as tester', () => {
       await page.waitForSelector(sectionButtonSelector);
       await page.click(sectionButtonSelector);
       await page.waitForSelector(tableSelector);
-      await page.$eval(tableSelector, el => {
-        // First button is Assign Yourself
-        el.querySelector('button').click();
-      });
+      // Wait for the Assign Yourself button to be available
+      await page.waitForSelector(`${tableSelector} button`, { timeout: 5000 });
+      await page.click(`${tableSelector} button:first-child`);
       await page.waitForNetworkIdle();
       await page.waitForSelector('::-p-text(Unassign Yourself)');
 

@@ -11,17 +11,13 @@ import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
 import { useAriaLiveRegion } from '../providers/AriaLiveRegionProvider';
 import { evaluateAuth } from '../../utils/evaluateAuth';
 import { isSupportedByResponseCollector } from '../../utils/automation';
-import {
-  ASSIGN_TESTER_MUTATION,
-  DELETE_TEST_PLAN_RUN,
-  TEST_QUEUE_PAGE_QUERY
-} from './queries';
+import { ASSIGN_TESTER_MUTATION, DELETE_TEST_PLAN_RUN } from './queries';
 import { SCHEDULE_COLLECTION_JOB_MUTATION } from '../AddTestToQueueWithConfirmation/queries';
 import { TEST_PLAN_REPORT_STATUS_DIALOG_QUERY } from '../TestPlanReportStatusDialog/queries';
 import { TestPlanReportPropType, UserPropType } from '../common/proptypes';
 import styles from './TestQueue.module.css';
 
-const AssignTesters = ({ me, testers, testPlanReport }) => {
+const AssignTesters = ({ me, testers, testPlanReport, triggerUpdate }) => {
   const { triggerLoad, loadingMessage } = useTriggerLoad();
 
   const setAlertMessage = useAriaLiveRegion();
@@ -39,7 +35,7 @@ const AssignTesters = ({ me, testers, testPlanReport }) => {
   const isSelfAssigned =
     me &&
     testPlanReport.draftTestPlanRuns.some(
-      testPlanRun => testPlanRun.tester.id === me.id
+      testPlanRun => testPlanRun.tester?.id === me.id
     );
 
   const onToggle = isShown => {
@@ -78,7 +74,7 @@ const AssignTesters = ({ me, testers, testPlanReport }) => {
     const tester = testers.find(tester => tester.id === testerId);
 
     const isAssigned = testPlanReport.draftTestPlanRuns.some(
-      testPlanRun => testPlanRun.tester.id === testerId
+      testPlanRun => testPlanRun.tester?.id === testerId
     );
 
     if (isAssigned) {
@@ -89,10 +85,7 @@ const AssignTesters = ({ me, testers, testPlanReport }) => {
         await triggerLoad(async () => {
           await client.mutate({
             mutation: DELETE_TEST_PLAN_RUN,
-            refetchQueries: [
-              TEST_QUEUE_PAGE_QUERY,
-              TEST_PLAN_REPORT_STATUS_DIALOG_QUERY
-            ],
+            refetchQueries: [TEST_PLAN_REPORT_STATUS_DIALOG_QUERY],
             awaitRefetchQueries: true,
             variables: {
               testReportId: testPlanReport.id,
@@ -104,6 +97,7 @@ const AssignTesters = ({ me, testers, testPlanReport }) => {
         hideConfirmationModal();
 
         await assignedCallback?.({ tester });
+        await triggerUpdate();
       };
 
       showConfirmationModal(
@@ -129,10 +123,7 @@ const AssignTesters = ({ me, testers, testPlanReport }) => {
       if (tester.isBot) {
         await client.mutate({
           mutation: SCHEDULE_COLLECTION_JOB_MUTATION,
-          refetchQueries: [
-            TEST_QUEUE_PAGE_QUERY,
-            TEST_PLAN_REPORT_STATUS_DIALOG_QUERY
-          ],
+          refetchQueries: [TEST_PLAN_REPORT_STATUS_DIALOG_QUERY],
           awaitRefetchQueries: true,
           variables: {
             testPlanReportId: testPlanReport.id
@@ -141,10 +132,7 @@ const AssignTesters = ({ me, testers, testPlanReport }) => {
       } else {
         await client.mutate({
           mutation: ASSIGN_TESTER_MUTATION,
-          refetchQueries: [
-            TEST_QUEUE_PAGE_QUERY,
-            TEST_PLAN_REPORT_STATUS_DIALOG_QUERY
-          ],
+          refetchQueries: [TEST_PLAN_REPORT_STATUS_DIALOG_QUERY],
           awaitRefetchQueries: true,
           variables: {
             testReportId: testPlanReport.id,
@@ -155,6 +143,7 @@ const AssignTesters = ({ me, testers, testPlanReport }) => {
     }, 'Assigning...');
 
     await unassignedCallback?.({ tester });
+    await triggerUpdate();
   };
 
   const onSelect = testerId => {
@@ -191,10 +180,9 @@ const AssignTesters = ({ me, testers, testPlanReport }) => {
   };
 
   const renderDropdownItem = ({ tester }) => {
-    const { id, username, isBot, ats } = tester;
+    const { id, username, isBot } = tester;
 
     if (isBot) {
-      const foundAtForBot = ats.find(({ id }) => id === testPlanReport.at?.id);
       const supportedByResponseCollector = isSupportedByResponseCollector({
         id: testPlanReport.id,
         at: testPlanReport.at,
@@ -202,11 +190,11 @@ const AssignTesters = ({ me, testers, testPlanReport }) => {
         minimumAtVersion: testPlanReport.minimumAtVersion,
         exactAtVersion: testPlanReport.exactAtVersion
       });
-      if (!foundAtForBot || !supportedByResponseCollector) return null;
+      if (!supportedByResponseCollector) return null;
     }
 
     const isAssigned = testPlanReport.draftTestPlanRuns.some(
-      testPlanRun => testPlanRun.tester.username === username
+      testPlanRun => testPlanRun.tester?.username === username
     );
 
     let icon;
@@ -265,6 +253,7 @@ const AssignTesters = ({ me, testers, testPlanReport }) => {
       </div>
       <ul className={styles.assignTestersList}>
         {testPlanReport.draftTestPlanRuns
+          .filter(testPlanRun => testPlanRun.tester)
           .slice()
           .sort((a, b) => a.tester.username.localeCompare(b.tester.username))
           .map(testPlanRun => {
@@ -291,7 +280,8 @@ const AssignTesters = ({ me, testers, testPlanReport }) => {
 AssignTesters.propTypes = {
   me: UserPropType,
   testers: PropTypes.arrayOf(UserPropType).isRequired,
-  testPlanReport: TestPlanReportPropType.isRequired
+  testPlanReport: TestPlanReportPropType.isRequired,
+  triggerUpdate: PropTypes.func.isRequired
 };
 
 export default AssignTesters;
