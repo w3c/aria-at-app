@@ -213,17 +213,17 @@ describe('Report page for candidate report', () => {
       const validJawsHeadingMatchFound = await checkForHeading(
         page,
         'h2 ::-p-text(JAWS)',
-        'JAWS and Chrome'
+        'JAWS 2021.2111.13 or later and Chrome'
       );
       const validNvdaHeadingMatchFound = await checkForHeading(
         page,
         'h2 ::-p-text(NVDA)',
-        'NVDA and Chrome'
+        'NVDA 2020.4 or later and Chrome'
       );
       const validVoiceoverHeadingMatchFound = await checkForHeading(
         page,
         'h2 ::-p-text(VoiceOver for macOS)',
-        'VoiceOver for macOS and Safari'
+        'VoiceOver for macOS 11.6 (20G165) or later and Safari'
       );
 
       expect(validReportCompletedOnDate).toBe(true);
@@ -242,20 +242,13 @@ describe('Report page for candidate report', () => {
       await page.click(viewResultsButton);
 
       await page.waitForSelector('h1 ::-p-text(Modal Dialog Example)');
-
-      const isVersionsSummaryFound = await page.evaluate(() => {
-        const elementsWithText = Array.from(
-          document.querySelectorAll('h2')
-        ).filter(element => element.textContent.includes('Versions Summary'));
-        return elementsWithText.length > 0;
-      });
+      await page.waitForSelector('h2 ::-p-text(Versions Summary)');
       await page.waitForSelector('h2 ::-p-text(Results for)');
       await page.waitForSelector(
         'details summary ::-p-text(Unapproved Report)'
       );
       const currentUrl = await page.url();
 
-      expect(isVersionsSummaryFound).toBe(false);
       expect(currentUrl).toMatch(/^.*\/report\/\d+\/targets\/\d+/);
     });
   });
