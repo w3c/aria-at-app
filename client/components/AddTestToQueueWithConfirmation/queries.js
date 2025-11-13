@@ -71,17 +71,20 @@ export const ADD_TEST_QUEUE_MUTATION = gql`
         copyResultsFromTestPlanVersionId: $copyResultsFromTestPlanVersionId
       }
     ) {
-      testPlanReport {
-        id
-        at {
+      alreadyExisted
+      populatedData {
+        testPlanReport {
+          id
+          at {
+            id
+          }
+          browser {
+            id
+          }
+        }
+        testPlanVersion {
           id
         }
-        browser {
-          id
-        }
-      }
-      testPlanVersion {
-        id
       }
     }
   }
