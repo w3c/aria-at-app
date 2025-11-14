@@ -202,8 +202,9 @@ const Actions = ({
       hideConfirmationModal();
 
       setTimeout(() => {
+        const escapedDirectory = testPlan.directory.replace(/\//g, '\\/');
         const focusTarget =
-          document.querySelector(`h2#${testPlan.directory}`) ??
+          document.querySelector(`h2#${escapedDirectory}`) ??
           document.querySelector('#main');
 
         focusTarget.focus();
