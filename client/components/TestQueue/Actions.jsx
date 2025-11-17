@@ -203,7 +203,7 @@ const Actions = ({
 
       setTimeout(() => {
         const focusTarget =
-          document.querySelector(`h2#${testPlan.directory}`) ??
+          document.querySelector(`h2#${CSS.escape(testPlan.directory)}`) ??
           document.querySelector('#main');
 
         focusTarget.focus();
