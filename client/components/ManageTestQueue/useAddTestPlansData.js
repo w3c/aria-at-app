@@ -56,24 +56,20 @@ export const useAddTestPlansData = isOpen => {
 
     if (mainQueryData.testPlanVersions) {
       mainQueryData.testPlanVersions.forEach(version => {
-        if (version.testPlanReports && version.testPlanReports.length > 0) {
-          const testPlanDirectory = version.testPlan?.directory;
-          if (testPlanDirectory) {
-            allTestPlanVersions.push(
-              normalizeVersion(version, testPlanDirectory)
-            );
-          }
+        const testPlanDirectory = version.testPlan?.directory;
+        if (testPlanDirectory) {
+          allTestPlanVersions.push(
+            normalizeVersion(version, testPlanDirectory)
+          );
         }
       });
     } else if (mainQueryData.testPlans) {
       mainQueryData.testPlans.forEach(testPlan => {
         const versions = testPlan.testPlanVersions || [];
         versions.forEach(version => {
-          if (version.testPlanReports && version.testPlanReports.length > 0) {
-            allTestPlanVersions.push(
-              normalizeVersion(version, testPlan.directory)
-            );
-          }
+          allTestPlanVersions.push(
+            normalizeVersion(version, testPlan.directory)
+          );
         });
       });
     }
