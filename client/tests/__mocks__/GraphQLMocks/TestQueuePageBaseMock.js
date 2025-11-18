@@ -3,7 +3,8 @@ export default (
   existingTestPlanReportsQuery,
   getUpdateEventsQuery,
   addTestPlansQuery,
-  getAutomationSupportedAtVersionsQuery
+  getAutomationSupportedAtVersionsQuery,
+  getRerunnableReportsCountQuery
 ) => [
   {
     request: {
@@ -139,6 +140,19 @@ export default (
   },
   {
     request: {
+      query: addTestPlansQuery,
+      variables: {
+        testPlanVersionPhases: ['DRAFT', 'CANDIDATE', 'RECOMMENDED']
+      }
+    },
+    result: {
+      data: {
+        testPlans: []
+      }
+    }
+  },
+  {
+    request: {
       query: getAutomationSupportedAtVersionsQuery,
       variables: {}
     },
@@ -170,6 +184,36 @@ export default (
             ]
           }
         ]
+      }
+    }
+  },
+  {
+    request: {
+      query: getRerunnableReportsCountQuery,
+      variables: {
+        atVersionId: '1'
+      }
+    },
+    result: {
+      data: {
+        rerunnableReports: {
+          previousVersionGroups: []
+        }
+      }
+    }
+  },
+  {
+    request: {
+      query: getRerunnableReportsCountQuery,
+      variables: {
+        atVersionId: '2'
+      }
+    },
+    result: {
+      data: {
+        rerunnableReports: {
+          previousVersionGroups: []
+        }
       }
     }
   }

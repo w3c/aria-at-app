@@ -175,6 +175,8 @@ const Actions = ({
         content={content}
         closeLabel="Cancel"
         staticBackdrop={true}
+        useOnHide={true}
+        handleClose={hideConfirmationModal}
         actions={[
           {
             label: 'Confirm',

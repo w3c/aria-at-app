@@ -24,6 +24,9 @@ const addViewerResolver = async (_, { testId, testPlanReportId }, context) => {
       transaction
     });
   } catch (error) {
+    // Log the error but don't fail the mutation - this is a non-critical operation
+    // that tracks which tests a reviewer has viewed. If it fails, we still want to
+    // return the user successfully. This is intentionally a best-effort operation
     console.error('addViewerResolver.error', error);
   }
 
