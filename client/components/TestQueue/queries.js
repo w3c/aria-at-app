@@ -278,6 +278,7 @@ export const TEST_QUEUE_EXPANDED_ROW_QUERY = gql`
       }
       draftTestPlanRuns {
         ...TestPlanRunFields
+        testResultsLength
       }
     }
   }
