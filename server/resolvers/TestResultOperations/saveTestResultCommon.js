@@ -17,12 +17,14 @@ const {
 const { updatePercentComplete } = require('../../util/updatePercentComplete');
 const {
   bulkCreateNegativeSideEffects,
-  getNegativeSideEffectsByTestPlanRunId
+  getNegativeSideEffectsByTestPlanRunId,
+  updateNegativeSideEffectById,
+  deleteNegativeSideEffectById
 } = require('../../models/services/NegativeSideEffectService');
 
 /**
- * Persists negative side effects to DB, avoiding duplicates.
- * Creates unique IDs (testResultId+scenarioResultId+negativeSideEffectId), filters existing, bulk creates.
+ * Persists negative side effects to DB, syncing with test result data.
+ * Creates unique IDs (testResultId+scenarioResultId+negativeSideEffectId), updates existing records, creates new ones, and deletes removed ones.
  * Non-critical operation - errors logged but not thrown.
  *
  * @param {Object} options
@@ -43,15 +45,21 @@ const createNegativeSideEffectsForTestResult = async ({
         transaction
       });
 
-    // Create a set of existing negative side effect IDs for efficient lookup
-    const existingIds = new Set(
-      existingNegativeSideEffects.map(
-        nse =>
-          `${nse.testResultId}_${nse.scenarioResultId}_${nse.negativeSideEffectId}`
-      )
+    // Filter existing negative side effects to only those for this test result
+    const existingForTestResult = existingNegativeSideEffects.filter(
+      nse => nse.testResultId === testResult.id
     );
 
+    // Create a map of existing negative side effects by unique ID for efficient lookup
+    const existingMap = new Map();
+    existingForTestResult.forEach(nse => {
+      const uniqueId = `${nse.testResultId}_${nse.scenarioResultId}_${nse.negativeSideEffectId}`;
+      existingMap.set(uniqueId, nse);
+    });
+
     const negativeSideEffectsData = [];
+    const updatePromises = [];
+    const newUniqueIds = new Set();
 
     // Process each scenario result
     if (
@@ -65,9 +73,35 @@ const createNegativeSideEffectsForTestResult = async ({
         ) {
           for (const negativeSideEffect of scenarioResult.negativeSideEffects) {
             const uniqueId = `${testResult.id}_${scenarioResult.id}_${negativeSideEffect.id}`;
+            newUniqueIds.add(uniqueId);
+            const existing = existingMap.get(uniqueId);
 
-            // Only create if it doesn't already exist
-            if (!existingIds.has(uniqueId)) {
+            if (existing) {
+              // Update existing record if values have changed
+              const updateValues = {
+                impact: negativeSideEffect.impact || 'MODERATE',
+                details: negativeSideEffect.details || null,
+                highlightRequired:
+                  negativeSideEffect.highlightRequired || false,
+                updatedAt: new Date()
+              };
+
+              // Only update if values have actually changed
+              if (
+                existing.impact !== updateValues.impact ||
+                existing.details !== updateValues.details ||
+                existing.highlightRequired !== updateValues.highlightRequired
+              ) {
+                updatePromises.push(
+                  updateNegativeSideEffectById({
+                    id: existing.id,
+                    values: updateValues,
+                    transaction
+                  })
+                );
+              }
+            } else {
+              // Create new record
               negativeSideEffectsData.push({
                 testPlanRunId,
                 testResultId: testResult.id,
@@ -84,6 +118,38 @@ const createNegativeSideEffectsForTestResult = async ({
             }
           }
         }
+      }
+    }
+
+    // Delete any existing negative side effects that are no longer in the test result
+    const deletePromises = [];
+    for (const existing of existingForTestResult) {
+      const uniqueId = `${existing.testResultId}_${existing.scenarioResultId}_${existing.negativeSideEffectId}`;
+      if (!newUniqueIds.has(uniqueId)) {
+        deletePromises.push(
+          deleteNegativeSideEffectById({
+            id: existing.id,
+            transaction
+          })
+        );
+      }
+    }
+
+    // Delete removed negative side effects
+    if (deletePromises.length > 0) {
+      try {
+        await Promise.all(deletePromises);
+      } catch (error) {
+        console.error('Error deleting negative side effects:', error);
+      }
+    }
+
+    // Update existing records in parallel
+    if (updatePromises.length > 0) {
+      try {
+        await Promise.all(updatePromises);
+      } catch (error) {
+        console.error('Error updating negative side effects:', error);
       }
     }
 
