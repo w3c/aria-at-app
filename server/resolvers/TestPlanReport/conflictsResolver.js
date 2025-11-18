@@ -85,7 +85,8 @@ const conflictsResolver = async (testPlanReport, _, context) => {
 
         // Ignore negativeSideEffect details text during comparison of conflicts
         picked.negativeSideEffects = picked.negativeSideEffects.map(
-          negativeSideEffect => omit(negativeSideEffect, ['details'])
+          negativeSideEffect =>
+            omit(negativeSideEffect, ['details', 'encodedId', 'atBugs'])
         );
 
         return picked;
