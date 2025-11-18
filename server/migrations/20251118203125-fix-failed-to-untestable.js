@@ -7,7 +7,9 @@ const { dumpTable } = require('./utils');
 module.exports = {
   async up(queryInterface) {
     // From production_dump_20251118.sql, found these to be the faulty reports which prevented progression to RECOMMENDED
-    const testPlanReportIdsWithNonMatchingFailures = [419, 472, 475, 516, 433];
+    const testPlanReportIdsWithNonMatchingFailures = [
+      419, 472, 475, 516, 433, 432
+    ];
 
     const transaction = await queryInterface.sequelize.transaction();
 
@@ -68,7 +70,7 @@ module.exports = {
             return;
           }
 
-          // Nw update all TestPlanRuns to set untestable: true
+          // Now update all TestPlanRuns to set untestable: true
           // for scenarios that are untestable in any run
           const updatedRunIds = [];
 
