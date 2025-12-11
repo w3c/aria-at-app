@@ -16,11 +16,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v4
-      - name: Install NodeJS 20
-        uses: actions/setup-node@v4
+        uses: actions/checkout@v5
+      - name: Install NodeJS 22
+        uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
       - name: Conventional Changelog Action
         uses: TriPSs/conventional-changelog-action@v3

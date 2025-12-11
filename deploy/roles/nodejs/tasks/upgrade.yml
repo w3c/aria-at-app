@@ -9,17 +9,18 @@
 - name: Show status of nodejs installation
   debug: msg="{{ node_version.stdout }}"
 
-- name: Remove Node.js repo if not version 18
+- name: Remove Node.js repo if not version 22
   apt_repository:
     state: absent
-    repo: deb https://deb.nodesource.com/node_14.x buster main
+    # The last known version across the environments before current update
+    repo: deb https://deb.nodesource.com/node_18.x buster main
     update_cache: True
   become: yes
-  when: 'node_version.stdout is not match("v18.*")'
+  when: 'node_version.stdout is not match("v22.*")'
 
-- name: Remove Node.js if not version 18
+- name: Remove Node.js if not version 22
   apt:
     name: nodejs
     state: absent
   become: yes
-  when: 'node_version.stdout is not match("v18.*")'
+  when: 'node_version.stdout is not match("v22.*")'
