@@ -22,7 +22,7 @@
   "dependencies": {
     "@apollo/client": "^3.10.8",
     "@fortawesome/fontawesome-svg-core": "^6.5.2",
-    "@fortawesome/free-solid-svg-icons": "^6.5.2",
+    "@fortawesome/free-solid-svg-icons": "^7.1.0",
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@radix-ui/react-tooltip": "^1.2.7",
     "bootstrap": "^5.3.3",
