@@ -174,7 +174,11 @@ export default () => (
     <Route
       exact
       path="/aria-html-feature/:atId/:browserId/:refId/:refType"
-      element={<AriaHtmlFeatureDetailReport />}
+      element={
+        <Suspense fallback={<PageLoader />}>
+          <AriaHtmlFeatureDetailReport />
+        </Suspense>
+      }
     />
     <Route
       exact
