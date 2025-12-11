@@ -1971,7 +1971,7 @@ const graphqlSchema = gql`
       The TestPlanReport to create.
       """
       input: TestPlanReportInput!
-    ): PopulatedData!
+    ): CreateTestPlanReportResponse!
     """
     Get the available mutations for the given TestPlanReport.
     """
@@ -2093,6 +2093,20 @@ const graphqlSchema = gql`
   type CreateCollectionJobsFromPreviousVersionResponse {
     collectionJobs: [CollectionJob!]!
     message: String!
+  }
+
+  """
+  Response type for createTestPlanReport mutation.
+  """
+  type CreateTestPlanReportResponse {
+    """
+    The populated data containing the test plan report and related entities.
+    """
+    populatedData: PopulatedData!
+    """
+    Whether the test plan report already existed before this mutation was called.
+    """
+    alreadyExisted: Boolean!
   }
 
   type KeyMetrics {
