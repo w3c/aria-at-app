@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRobot } from '@fortawesome/free-solid-svg-icons';
@@ -43,22 +43,7 @@ const TestQueueRunCompletionStatus = ({
     testPlanReport.runnableTestsLength
   ]);
 
-  // Scenarios, even on a runnable test, may have different ATs than the report
-  const getNumScenariosTest = test =>
-    test.scenarios.reduce(
-      (acc, scenario) =>
-        acc + (scenario.at.id === testPlanReport.at.id ? 1 : 0),
-      0
-    );
-
-  const totalResponses = useMemo(
-    () =>
-      testPlanReport.runnableTests.reduce(
-        (acc, test) => acc + getNumScenariosTest(test),
-        0
-      ),
-    [testPlanReport.runnableTests]
-  );
+  const totalResponses = testPlanReport.totalScenarioCount || 0;
 
   let info;
   let completionStatus;

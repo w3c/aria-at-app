@@ -1,11 +1,35 @@
+const DataLoader = require('dataloader');
 const {
-  getTestPlanReportById
+  getTestPlanReports
 } = require('../models/services/TestPlanReportService');
 
-const testPlanReportResolver = (_, { id }, context) => {
-  const { transaction } = context;
+const createTestPlanReportBatchLoader = context => {
+  return new DataLoader(async testPlanReportIds => {
+    const reports = await getTestPlanReports({
+      where: { id: testPlanReportIds },
+      transaction: context.transaction
+    });
 
-  return getTestPlanReportById({ id, transaction });
+    const reportsById = {};
+    reports.forEach(report => {
+      reportsById[report.id] = report;
+    });
+
+    return testPlanReportIds.map(id => reportsById[id] || null);
+  });
+};
+
+const testPlanReportResolver = async (_, { id }, context) => {
+  if (!context.loaders) {
+    context.loaders = {};
+  }
+
+  if (!context.loaders.testPlanReportById) {
+    context.loaders.testPlanReportById =
+      createTestPlanReportBatchLoader(context);
+  }
+
+  return context.loaders.testPlanReportById.load(id);
 };
 
 module.exports = testPlanReportResolver;

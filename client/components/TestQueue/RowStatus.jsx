@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import ProgressBar from '../common/ProgressBar';
 import ReportStatusSummary from '../common/ReportStatusSummary';
 import { useTestPlanReportPercentComplete } from '../../hooks/useTestPlanReportPercentComplete';
-import { TestPlanVersionPropType } from '../common/proptypes';
 
 const RowStatus = ({ testPlanVersion, testPlanReport, shouldPoll }) => {
   const { percentComplete } = useTestPlanReportPercentComplete(
@@ -29,10 +28,24 @@ const RowStatus = ({ testPlanVersion, testPlanReport, shouldPoll }) => {
 };
 
 RowStatus.propTypes = {
-  testPlanVersion: TestPlanVersionPropType.isRequired,
+  testPlanVersion: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    title: PropTypes.string,
+    phase: PropTypes.string,
+    versionString: PropTypes.string
+  }).isRequired,
   testPlanReport: PropTypes.shape({
     id: PropTypes.string.isRequired,
-    percentComplete: PropTypes.number
+    percentComplete: PropTypes.number,
+    markedFinalAt: PropTypes.string,
+    conflictsLength: PropTypes.number,
+    draftTestPlanRuns: PropTypes.arrayOf(
+      PropTypes.shape({
+        tester: PropTypes.shape({
+          username: PropTypes.string
+        })
+      })
+    )
   }).isRequired,
   shouldPoll: PropTypes.bool
 };

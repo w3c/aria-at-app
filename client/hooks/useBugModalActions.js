@@ -8,6 +8,39 @@ import {
   UNLINK_AT_BUGS_FROM_NEGATIVE_SIDE_EFFECT
 } from '../components/FailingAssertionsSummary/queries';
 
+/**
+ * @typedef {Object} BugPendingChanges
+ * @property {Array} linkedBugs - Array of bugs to be linked
+ * @property {Array} unlinkedBugs - Array of bug IDs to be unlinked
+ */
+
+/**
+ * @typedef {Object} UseBugModalActionsOptions
+ * @property {Object} assertion - The assertion object containing assertionId or negativeSideEffectId
+ * @property {BugPendingChanges} pendingChanges - Object with linkedBugs and unlinkedBugs arrays
+ * @property {Object} displayAssertion - The assertion object with pending changes applied
+ * @property {Function} onLinked - Callback function called with updated assertion after successful save
+ * @property {Function} onClose - Callback function called when modal should close
+ */
+
+/**
+ * @typedef {Object} UseBugModalActionsReturn
+ * @property {boolean} showCancelConfirm - True if cancel confirmation should be shown
+ * @property {boolean} hasChanges - True if there are pending changes
+ * @property {Function} handleSave - Function to save changes (can receive newlyCreatedBug parameter)
+ * @property {Function} handleCancel - Function to handle cancel action
+ * @property {Function} handleConfirmCancel - Function to confirm cancellation
+ * @property {Function} handleCancelCancel - Function to cancel the cancellation confirmation
+ */
+
+/**
+ * Hook for managing bug linking modal actions. Handles saving bug links/unlinks for
+ * both regular assertions and negative side effects. Updates commandIds arrays appropriately
+ * and notifies parent component of changes.
+ *
+ * @param {UseBugModalActionsOptions} options - Configuration options
+ * @returns {UseBugModalActionsReturn}
+ */
 export const useBugModalActions = ({
   assertion,
   pendingChanges,

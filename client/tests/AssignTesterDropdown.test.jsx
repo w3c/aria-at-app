@@ -58,17 +58,52 @@ import { useMutation } from '@apollo/client';
 
 // Mock useMutation hook
 useMutation.mockImplementation(mutation => {
-  let response;
+  let mutationFn;
 
   if (mutation === ASSIGN_TESTER_MUTATION) {
-    response = 'ASSIGN';
+    mutationFn = jest.fn(() => ({
+      data: {
+        testPlanReport: {
+          assignTester: {
+            testPlanReport: {
+              draftTestPlanRuns: [
+                {
+                  initiatedByAutomation: false,
+                  tester: {
+                    id: '1',
+                    username: 'bee'
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    }));
   } else if (mutation === REMOVE_TESTER_MUTATION) {
-    response = 'REMOVE';
+    mutationFn = jest.fn(() => ({
+      data: {
+        testPlanReport: {
+          deleteTestPlanRun: {
+            testPlanReport: {
+              draftTestPlanRuns: []
+            }
+          }
+        }
+      }
+    }));
   } else if (mutation === SCHEDULE_COLLECTION_JOB_MUTATION) {
-    response = 'SCHEDULE';
+    mutationFn = jest.fn(() => ({
+      data: {
+        scheduleCollectionJob: {
+          id: 'some-job-id',
+          status: 'pending'
+        }
+      }
+    }));
   }
 
-  return [jest.fn(() => response), { loading: false, error: null }];
+  return [mutationFn, { loading: false, error: null }];
 });
 
 // Mocked GraphQL responses
@@ -234,7 +269,11 @@ describe('AssignTesterDropdown', () => {
     fireEvent.click(items[0]);
 
     await waitFor(async () => {
-      expect(useMutation).toHaveBeenCalledWith(ASSIGN_TESTER_MUTATION);
+      const calls = useMutation.mock.calls;
+      const assignTesterCalled = calls.some(
+        call => call[0] === ASSIGN_TESTER_MUTATION
+      );
+      expect(assignTesterCalled).toBe(true);
       expect(mockProps.onChange).toHaveBeenCalledTimes(1);
       expect(mockProps.setAlertMessage).toHaveBeenCalledTimes(1);
       expect(mockProps.setAlertMessage).toHaveBeenCalledWith(
@@ -260,9 +299,11 @@ describe('AssignTesterDropdown', () => {
     fireEvent.click(items[0]);
 
     await waitFor(() => {
-      expect(useMutation).toHaveBeenCalledWith(
-        SCHEDULE_COLLECTION_JOB_MUTATION
+      const calls = useMutation.mock.calls;
+      const scheduleCollectionCalled = calls.some(
+        call => call[0] === SCHEDULE_COLLECTION_JOB_MUTATION
       );
+      expect(scheduleCollectionCalled).toBe(true);
       expect(mockProps.onChange).toHaveBeenCalledTimes(1);
     });
   });
@@ -352,7 +393,11 @@ describe('AssignTesterDropdown', () => {
     fireEvent.click(items[0]);
 
     await waitFor(() => {
-      expect(useMutation).toHaveBeenCalledWith(REMOVE_TESTER_MUTATION);
+      const calls = useMutation.mock.calls;
+      const removeTesterCalled = calls.some(
+        call => call[0] === REMOVE_TESTER_MUTATION
+      );
+      expect(removeTesterCalled).toBe(true);
       expect(mockProps.setAlertMessage).toHaveBeenCalledWith(
         expect.stringContaining('bee now unchecked')
       );

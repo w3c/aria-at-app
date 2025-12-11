@@ -15,8 +15,11 @@ export const TEST_PLAN_REPORT_ASSIGNED_TESTERS_QUERY = gql`
     testPlanReport(id: $testPlanReportId) {
       id
       draftTestPlanRuns {
+        id
         tester {
           id
+          username
+          isBot
         }
       }
     }

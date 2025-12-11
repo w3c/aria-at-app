@@ -33,6 +33,7 @@ const BotRunTestStatusList = ({ testPlanReportId }) => {
   } = useQuery(TEST_PLAN_RUNS_TEST_RESULTS_QUERY, {
     variables: { testPlanReportId },
     fetchPolicy: 'cache-and-network',
+    nextFetchPolicy: 'cache-first',
     pollInterval
   });
 

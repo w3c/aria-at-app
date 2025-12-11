@@ -9,8 +9,6 @@ import {
   concat
 } from '@apollo/client';
 
-// Dynamically set GraphQL request headers
-// See https://www.apollographql.com/docs/react/networking/advanced-http-networking#customizing-request-logic
 const headerMiddleware = new ApolloLink((operation, forward) => {
   const currentTransactionId = sessionStorage.getItem('currentTransactionId');
   if (currentTransactionId) {
@@ -33,9 +31,7 @@ const client = new ApolloClient({
         fields: {
           me: { merge: true },
           testPlanVersion: { merge: true },
-          testPlanVersions: { merge: false },
           testPlanReport: { merge: true },
-          testPlanReports: { merge: false },
           collectionJobByTestPlanRunId: {
             merge(existing, incoming) {
               return { ...existing, ...incoming };
@@ -43,15 +39,52 @@ const client = new ApolloClient({
           }
         }
       },
-      Mutation: {
-        fields: {
-          testPlanReport: { merge: false },
-          testPlanRun: { merge: false },
-          testPlanVersion: { merge: false }
-        }
+      At: {
+        keyFields: ['id']
+      },
+      AtVersion: {
+        keyFields: ['id']
+      },
+      Browser: {
+        keyFields: ['id']
+      },
+      BrowserVersion: {
+        keyFields: ['id']
+      },
+      TestPlan: {
+        keyFields: ['id']
+      },
+      TestPlanVersion: {
+        keyFields: ['id']
+      },
+      TestPlanReport: {
+        keyFields: ['id']
+      },
+      TestPlanRun: {
+        keyFields: ['id']
+      },
+      TestResult: {
+        keyFields: ['id']
+      },
+      CollectionJob: {
+        keyFields: ['id']
+      },
+      User: {
+        keyFields: ['id']
+      },
+      AriaHtmlFeaturesMetrics: {
+        keyFields: false
       }
     }
-  })
+  }),
+  defaultOptions: {
+    query: {
+      errorPolicy: 'all'
+    },
+    watchQuery: {
+      errorPolicy: 'all'
+    }
+  }
 });
 
 const resetCache = async () => {

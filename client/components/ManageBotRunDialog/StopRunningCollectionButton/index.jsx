@@ -13,7 +13,8 @@ const StopRunningCollectionButton = ({ collectionJob, onClick = () => {} }) => {
     variables: {
       collectionJobId: collectionJob.id
     },
-    skip: !collectionJob
+    skip: !collectionJob,
+    refetchQueries: ['CollectionJobIdByTestPlanRunId']
   });
 
   if (!collectionJob) {

@@ -35,6 +35,7 @@ export const Provider = ({ children, testPlanRun }) => {
     testPlanRunId
       ? useLazyQuery(COLLECTION_JOB_UPDATES_QUERY, {
           fetchPolicy: 'cache-and-network',
+          nextFetchPolicy: 'cache-first',
           variables: { collectionJobId: initialCollectionJob?.id },
           pollInterval
         })

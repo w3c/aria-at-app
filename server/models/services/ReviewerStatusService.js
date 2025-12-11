@@ -332,16 +332,31 @@ const createOrUpdateReviewerStatus = async ({
 
   await ReviewerStatus.upsert(upsertValues, { transaction });
 
-  return getReviewerStatusById({
-    testPlanReportId,
-    userId,
-    reviewerStatusAttributes,
-    testPlanReportAttributes,
-    testPlanVersionAttributes,
-    userAttributes,
-    vendorAttributes,
-    transaction
-  });
+  // Try to get the updated reviewer status
+  // If the transaction was rolled back (e.g., due to an error in a nested operation),
+  // catch the error and return the existing status or null
+  try {
+    return await getReviewerStatusById({
+      testPlanReportId,
+      userId,
+      reviewerStatusAttributes,
+      testPlanReportAttributes,
+      testPlanVersionAttributes,
+      userAttributes,
+      vendorAttributes,
+      transaction
+    });
+  } catch (error) {
+    // If the transaction was rolled back, we can't query with it
+    // Return the existing status if we have it, otherwise null
+    if (
+      error.message &&
+      error.message.includes('rollback has been called on this transaction')
+    ) {
+      return existing || null;
+    }
+    throw error;
+  }
 };
 
 module.exports = {

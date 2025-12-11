@@ -1,7 +1,32 @@
 import { useState, useCallback, useMemo } from 'react';
 
 /**
- * Generic hook for form validation
+ * @typedef {Object} UseFormValidationOptions
+ * @property {Object} [initialData={}] - Initial form data object
+ * @property {Object<string, Function>} [validators={}] - Object mapping field names
+ *   to validator functions. Validators should throw errors when validation fails
+ * @property {Function|null} [checkDuplicates=null] - Optional function to check for
+ *   duplicate values. Should return a truthy value if duplicates are found
+ */
+
+/**
+ * @typedef {Object} UseFormValidationReturn
+ * @property {Object} formData - Current form data values
+ * @property {Object<string, string>} errors - Object mapping field names to error messages
+ * @property {*} duplicateCheck - Result of duplicate check function, or null
+ * @property {Function} updateField - Function to update a field value (fieldName, value)
+ * @property {Function} validateForm - Function to validate all fields, returns boolean
+ * @property {Function} resetForm - Function to reset form to initial data
+ * @property {boolean} isValid - True if form has no errors and no duplicates
+ */
+
+/**
+ * Generic hook for form validation. Manages form data state, validates fields
+ * using provided validators, and checks for duplicates. Validators should throw
+ * errors with messages when validation fails.
+ *
+ * @param {UseFormValidationOptions} options - Configuration options
+ * @returns {UseFormValidationReturn}
  */
 export const useFormValidation = ({
   initialData = {},

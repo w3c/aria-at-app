@@ -14,7 +14,7 @@ import {
   GET_UPDATE_EVENTS
 } from './queries';
 
-const ReportRerun = ({ onQueueUpdate, onTotalRunsAvailable }) => {
+const ReportRerun = ({ onQueueUpdate }) => {
   const { triggerLoad, loadingMessage } = useTriggerLoad();
   const eventsPanelRef = useRef(null);
   const announce = useAriaLiveRegion();
@@ -92,7 +92,7 @@ const ReportRerun = ({ onQueueUpdate, onTotalRunsAvailable }) => {
   }, [atVersionsData]);
 
   const [getRerunnableReports] = useLazyQuery(GET_RERUNNABLE_REPORTS_QUERY, {
-    fetchPolicy: 'cache-and-network'
+    fetchPolicy: 'cache-first'
   });
 
   useEffect(() => {
@@ -171,18 +171,6 @@ const ReportRerun = ({ onQueueUpdate, onTotalRunsAvailable }) => {
       };
     });
   }, [automatedVersions, rerunnableReportsData]);
-
-  useEffect(() => {
-    const totalAvailableRuns = activeRuns.reduce(
-      (total, run) =>
-        total +
-        run.reportGroups.reduce((sum, group) => sum + group.reportCount, 0),
-      0
-    );
-    if (onTotalRunsAvailable) {
-      onTotalRunsAvailable(totalAvailableRuns);
-    }
-  }, [activeRuns, onTotalRunsAvailable]);
 
   const hasRerunnableReports = useMemo(() => {
     return activeRuns.some(
@@ -279,8 +267,7 @@ const ReportRerun = ({ onQueueUpdate, onTotalRunsAvailable }) => {
 };
 
 ReportRerun.propTypes = {
-  onQueueUpdate: PropTypes.func.isRequired,
-  onTotalRunsAvailable: PropTypes.func
+  onQueueUpdate: PropTypes.func.isRequired
 };
 
 export default ReportRerun;

@@ -6,6 +6,18 @@ const {
   hasExceptionWithPriority
 } = require('../../util/hasExceptionWithPriority');
 
+/**
+ * Detects conflicts between completed test results in a TestPlanReport.
+ * Compares all completed results for the same test and identifies:
+ * - Scenario conflicts: Different negative side effects (ignoring details text)
+ * - Assertion conflicts: Different pass/fail verdicts or untestable disagreements
+ * Skips EXCLUDE priority assertions and ignores output differences.
+ *
+ * @param {Object} testPlanReport - TestPlanReport with testPlanRuns to check
+ * @param {*} _ - Unused parent argument
+ * @param {Object} context - GraphQL context
+ * @returns {Promise<Array<Object>>} Conflicts with source and conflictingResults populated
+ */
 const conflictsResolver = async (testPlanReport, _, context) => {
   let testPlanReportData = {};
 
@@ -73,7 +85,8 @@ const conflictsResolver = async (testPlanReport, _, context) => {
 
         // Ignore negativeSideEffect details text during comparison of conflicts
         picked.negativeSideEffects = picked.negativeSideEffects.map(
-          negativeSideEffect => omit(negativeSideEffect, ['details'])
+          negativeSideEffect =>
+            omit(negativeSideEffect, ['details', 'encodedId', 'atBugs'])
         );
 
         return picked;

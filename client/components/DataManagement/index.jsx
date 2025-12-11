@@ -24,7 +24,10 @@ import styles from './DataManagement.module.css';
 const DataManagement = () => {
   const { loading, data, error, refetch } = useQuery(
     DATA_MANAGEMENT_PAGE_QUERY,
-    { fetchPolicy: 'cache-and-network' }
+    {
+      fetchPolicy: 'cache-and-network',
+      nextFetchPolicy: 'cache-first'
+    }
   );
 
   const [pageReady, setPageReady] = useState(false);

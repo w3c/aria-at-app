@@ -33,7 +33,6 @@ const testPlanVersionAssociation = (
   association: 'testPlanVersions',
   attributes: testPlanVersionAttributes,
   include: [
-    // eslint-disable-next-line no-use-before-define
     testPlanReportAssociation(
       testPlanReportAttributes,
       atAttributes,
@@ -62,11 +61,8 @@ const testPlanReportAssociation = (
   association: 'testPlanReports',
   attributes: testPlanReportAttributes,
   include: [
-    // eslint-disable-next-line no-use-before-define
     atAssociation(atAttributes),
-    // eslint-disable-next-line no-use-before-define
     browserAssociation(browserAttributes),
-    // eslint-disable-next-line no-use-before-define
     testPlanRunAssociation(testPlanRunAttributes, userAttributes)
   ]
 });
@@ -79,10 +75,7 @@ const testPlanReportAssociation = (
 const testPlanRunAssociation = (testPlanRunAttributes, userAttributes) => ({
   association: 'testPlanRuns',
   attributes: testPlanRunAttributes,
-  include: [
-    // eslint-disable-next-line no-use-before-define
-    userAssociation(userAttributes)
-  ]
+  include: [userAssociation(userAttributes)]
 });
 
 /**
@@ -193,19 +186,36 @@ const getTestPlans = async ({
   const searchQuery = search ? `%${search}%` : '';
   if (searchQuery) where = { ...where, title: { [Op.iLike]: searchQuery } };
 
+  // Build include array conditionally - only include if attributes are provided
+  const include = [];
+
+  if (testPlanVersionAttributes && testPlanVersionAttributes.length > 0) {
+    const testPlanVersionIncludes = [];
+
+    // Only include testPlanReports if testPlanReportAttributes are provided
+    if (testPlanReportAttributes && testPlanReportAttributes.length > 0) {
+      testPlanVersionIncludes.push(
+        testPlanReportAssociation(
+          testPlanReportAttributes,
+          atAttributes,
+          browserAttributes,
+          testPlanRunAttributes,
+          userAttributes
+        )
+      );
+    }
+
+    include.push({
+      association: 'testPlanVersions',
+      attributes: testPlanVersionAttributes,
+      include: testPlanVersionIncludes
+    });
+  }
+
   const data = await ModelService.get(TestPlan, {
     where,
     attributes: testPlanAttributes,
-    include: [
-      testPlanVersionAssociation(
-        testPlanVersionAttributes,
-        testPlanReportAttributes,
-        atAttributes,
-        browserAttributes,
-        testPlanRunAttributes,
-        userAttributes
-      )
-    ],
+    include,
     pagination,
     transaction
   });
