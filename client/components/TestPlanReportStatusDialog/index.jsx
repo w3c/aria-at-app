@@ -20,7 +20,8 @@ const TestPlanReportStatusDialog = ({
   triggerUpdate = () => {}
 }) => {
   const { data: { me } = {} } = useQuery(ME_QUERY, {
-    fetchPolicy: 'cache-and-network'
+    fetchPolicy: 'cache-and-network',
+    nextFetchPolicy: 'cache-first'
   });
 
   const auth = evaluateAuth(me);

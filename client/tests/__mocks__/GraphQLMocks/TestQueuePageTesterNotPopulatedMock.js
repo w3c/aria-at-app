@@ -1,4 +1,24 @@
-export default testQueuePageQuery => [
+export default (testQueuePageQuery, meQuery) => [
+  {
+    request: {
+      query: meQuery
+    },
+    result: {
+      data: {
+        me: {
+          __typename: 'User',
+          id: '4',
+          username: 'bar-foo',
+          roles: ['TESTER'],
+          company: {
+            id: '1',
+            name: 'Company',
+            ats: []
+          }
+        }
+      }
+    }
+  },
   {
     request: {
       query: testQueuePageQuery

@@ -123,8 +123,11 @@ const testPlanReportStatusesResolver = async (testPlanVersion, _, context) => {
       return a.browser.name.localeCompare(b.browser.name);
     }
     if (a.isRequired !== b.isRequired) return a.isRequired ? -1 : 1;
-    const dateA = (a.minimumAtVersion ?? a.exactAtVersion).releasedAt;
-    const dateB = (b.minimumAtVersion ?? b.exactAtVersion).releasedAt;
+    const atVersionA = a.minimumAtVersion ?? a.exactAtVersion;
+    const atVersionB = b.minimumAtVersion ?? b.exactAtVersion;
+    if (!atVersionA || !atVersionB) return 0;
+    const dateA = atVersionA.releasedAt;
+    const dateB = atVersionB.releasedAt;
     return new Date(dateA) - new Date(dateB);
   });
 
@@ -154,8 +157,12 @@ const indexTestPlanReports = async (unpopulatedTestPlanReports, context) => {
   );
 
   const releaseOrderTestPlanReports = unsortedTestPlanReports.sort((a, b) => {
-    const dateA = (a.minimumAtVersion ?? a.exactAtVersion).releasedAt;
-    const dateB = (b.minimumAtVersion ?? b.exactAtVersion).releasedAt;
+    const atVersionA = a.minimumAtVersion ?? a.exactAtVersion;
+    const atVersionB = b.minimumAtVersion ?? b.exactAtVersion;
+    if (!atVersionA || !atVersionB)
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    const dateA = atVersionA.releasedAt;
+    const dateB = atVersionB.releasedAt;
     if (dateA !== dateB) return new Date(dateB) - new Date(dateA);
 
     // With duplicate reports list the oldest first

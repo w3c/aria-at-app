@@ -187,6 +187,7 @@ describe('graphql', () => {
       ['UpdateEvent', 'performedBy'],
       ['UpdateEvent', 'entityId'],
       ['UpdateEvent', 'metadata'],
+      ['TestPlanReport', 'totalScenarioCount'],
       ['Assertion', 'references'],
       ['AtBug', 'commandIds']
     ];

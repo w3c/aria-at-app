@@ -4,10 +4,11 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     return queryInterface.sequelize.transaction(async transaction => {
-      // Create NVDA vendor and retrieve id to use with 'At' table
+      // Insert vendor if it doesn't exist, or get existing id
       const [vendor] = await queryInterface.sequelize.query(
         `insert into "Vendor" (name, "createdAt", "updatedAt")
          values ('nvAccess', now(), now())
+         on conflict (name) do update set name = excluded.name
          returning id`,
         {
           type: Sequelize.QueryTypes.INSERT,

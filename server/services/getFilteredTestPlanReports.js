@@ -2,6 +2,20 @@ const {
   getTestPlanReports
 } = require('../models/services/TestPlanReportService');
 
+/**
+ * Retrieves and filters test plan reports that are finalized and in CANDIDATE or
+ * RECOMMENDED phases. For each test plan, prioritizes RECOMMENDED phase reports
+ * over CANDIDATE phase reports. If a RECOMMENDED report exists for a test plan,
+ * only RECOMMENDED reports are included; otherwise, CANDIDATE reports are included.
+ *
+ * @param {Object} [filters={}] - Optional filters to apply to the query
+ * @param {number} [filters.atId] - Optional AT ID to filter reports by
+ * @param {number} [filters.browserId] - Optional browser ID to filter reports by
+ * @param {Object} options - Options object
+ * @param {Object} options.transaction - Sequelize transaction for database operations
+ * @returns {Promise<Array<Object>>} Promise that resolves to an array of filtered
+ *   test plan reports
+ */
 const getFilteredTestPlanReports = async (
   { atId, browserId } = {},
   { transaction }

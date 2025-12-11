@@ -2,9 +2,6 @@ const ModelService = require('./ModelService');
 const { AtVersion, TestPlanReport } = require('..');
 const { Op } = require('sequelize');
 const { AT_VERSION_ATTRIBUTES, AT_ATTRIBUTES } = require('./helpers');
-const {
-  AT_VERSIONS_SUPPORTED_BY_COLLECTION_JOBS
-} = require('../../util/constants');
 
 /**
  * @param atAttributes - At attributes to be returned in the result
@@ -82,6 +79,7 @@ const getAtVersionWithRequirements = async (
     const matchingAtVersions = await getAtVersions({
       where: {
         atId,
+        supportedByAutomation: true,
         releasedAt: { [Op.gte]: minimumAtVersion.releasedAt }
       },
       pagination: {
@@ -90,15 +88,8 @@ const getAtVersionWithRequirements = async (
       transaction
     });
 
-    const supportedVersions =
-      AT_VERSIONS_SUPPORTED_BY_COLLECTION_JOBS[
-        matchingAtVersions[0]?.at?.name
-      ] || [];
-
     const latestSupportedAtVersion = matchingAtVersions.find(
-      atv =>
-        supportedVersions.includes(atv.name) &&
-        new Date(atv.releasedAt) >= new Date(minimumAtVersion.releasedAt)
+      atv => new Date(atv.releasedAt) >= new Date(minimumAtVersion.releasedAt)
     );
 
     if (!latestSupportedAtVersion) {
@@ -123,17 +114,17 @@ const getAtVersionWithRequirements = async (
  */
 const getLatestAutomationSupportedAtVersion = async (atId, transaction) => {
   const versions = await getAtVersions({
-    where: { atId },
-    pagination: { order: [['releasedAt', 'ASC']] },
+    where: {
+      atId,
+      supportedByAutomation: true,
+      latestAutomationSupporting: true
+    },
     transaction
   });
-  const atName = versions[0]?.at?.name;
-  const supportedNames = AT_VERSIONS_SUPPORTED_BY_COLLECTION_JOBS[atName] || [];
-  const supported = versions.filter(v => supportedNames.includes(v.name));
-  if (!supported.length) {
+  if (!versions.length) {
     throw new Error(`No automation-supported versions found for AT ${atId}`);
   }
-  return supported[supported.length - 1];
+  return versions[0];
 };
 
 /**
@@ -195,13 +186,25 @@ const getAtVersionByQuery = async ({
  * @returns {Promise<*>}
  */
 const createAtVersion = async ({
-  values: { atId, name, releasedAt },
+  values: {
+    atId,
+    name,
+    releasedAt,
+    supportedByAutomation = false,
+    latestAutomationSupporting = false
+  },
   atVersionAttributes = AT_VERSION_ATTRIBUTES,
   atAttributes = AT_ATTRIBUTES,
   transaction
 }) => {
   await ModelService.create(AtVersion, {
-    values: { atId, name, releasedAt },
+    values: {
+      atId,
+      name,
+      releasedAt,
+      supportedByAutomation,
+      latestAutomationSupporting
+    },
     transaction
   });
   return ModelService.getByQuery(AtVersion, {
@@ -300,6 +303,50 @@ const removeAtVersionById = async ({ id, truncate = false, transaction }) => {
   return ModelService.removeById(AtVersion, {
     id,
     truncate,
+    transaction
+  });
+};
+
+/**
+ * Promote an AT version to be automation-supported, and mark it latest for that AT.
+ * Demotes any other versions for the same AT from latestAutomationSupporting.
+ * @param {object} params
+ * @param {number} params.atVersionId
+ * @param {*} transaction
+ */
+const promoteAutomationSupportedVersion = async ({
+  atVersionId,
+  transaction
+}) => {
+  const version = await ModelService.getById(AtVersion, {
+    id: atVersionId,
+    attributes: AT_VERSION_ATTRIBUTES,
+    transaction
+  });
+  if (!version) return null;
+
+  if (version.supportedByAutomation && version.latestAutomationSupporting) {
+    return version;
+  }
+
+  await ModelService.update(AtVersion, {
+    where: { id: atVersionId },
+    values: { supportedByAutomation: true, latestAutomationSupporting: true },
+    transaction
+  });
+  await ModelService.update(AtVersion, {
+    where: {
+      atId: version.atId,
+      id: { [Op.ne]: atVersionId },
+      latestAutomationSupporting: true
+    },
+    values: { latestAutomationSupporting: false },
+    transaction
+  });
+
+  return ModelService.getById(AtVersion, {
+    id: atVersionId,
+    attributes: AT_VERSION_ATTRIBUTES,
     transaction
   });
 };
@@ -404,9 +451,7 @@ const getRerunnableTestPlanReportsForVersion = async ({
   }
 
   // Check if version is supported by automation
-  const supportedVersionNames =
-    AT_VERSIONS_SUPPORTED_BY_COLLECTION_JOBS[currentVersion.at.name] || [];
-  if (!supportedVersionNames.includes(currentVersion.name)) {
+  if (!currentVersion.supportedByAutomation) {
     return { currentVersion, previousVersionGroups: [] };
   }
 
@@ -637,6 +682,7 @@ module.exports = {
   updateAtVersionByQuery,
   removeAtVersionByQuery,
   removeAtVersionById,
+  promoteAutomationSupportedVersion,
   findOrCreateAtVersion,
   getUniqueAtVersionsForReport,
   getRerunnableTestPlanReportsForVersion,

@@ -42,7 +42,13 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
   );
   if (!testPlanReport) return <Navigate to="/404" />;
 
-  const { at, browser, recommendedAtVersion } = testPlanReport;
+  const {
+    at,
+    browser,
+    recommendedAtVersion,
+    exactAtVersion,
+    minimumAtVersion
+  } = testPlanReport;
   const overallMetrics = getMetrics({ testPlanReport });
 
   // Construct testPlanTarget
@@ -50,13 +56,23 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
     id: `${at.id}${browser.id}`,
     at,
     browser,
-    atVersion: recommendedAtVersion
+    atVersion: recommendedAtVersion || exactAtVersion || minimumAtVersion,
+    isMinimumAtVersion:
+      !recommendedAtVersion && !exactAtVersion && !!minimumAtVersion
   };
 
   const none = None('No Data');
 
   const renderVersionsSummaryTable = () => {
-    if (testPlanVersion.phase !== 'RECOMMENDED') return null;
+    if (
+      !(
+        testPlanVersion.phase === 'RECOMMENDED' ||
+        testPlanVersion.phase === 'CANDIDATE'
+      )
+    ) {
+      return null;
+    }
+    if (!testPlanTarget.atVersion) return null;
 
     const title = `${testPlanTarget.at.name} Versions Summary`;
     const testPlanReportsForTarget = testPlanVersion.testPlanReports.filter(
@@ -64,11 +80,13 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
         testPlanReport.at.id === at.id &&
         testPlanReport.browser.id === browser.id
     );
-    testPlanReportsForTarget.sort(
-      (a, b) =>
-        new Date(b.recommendedAtVersion.releasedAt) -
-        new Date(a.recommendedAtVersion.releasedAt)
-    );
+    testPlanReportsForTarget.sort((a, b) => {
+      const aAtVersion =
+        a.recommendedAtVersion || a.exactAtVersion || a.minimumAtVersion;
+      const bAtVersion =
+        b.recommendedAtVersion || b.exactAtVersion || b.minimumAtVersion;
+      return new Date(bAtVersion.releasedAt) - new Date(aAtVersion.releasedAt);
+    });
 
     return (
       <>
@@ -88,14 +106,26 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
           </thead>
           <tbody>
             {testPlanReportsForTarget.map(testPlanReport => {
-              const { recommendedAtVersion, metrics } = testPlanReport;
+              const {
+                recommendedAtVersion,
+                exactAtVersion,
+                minimumAtVersion,
+                metrics
+              } = testPlanReport;
               const { mustFormatted, shouldFormatted, mayFormatted } = metrics;
+
+              const atVersion =
+                recommendedAtVersion || exactAtVersion || minimumAtVersion;
+              const isMinimumAtVersion = atVersion === minimumAtVersion;
+              const atVersionDisplayName = isMinimumAtVersion
+                ? `${atVersion.name} or later`
+                : atVersion.name;
 
               return (
                 <tr key={`VersionsSummaryRow_${testPlanReport.id}`}>
                   <td>
                     {testPlanReportId === testPlanReport.id ? (
-                      <>{recommendedAtVersion.name}</>
+                      <>{atVersionDisplayName}</>
                     ) : (
                       <Link
                         to={
@@ -103,7 +133,7 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
                           `/targets/${testPlanReport.id}`
                         }
                       >
-                        {recommendedAtVersion.name}
+                        {atVersionDisplayName}
                       </Link>
                     )}
                   </td>

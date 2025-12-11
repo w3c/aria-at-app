@@ -50,6 +50,18 @@ export const GET_RERUNNABLE_REPORTS_QUERY = gql`
   }
 `;
 
+export const GET_RERUNNABLE_REPORTS_COUNT_QUERY = gql`
+  query GetRerunnableReportsCount($atVersionId: ID!) {
+    rerunnableReports(atVersionId: $atVersionId) {
+      previousVersionGroups {
+        reports {
+          id
+        }
+      }
+    }
+  }
+`;
+
 export const CREATE_COLLECTION_JOBS_MUTATION = gql`
   mutation CreateCollectionJobs($atVersionId: ID!) {
     createCollectionJobsFromPreviousAtVersion(atVersionId: $atVersionId) {

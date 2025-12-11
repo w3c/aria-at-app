@@ -13,6 +13,19 @@ const TEST_PLAN_RUN_TEST_RESULTS_COMPLETION_STATUS = gql`
     }
   }
 `;
+
+/**
+ * @typedef {Object} UseTestPlanRunIsFinishedReturn
+ * @property {boolean} runIsFinished - True if all test results have completedAt set, false otherwise
+ */
+
+/**
+ * Hook to determine if a test plan run is finished by checking if all test results
+ * have a completedAt timestamp.
+ *
+ * @param {string} testPlanRunId - The ID of the test plan run to check
+ * @returns {UseTestPlanRunIsFinishedReturn}
+ */
 export const useTestPlanRunIsFinished = testPlanRunId => {
   const { data: testPlanRunCompletionQuery } = useQuery(
     TEST_PLAN_RUN_TEST_RESULTS_COMPLETION_STATUS,
@@ -20,7 +33,8 @@ export const useTestPlanRunIsFinished = testPlanRunId => {
       variables: {
         testPlanRunId
       },
-      fetchPolicy: 'cache-and-network'
+      fetchPolicy: 'cache-and-network',
+      nextFetchPolicy: 'cache-first'
     }
   );
 

@@ -94,7 +94,7 @@ const Home = () => {
           </div>
           <div className={styles.heroVideo}>
             <iframe
-              src="https://player.vimeo.com/video/651279608?h=45aefd646f&byline=false&dnt=true&portrait=false"
+              src="https://player.vimeo.com/video/1140212763?h=45aefd646f&byline=false&dnt=true&portrait=false"
               width="640"
               height="340"
               frameBorder="0"

@@ -21,7 +21,8 @@ const TestReview = () => {
 
   const { loading, data, error } = useQuery(TEST_REVIEW_PAGE_QUERY, {
     variables: { testPlanVersionId },
-    fetchPolicy: 'cache-and-network'
+    fetchPolicy: 'cache-and-network',
+    nextFetchPolicy: 'cache-first'
   });
   const [activeFilter, setActiveFilter] = useState('All ATs');
 

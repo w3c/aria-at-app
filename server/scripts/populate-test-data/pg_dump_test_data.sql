@@ -47,9 +47,9 @@ $$;
 -- Data for Name: AtVersion; Type: TABLE DATA; Schema: public; Owner: atr
 --
 
-INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (2, '2023.3.3', '2023-12-02');
-INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (3, '13.0', '2023-12-02');
-INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (3, '14.0', '2024-09-23');
+INSERT INTO "AtVersion" ("atId", "name", "releasedAt", "supportedByAutomation", "latestAutomationSupporting") VALUES (2, '2023.3.3', '2023-12-02', true, true);
+INSERT INTO "AtVersion" ("atId", "name", "releasedAt", "supportedByAutomation", "latestAutomationSupporting") VALUES (3, '13.0', '2023-12-02', true, false);
+INSERT INTO "AtVersion" ("atId", "name", "releasedAt", "supportedByAutomation", "latestAutomationSupporting") VALUES (3, '14.0', '2024-09-23', true, true);
 
 
 -- INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (2, '2019.3', '2022-05-02');

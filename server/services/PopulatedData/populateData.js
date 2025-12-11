@@ -19,13 +19,17 @@ const {
 const getTests = require('../../models/services/TestsService');
 
 /**
+ * Central data loader for ARIA-AT hierarchies. Loads relational (Sequelize) and JSON (JSONB) data.
+ * Smart ID decoding: extracts parent IDs from encoded IDs (testId → testPlanVersionId).
+ * Hierarchical loading: walks up from specific to general. Validates parent/child consistency.
+ * Dual assertion lookup: tries Assertion table, falls back to JSONB. Supports preloading.
  *
- * @param {object} locationOfData - locationOfData as defined in GraphQL
- * @param {*} options
- * @param {*} options.preloaded - Used to prevent unnecessary database fetches,
- * you can provide a testPlanRun, testPlanReport, testPlanVersion or testPlan
- * and no database queries will be run by this function.
- * @returns
+ * @param {Object} locationOfData - IDs to locate data (testPlanId, testPlanVersionId, testResultId, etc.)
+ * @param {Object} [options={}]
+ * @param {Object} options.context - GraphQL context with transaction
+ * @param {Object} [options.preloaded] - Pre-fetched entities (testPlan, testPlanVersion, etc.)
+ * @returns {Promise<Object>} All loaded entities: testPlan, testPlanVersion, testPlanReport, testPlanRun, test, scenario, assertion, etc.
+ * @throws {Error} If data can't be loaded or parent/child IDs inconsistent
  */
 const populateData = async (locationOfData, { context, preloaded } = {}) => {
   const { transaction } = context;
@@ -258,6 +262,17 @@ const populateData = async (locationOfData, { context, preloaded } = {}) => {
   };
 };
 
+/**
+ * Generates detailed error for populateData failures.
+ * Detects: testPlanVersion IDs failed, testPlanRun IDs failed, or generic failure.
+ * If parent ID is undefined (not just missing), suggests wrong ID type used.
+ *
+ * @param {Object} params
+ * @param {string} params.testPlanVersionId - Decoded/provided testPlanVersionId
+ * @param {string} params.testPlanRunId - Decoded/provided testPlanRunId
+ * @param {Object} params.locationOfData - Original IDs
+ * @throws {Error} Always throws descriptive error
+ */
 const throwFailedToLoadError = ({
   testPlanVersionId,
   testPlanRunId,

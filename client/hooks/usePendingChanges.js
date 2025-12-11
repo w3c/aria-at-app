@@ -1,7 +1,37 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 
 /**
- * Generic hook for managing pending changes with preview functionality
+ * @typedef {Object} PendingChanges
+ * @property {Array} addedItems - Array of items to be added
+ * @property {Array} removedItemIds - Array of item IDs to be removed
+ */
+
+/**
+ * @typedef {Object} UsePendingChangesOptions
+ * @property {Object} originalItem - The original item to track changes for
+ * @property {Function} [getItemsField=item => item.items || []] - Function to extract
+ *   the items array from an item
+ * @property {Function} [createUpdatedItem=(item, updatedItems) => ({ ...item, items: updatedItems })] -
+ *   Function to create an updated item with the new items array
+ */
+
+/**
+ * @typedef {Object} UsePendingChangesReturn
+ * @property {PendingChanges} pendingChanges - Object with addedItems and removedItemIds arrays
+ * @property {Object|null} displayItem - Preview of the item with pending changes applied
+ * @property {boolean} hasChanges - True if there are any pending changes
+ * @property {Function} addItem - Function to add an item to pending changes
+ * @property {Function} removeItem - Function to remove an item by ID
+ * @property {Function} clearChanges - Function to clear all pending changes
+ */
+
+/**
+ * Generic hook for managing pending changes with preview functionality. Tracks
+ * items to be added and removed, and provides a preview of the item with changes applied.
+ * Automatically resets when the original item changes.
+ *
+ * @param {UsePendingChangesOptions} options - Configuration options
+ * @returns {UsePendingChangesReturn}
  */
 export const usePendingChanges = ({
   originalItem,

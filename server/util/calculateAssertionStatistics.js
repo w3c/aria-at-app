@@ -1,3 +1,13 @@
+/**
+ * Calculates assertion statistics (passed/failed/untestable counts and percentages) from test result rows.
+ * Returns 4 views: Must-Have only, Should-Have only, Must+Should combined, and Percent of Behaviors.
+ * The Percent of Behaviors view uses floor division for passing/failing to ensure untestable captures rounding remainder.
+ *
+ * @param {Array<Object>} rows - Array of assertion result rows
+ * @param {string} rows[].assertionPriority - 'Must' or 'Should'
+ * @param {string} rows[].result - 'Passed', 'Failed', or 'Untestable'
+ * @returns {Array<Object>} Array of 4 statistic objects with counts/totals/percentages
+ */
 const calculateAssertionStatistics = rows => {
   const statistics = {
     must: {

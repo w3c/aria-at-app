@@ -1,7 +1,10 @@
 export default (
   testPlanReportAtBrowserQuery,
   existingTestPlanReportsQuery,
-  getUpdateEventsQuery
+  getUpdateEventsQuery,
+  addTestPlansQuery,
+  getAutomationSupportedAtVersionsQuery,
+  getRerunnableReportsCountQuery
 ) => [
   {
     request: {
@@ -132,6 +135,85 @@ export default (
     result: {
       data: {
         updateEvents: []
+      }
+    }
+  },
+  {
+    request: {
+      query: addTestPlansQuery,
+      variables: {
+        testPlanVersionPhases: ['DRAFT', 'CANDIDATE', 'RECOMMENDED']
+      }
+    },
+    result: {
+      data: {
+        testPlans: []
+      }
+    }
+  },
+  {
+    request: {
+      query: getAutomationSupportedAtVersionsQuery,
+      variables: {}
+    },
+    result: {
+      data: {
+        ats: [
+          {
+            id: '1',
+            name: 'Chrome',
+            atVersions: [
+              {
+                id: '1',
+                name: '126',
+                releasedAt: '2024-01-01',
+                supportedByAutomation: true
+              }
+            ]
+          },
+          {
+            id: '2',
+            name: 'Firefox',
+            atVersions: [
+              {
+                id: '2',
+                name: '123',
+                releasedAt: '2024-01-01',
+                supportedByAutomation: true
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    request: {
+      query: getRerunnableReportsCountQuery,
+      variables: {
+        atVersionId: '1'
+      }
+    },
+    result: {
+      data: {
+        rerunnableReports: {
+          previousVersionGroups: []
+        }
+      }
+    }
+  },
+  {
+    request: {
+      query: getRerunnableReportsCountQuery,
+      variables: {
+        atVersionId: '2'
+      }
+    },
+    result: {
+      data: {
+        rerunnableReports: {
+          previousVersionGroups: []
+        }
       }
     }
   }

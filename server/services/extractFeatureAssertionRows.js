@@ -1,6 +1,27 @@
 const checkAssertionResultExceptionMatch = require('../../shared/checkAssertionResultExceptionMatch');
 const convertAssertionPriority = require('../../shared/convertAssertionPriority');
 
+/**
+ * Extracts assertion rows from finalized test results that match a specific feature reference.
+ * Filters assertions based on reference ID and type, and collects feature information from
+ * the first matching reference. Only includes assertions that match exception criteria
+ * (MUST or SHOULD priority).
+ *
+ * @param {Object} testPlanReport - The test plan report object containing test plan version,
+ *   AT, and browser information
+ * @param {number} testPlanReportId - The ID of the test plan report
+ * @param {Array<Object>} finalizedTestResults - Array of finalized test result objects,
+ *   each containing test, scenarioResults, atVersion, browserVersion, and completedAt
+ * @param {string} refId - The reference ID to filter assertions by
+ * @param {string} [refType] - Optional reference type to further filter assertions
+ * @param {Object<string, number>} [testIdToResultIdMap={}] - Optional mapping of test IDs
+ *   to test result IDs for remapping test result IDs
+ * @returns {Object} An object containing:
+ *   - {Array<Object>} rows - Array of assertion row objects with test plan, test, assertion,
+ *     and result information
+ *   - {Object} featureInfo - Object containing refId, type, linkText, and value from the
+ *     first matching reference
+ */
 const extractFeatureAssertionRows = (
   testPlanReport,
   testPlanReportId,

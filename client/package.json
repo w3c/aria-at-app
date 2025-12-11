@@ -28,6 +28,7 @@
     "bootstrap": "^5.3.3",
     "clsx": "^2.1.1",
     "core-js": "^3.37.1",
+    "dataloader": "^2.2.3",
     "graphql": "^16.9.0",
     "lodash": "^4.17.21",
     "moment": "^2.30.1",

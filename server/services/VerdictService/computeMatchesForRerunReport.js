@@ -14,6 +14,14 @@ const MATCH_TYPE = {
   NONE: 'NONE'
 };
 
+/**
+ * Builds map of scenario IDs to current test result data from rerun report.
+ * Extracts scenario data from test results or uses currentOutputsByScenarioId override for live updates.
+ *
+ * @param {Object} rerunReport - Rerun test plan report
+ * @param {Object} [currentOutputsByScenarioId] - Optional output overrides
+ * @returns {Map<string, Object>} ScenarioId → {testId, scenarioId, output, assertionIds}
+ */
 const buildCurrentScenarioMap = (rerunReport, currentOutputsByScenarioId) => {
   const map = new Map();
   for (const run of rerunReport.testPlanRuns || []) {
@@ -36,6 +44,15 @@ const buildCurrentScenarioMap = (rerunReport, currentOutputsByScenarioId) => {
   return map;
 };
 
+/**
+ * Extracts finalized scenario results from candidate reports for matching.
+ * Flattens TestPlanReports → FinalizedTestResults → ScenarioResults into flat array
+ * with all metadata for verdict copying (outputs, assertions, side effects, versions).
+ *
+ * @param {Array<Object>} candidateReports - Finalized TestPlanReports
+ * @param {Object} context - GraphQL context
+ * @returns {Promise<Array<Object>>} Scenario entries with all matching/copying metadata
+ */
 const buildCandidateEntries = async (candidateReports, context) => {
   const entries = [];
   for (const report of candidateReports) {
@@ -78,6 +95,16 @@ const buildCandidateEntries = async (candidateReports, context) => {
   return entries;
 };
 
+/**
+ * Determines match type for verdict copying reliability.
+ * SAME_SCENARIO: exact match + exact assertions. CROSS_SCENARIO: different scenario + exact assertions.
+ * INCOMPLETE: assertion sets differ (new/removed assertions lack historical verdicts).
+ *
+ * @param {boolean} isSameScenario - Scenario IDs match
+ * @param {Set<string>} currentIds - Rerun assertion IDs
+ * @param {Set<string>} sourceIds - Candidate assertion IDs
+ * @returns {string} MATCH_TYPE constant
+ */
 const determineType = (isSameScenario, currentIds, sourceIds) => {
   const currentOnly = [...currentIds].filter(id => !sourceIds.has(id));
   const sourceOnly = [...sourceIds].filter(id => !currentIds.has(id));
@@ -90,6 +117,18 @@ const determineType = (isSameScenario, currentIds, sourceIds) => {
   return isSameScenario ? MATCH_TYPE.SAME_SCENARIO : MATCH_TYPE.CROSS_SCENARIO;
 };
 
+/**
+ * Finds best historical matches for rerun report scenarios to enable verdict copying.
+ * Strategy: SAME_SCENARIO (exact) → CROSS_SCENARIO (different scenario, same output) → NONE (fallback reference).
+ * Uses normalized output comparison. Prioritizes same test, then broadens. Returns null if no finalized candidates.
+ *
+ * @param {Object} params
+ * @param {string} params.rerunTestPlanReportId - Rerun report ID
+ * @param {Object} params.context - GraphQL context
+ * @param {number} [params.candidatesLimit] - Optional candidate limit
+ * @param {Object} [params.currentOutputsByScenarioId] - Live output overrides
+ * @returns {Promise<Map<string, Object>|null>} ScenarioId → {type, source with verdict data}, or null
+ */
 const computeMatchesForRerunReport = async ({
   rerunTestPlanReportId,
   context,

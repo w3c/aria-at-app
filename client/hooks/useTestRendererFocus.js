@@ -1,5 +1,15 @@
 import { useEffect, useRef } from 'react';
 
+/**
+ * Hook to manage focus behavior in the test renderer. Automatically focuses the first
+ * element that needs attention after submission, including elements with focus flags,
+ * incomplete assertions, and negative side effects sections. Uses MutationObserver to
+ * wait for DOM updates and has a 5-second timeout.
+ *
+ * @param {boolean} isSubmitted - True when the form has been submitted
+ * @param {Object} pageContent - The page content object containing results.commands array
+ * @returns {void}
+ */
 const useTestRendererFocus = (isSubmitted, pageContent) => {
   const focusHandledRef = useRef(false);
   const observerRef = useRef(null);

@@ -1,5 +1,6 @@
 const runnableTests = require('./runnableTestsResolver');
 const runnableTestsLength = require('./runnableTestsLengthResolver');
+const totalScenarioCount = require('./totalScenarioCountResolver');
 const draftTestPlanRuns = require('./draftTestPlanRunsResolver');
 const finalizedTestResults = require('./finalizedTestResultsResolver');
 const conflicts = require('./conflictsResolver');
@@ -21,6 +22,7 @@ const events = require('./updateEventsResolver');
 module.exports = {
   runnableTests,
   runnableTestsLength,
+  totalScenarioCount,
   draftTestPlanRuns,
   finalizedTestResults,
   conflicts,

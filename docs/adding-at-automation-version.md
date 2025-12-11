@@ -61,18 +61,19 @@ This document describes the process for adding a new version of an AT to the ARI
 
 ## Update Aria-AT App
 
-Note that these steps are required for both NVDA and VoiceOver
+There are two ways to add a new automation-supported AT version to the ARIA-AT App.
 
-1. Update the supported versions constant in the aria-at-app:
-   - `AT_VERSIONS_SUPPORTED_BY_COLLECTION_JOBS` in [server/util/constants.js](https://github.com/w3c/aria-at-app/blob/development/server/util/constants.js#L4)
-2. Update the relevant deployment
-3. Create and deploy a new release of the aria-at-app to production
-4. Log in to the ARIA-AT App as an administrator
-5. Navigate to the "Test Queue" page
-6. Click "Manage Assistive Technology Versions"
-7. If the new AT version is not listed:
-   1. Click "Add New AT Version"
-   2. Enter the version number and available date
-   3. Save the new version
+Note that these steps are required for NVDA and JAWS. VoiceOver will automatically be marked as latest and automation-supported when the first bot run completes with the new version.
+
+### Option A: Add a seeder\*\*
+
+- Create a new seeder file in `server/seeders/` to mark the version as supported
+- Go through the process of deploying the changes to the ARIA-AT App
+
+### Option B: Use GraphQL Playground\*\*
+
+1. Navigate to the GraphQL playground in your deployed environment
+2. Use the `createAtVersion` mutation to add the new version
+3. Use the `promoteAutomationSupportedVersion` mutation to mark the version as latest automation-supported
 
 The new AT version is now fully configured and ready for use in ARIA-AT App.
