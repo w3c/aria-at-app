@@ -1,3 +1,23 @@
+## [1.26.0](https://github.com/w3c/aria-at-app/compare/v1.25.2...v1.26.0) (2025-12-11)
+
+
+### Features
+
+* persist at version automation support in DB ([#1582](https://github.com/w3c/aria-at-app/issues/1582)) ([4f80595](https://github.com/w3c/aria-at-app/commit/4f805954d706fec535ac4ccc1d9ce02cc12f3dfe))
+
+
+### Bug Fixes
+
+* "Mark as Final" unexpectedly disabled ([#1650](https://github.com/w3c/aria-at-app/issues/1650)) ([f96e8b0](https://github.com/w3c/aria-at-app/commit/f96e8b051b9c6b33976fa8f91ab5a7b5ef554088))
+* Address chance of invalid querySelector call ([#1647](https://github.com/w3c/aria-at-app/issues/1647)) ([17e1141](https://github.com/w3c/aria-at-app/commit/17e1141d414ecc32f3d63c2cb8e15e675b41771f))
+* allow add test plans disclosure to add test plan versions without initial reports ([#1649](https://github.com/w3c/aria-at-app/issues/1649)) ([9dc48fc](https://github.com/w3c/aria-at-app/commit/9dc48fc8969bf0e85b1473771a65a8e92d3d41cb))
+* data management add test plan crash ([#1644](https://github.com/w3c/aria-at-app/issues/1644)) ([5bb1446](https://github.com/w3c/aria-at-app/commit/5bb1446326533b285efaeb8e4a607419190a8444))
+* Display additional information for reports ([#1640](https://github.com/w3c/aria-at-app/issues/1640)) ([d3e616e](https://github.com/w3c/aria-at-app/commit/d3e616e130c6319088f399b762ba2c0db93e5df0))
+* page query response time reduction and server load improvements  ([#1592](https://github.com/w3c/aria-at-app/issues/1592)) ([54a5375](https://github.com/w3c/aria-at-app/commit/54a537570ab29c258fc9a1d294973c2045966e13))
+* populate test plan versions and filter on first disclosure open ([#1643](https://github.com/w3c/aria-at-app/issues/1643)) ([35e9469](https://github.com/w3c/aria-at-app/commit/35e94692f15611735a03f9c0d5eccf790bba2707))
+* Restore phase update to `RECOMMENDED` and restore negative side effects expected mutations ([#1653](https://github.com/w3c/aria-at-app/issues/1653)) ([6af6983](https://github.com/w3c/aria-at-app/commit/6af69837eab799993076df823698dcc25e6a1633))
+* Update instructions on running setup script ([#1639](https://github.com/w3c/aria-at-app/issues/1639)) ([4f290d1](https://github.com/w3c/aria-at-app/commit/4f290d1dd5900c955c1c8a5a61782b33390811e5))
+
 ### [1.25.2](https://github.com/w3c/aria-at-app/compare/v1.25.1...v1.25.2) (2025-11-10)
 
 
