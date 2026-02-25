@@ -125,9 +125,6 @@ server/migrations/test_plan_target_id.csv
 server/migrations/dumps/dumpDatabase_*.sql
 server/migrations/dumps/dumpTable_*.sql
 
-# Private Key files (installed by deploy)
-jwt-signing-key.pem
-
 client/resources
 
 #temp files for import-tests
