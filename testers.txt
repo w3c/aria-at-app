@@ -3,19 +3,14 @@
 # One username per line.
 
 jongund
-MarcoZehe
 jscholes
 shirsha
 robfentress
 a11ydoer
 jha11y
-brettplewis1966
 hadirangin
 AlyssaGourley
 IsaDC
-sinabahram
-avo4-1925562
-jkva
 howard-e
 alaina-a11y
 RUSteinberg
@@ -31,5 +26,7 @@ stevefaulkner
 stalgiag
 gnarf
 tactics2
-thinkbulecount2
 lezette
+BrettLewisVispero
+LorenMora
+tuncaytugce
