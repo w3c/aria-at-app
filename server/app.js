@@ -30,7 +30,13 @@ app.use('/database', databaseRoutes);
 app.use('/metrics', metricsRoutes);
 
 apolloServer.start().then(() => {
-  apolloServer.applyMiddleware({ app });
+  apolloServer.applyMiddleware({
+    app,
+    cors: {
+      origin: process.env.APP_SERVER,
+      credentials: true
+    }
+  });
 });
 
 const listener = express();
