@@ -64,4 +64,4 @@ The project maintainers keep a record of the technical problems which cause unfo
 
 ## License
 
-When you submit code changes, your submissions are understood to be under the same [W3C Document License](https://github.com/w3c/aria-at-app/blob/main/LICENSE.md) that covers the project.
+When you submit code changes, your submissions are understood to be under the same [W3C Software and Document License](https://github.com/w3c/aria-at-app/blob/main/LICENSE.md) that covers the project.

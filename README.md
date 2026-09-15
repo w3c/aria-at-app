@@ -33,4 +33,4 @@ All contributors to this project are expected to adhere to the Code of Conduct, 
 
 All documents in this Repository are licensed by contributors
 under the
-[W3C Document License](https://www.w3.org/Consortium/Legal/copyright-documents).
+[W3C Software and Document License](https://www.w3.org/copyright/software-license/).
