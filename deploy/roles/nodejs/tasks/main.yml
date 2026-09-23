@@ -1,12 +1,26 @@
 ---
+- name: Ensure apt keyrings directory exists
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+  become: yes
+
 - name: Add software repository keys
-  apt_key:
-    state: present
-    url: '{{item}}'
+  shell: |
+    curl -fsSL {{ item.url }} | gpg --dearmor -o {{ item.dest }}
+  args:
+    creates: '{{ item.dest }}'
   become: yes
   with_items:
-    - https://dl.yarnpkg.com/debian/pubkey.gpg
-    - https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+    - {
+        url: 'https://dl.yarnpkg.com/debian/pubkey.gpg',
+        dest: '/etc/apt/keyrings/yarn.gpg'
+      }
+    - {
+        url: 'https://deb.nodesource.com/gpgkey/nodesource.gpg.key',
+        dest: '/etc/apt/keyrings/nodesource.gpg'
+      }
 
 - include_tasks: upgrade.yml
 
@@ -17,8 +31,8 @@
     update_cache: True
   become: yes
   with_items:
-    - deb https://dl.yarnpkg.com/debian/ stable main
-    - deb https://deb.nodesource.com/node_18.x buster main
+    - deb [signed-by=/etc/apt/keyrings/yarn.gpg] https://dl.yarnpkg.com/debian/ stable main
+    - deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_18.x buster main
 
 - name: Install packages
   apt:
