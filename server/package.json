@@ -23,6 +23,8 @@
   "homepage": "https://github.com/bocoup/aria-at-app#readme",
   "dependencies": {
     "@moebius/http-graceful-shutdown": "^1.1.0",
+    "@octokit/auth-app": "^8.2.0",
+    "@octokit/rest": "^22.0.1",
     "apicache": "^1.6.3",
     "apollo-server": "^3.13.0",
     "apollo-server-core": "^3.13.0",
@@ -40,7 +42,6 @@
     "fs-extra": "^11.2.0",
     "graphql": "^16.9.0",
     "js-base64": "^3.7.7",
-    "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
     "minimist": "^1.2.8",
     "moment": "^2.30.1",

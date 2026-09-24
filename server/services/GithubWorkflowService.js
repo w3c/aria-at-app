@@ -1,40 +1,67 @@
-//import token from '../.github-app-token.json';
-const axios = require('axios');
-const fs = require('fs');
-const jwt = require('jsonwebtoken');
-const path = require('path');
+const { Octokit } = require('@octokit/rest');
+const { createAppAuth } = require('@octokit/auth-app');
 const {
   promises: { resolve }
 } = require('dns');
-
-const ONE_MINUTE = 60;
-
-// Assigned by GitHub
-const GITHUB_APP_ID = '395709';
-
-// > your JWT must be signed using the RS256 algorithm.
-//
-// https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/generating-a-json-web-token-jwt-for-a-github-app
-const ALGORITHM = 'RS256';
 
 // > Note: [The `workflow_dispatch event] will only trigger a workflow run if
 // > the workflow file is on the default branch.
 //
 // https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_dispatch
-const WORKFLOW_REPO =
-  process.env.GITHUB_WORKFLOW_REPO ||
-  (process.env.ENVIRONMENT === 'production'
-    ? 'bocoup/aria-at-gh-actions-helper'
-    : 'bocoup/aria-at-gh-actions-helper-dev');
+const WORKFLOW_REPO = process.env.GITHUB_WORKFLOW_REPO;
 
-// Generated from the GitHub.com UI
-let privateKey = null;
+let octokit = null;
 let callbackUrlHostname = null;
 
 exports.setup = async () => {
-  privateKey = fs.readFileSync(
-    path.join(__dirname, '../../jwt-signing-key.pem')
-  );
+  const appId = process.env.GITHUB_APP_ID;
+  if (!appId) {
+    throw new Error(
+      'Environment GITHUB_APP_ID must be set to the GitHub App ID.'
+    );
+  }
+
+  // The installation ID can be found via the GitHub API once the app is
+  // installed on an org: GET /orgs/{org}/installation
+  // https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/authenticating-as-a-github-app-installation
+  const installationId = process.env.GITHUB_APP_INSTALLATION_ID;
+  if (!installationId) {
+    throw new Error(
+      'Environment GITHUB_APP_INSTALLATION_ID must be set to the ' +
+        'GitHub App installation ID.'
+    );
+  }
+
+  // Provide the PEM key generated from the Github app. The value must be base64-encoded.
+  const rawKey = process.env.GITHUB_APP_PRIVATE_KEY;
+  if (!rawKey) {
+    throw new Error(
+      'Environment GITHUB_APP_PRIVATE_KEY must be set to the GitHub App PEM ' +
+        'private key (base64-encoded).'
+    );
+  }
+
+  // Decode the base64-encoded PEM key.
+  const privateKey = Buffer.from(rawKey, 'base64').toString('utf8');
+
+  if (!privateKey.includes('-----BEGIN')) {
+    throw new Error(
+      'GITHUB_APP_PRIVATE_KEY does not appear to be a valid base64-encoded ' +
+        'PEM key.'
+    );
+  }
+
+  // Octokit handles JWT creation, signing, and installation token
+  // exchange automatically via @octokit/auth-app.
+  octokit = new Octokit({
+    authStrategy: createAppAuth,
+    auth: {
+      appId,
+      privateKey,
+      installationId
+    }
+  });
+
   // strip possible https:// at start and trailing /
   callbackUrlHostname = process.env.AUTOMATION_CALLBACK_FQDN?.replace(
     /(^[^:]+:\/\/|\/$)/g,
@@ -57,66 +84,7 @@ exports.setup = async () => {
   }
 };
 
-exports.isEnabled = () => privateKey && callbackUrlHostname;
-// > 2. Get the ID of the installation that you want to authenticate as.
-// >
-// >   If you are responding to a webhook event, the webhook payload will
-// >   include the installation ID.
-// >
-// >   You can also use the REST API to find the ID for an installation of your
-// >   app. For example, you can get an installation ID with the `GET
-// >   /users/{username}/installation`, `GET
-// >   /repos/{owner}/{repo}/installation`, `GET /orgs/{org}/installation`, or
-// >   `GET /app/installations endpoints`. For more information, see
-// >   "[GitHub Apps](https://docs.github.com/en/rest/apps/apps)".
-//
-// https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/authenticating-as-a-github-app-installation
-const GITHUB_APP_INSTALLATION_ID = '42217598';
-
-// > The time that the JWT was created. To protect against clock drift, we
-// > recommend that you set this 60 seconds in the past and ensure that your
-// > server's date and time is set accurately (for example, by using the Network
-// > Time Protocol).
-//
-// https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/generating-a-json-web-token-jwt-for-a-github-app
-const calculateIssuedAt = () => Math.round(Date.now() / 1000) - ONE_MINUTE;
-
-const createJWT = (payload, privateKey, algorithm) => {
-  return new Promise((resolve, reject) => {
-    jwt.sign(payload, privateKey, { algorithm }, (err, token) => {
-      token ? resolve(token) : reject(err);
-    });
-  });
-};
-
-// > The expiration time of the JWT, after which it can't be used to request an
-// > installation token. The time must be no more than 10 minutes into the
-// > future.
-//
-// https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/generating-a-json-web-token-jwt-for-a-github-app
-const calculateExpiresAt = () => Math.round(Date.now() / 1000) + 9 * ONE_MINUTE;
-
-const fetchInstallationAccessToken = async (jsonWebToken, installationID) => {
-  const response = await axios({
-    method: 'POST',
-    url: `https://api.github.com/app/installations/${installationID}/access_tokens`,
-    headers: {
-      Accept: 'application/vnd.github+json',
-      Authorization: `Bearer ${jsonWebToken}`,
-      'X-GitHub-Api-Version': '2022-11-28'
-    },
-    transformResponse: [],
-    validateStatus: () => true,
-    responseType: 'text'
-  });
-
-  if (response.status < 200 || response.status >= 300) {
-    throw new Error(
-      response.data ?? 'Unable to retrieve installation access token'
-    );
-  }
-  return JSON.parse(response.data).token;
-};
+exports.isEnabled = () => octokit && callbackUrlHostname;
 
 /**
  * We just want the whole number of the macOS version
@@ -142,16 +110,7 @@ const getWorkflowNameForMacOS = (atKey, atVersion) => {
 };
 
 const createGithubWorkflow = async ({ job, directory, gitSha, atVersion }) => {
-  const payload = {
-    iat: calculateIssuedAt(),
-    exp: calculateExpiresAt(),
-    iss: GITHUB_APP_ID
-  };
-  const jsonWebToken = await createJWT(payload, privateKey, ALGORITHM);
-  const accessToken = await fetchInstallationAccessToken(
-    jsonWebToken,
-    GITHUB_APP_INSTALLATION_ID
-  );
+  const [owner, repo] = WORKFLOW_REPO.split('/');
 
   const atKey = job.testPlanRun.testPlanReport.at.key;
   const workflowFilename = {
@@ -187,30 +146,14 @@ const createGithubWorkflow = async ({ job, directory, gitSha, atVersion }) => {
     inputs.browser = browser;
     inputs.jaws_version = atVersion?.name ?? 'latest';
   }
-  const axiosConfig = {
-    method: 'POST',
-    url: `https://api.github.com/repos/${WORKFLOW_REPO}/actions/workflows/${workflowFilename}/dispatches`,
 
-    headers: {
-      Accept: 'application/vnd.github+json',
-      Authorization: `Bearer ${accessToken}`,
-      'X-GitHub-Api-Version': '2022-11-28'
-    },
-    data: JSON.stringify({
-      ref: 'main',
-      inputs
-    }),
-    validateStatus: () => true,
-    responseType: 'text'
-  };
-  const response = await axios(axiosConfig);
-  if (response.status < 200 || response.status >= 300) {
-    throw new Error(
-      response.data
-        ? JSON.stringify(response.data)
-        : 'Unable to initiate workflow'
-    );
-  }
+  await octokit.actions.createWorkflowDispatch({
+    owner,
+    repo,
+    workflow_id: workflowFilename,
+    ref: 'main',
+    inputs
+  });
 
   return true;
 };

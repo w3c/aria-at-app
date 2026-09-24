@@ -25,6 +25,5 @@ jobs:
           python -m pip install --user ansible-core==2.16.14
           cd deploy
           echo ${{ secrets.ANSIBLE_VAULT_PASSWORD }} > ansible-vault-password.txt
-          ansible-vault view --vault-password-file ansible-vault-password.txt files/jwt-signing-key.pem.enc > ../jwt-signing-key.pem
           ansible-galaxy collection install ansible.posix
           ansible-playbook provision.yml -e ansible_python_interpreter=/usr/bin/python3 --inventory inventory/production.yml
