@@ -119,5 +119,4 @@ window.endTestTransaction = async () => {
   });
   sessionStorage.removeItem('currentTransactionId');
   await resetCache();
-  location.reload();
 };
