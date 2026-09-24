@@ -10,7 +10,7 @@ const {
 const ONE_MINUTE = 60;
 
 // Assigned by GitHub
-const GITHUB_APP_ID = '395709';
+const GITHUB_APP_ID = process.env.GITHUB_APP_ID;
 
 // > your JWT must be signed using the RS256 algorithm.
 //
@@ -71,7 +71,7 @@ exports.isEnabled = () => privateKey && callbackUrlHostname;
 // >   "[GitHub Apps](https://docs.github.com/en/rest/apps/apps)".
 //
 // https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/authenticating-as-a-github-app-installation
-const GITHUB_APP_INSTALLATION_ID = '42217598';
+const GITHUB_APP_INSTALLATION_ID = process.env.GITHUB_APP_INSTALLATION_ID;
 
 // > The time that the JWT was created. To protect against clock drift, we
 // > recommend that you set this 60 seconds in the past and ensure that your
