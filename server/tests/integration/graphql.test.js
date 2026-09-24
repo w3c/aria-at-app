@@ -1002,6 +1002,10 @@ describe('graphql', () => {
               }
             ) {
               __typename
+              populatedData {
+                __typename
+              }
+              alreadyExisted
             }
             testPlanReport(id: 1) {
               __typename
