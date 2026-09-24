@@ -7,19 +7,19 @@
   become: yes
 
 - name: Add software repository keys
-  shell: |
-    curl -fsSL {{ item.url }} | gpg --dearmor -o {{ item.dest }}
-  args:
-    creates: '{{ item.dest }}'
+  get_url:
+    url: '{{ item.url }}'
+    dest: '{{ item.dest }}'
+    mode: '0644'
   become: yes
   with_items:
     - {
         url: 'https://dl.yarnpkg.com/debian/pubkey.gpg',
-        dest: '/etc/apt/keyrings/yarn.gpg'
+        dest: '/etc/apt/keyrings/yarn.asc'
       }
     - {
-        url: 'https://deb.nodesource.com/gpgkey/nodesource.gpg.key',
-        dest: '/etc/apt/keyrings/nodesource.gpg'
+        url: 'https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key',
+        dest: '/etc/apt/keyrings/nodesource.asc'
       }
 
 - include_tasks: upgrade.yml
@@ -31,8 +31,8 @@
     update_cache: True
   become: yes
   with_items:
-    - deb [signed-by=/etc/apt/keyrings/yarn.gpg] https://dl.yarnpkg.com/debian/ stable main
-    - deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_18.x buster main
+    - deb [signed-by=/etc/apt/keyrings/yarn.asc] https://dl.yarnpkg.com/debian/ stable main
+    - deb [signed-by=/etc/apt/keyrings/nodesource.asc] https://deb.nodesource.com/node_{{ nodejs_major_version }}.x nodistro main
 
 - name: Install packages
   apt:
