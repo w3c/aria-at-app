@@ -195,7 +195,13 @@ const getPage = async (options, callback) => {
       consoleErrors
     });
   } finally {
-    await page.evaluate('endTestTransaction()');
+    // An error thrown here would replace any error thrown by the test itself,
+    // so log it instead
+    try {
+      await page.evaluate('endTestTransaction()');
+    } catch (error) {
+      console.error('Failed to end test transaction:', error); // eslint-disable-line no-console
+    }
   }
 
   await page.close();
