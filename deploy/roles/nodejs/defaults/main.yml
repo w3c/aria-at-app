@@ -1,0 +1,4 @@
+---
+# Major version of Node.js installed from NodeSource. Keep this on a supported
+# LTS release: https://nodejs.org/en/about/previous-releases
+nodejs_major_version: 22

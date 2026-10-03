@@ -156,25 +156,18 @@ describe('Test Run when signed in as admin', () => {
       timeout: 5000
     });
 
-    await page.evaluate(() => {
-      const openRunAsMenu = document.querySelector('div.dropdown-menu');
-      if (!openRunAsMenu) return;
-
-      const testerOptions = Array.from(
-        openRunAsMenu.querySelectorAll('a.dropdown-item')
-      );
-      const targetTesterOption = testerOptions.find(option =>
-        option.innerText.includes('esmeralda-baggins')
-      );
-      if (targetTesterOption) {
-        targetTesterOption.click();
-      }
-    });
-
-    // Wait for navigation to Test Run page to complete
-    await page.waitForNavigation({
-      waitUntil: ['domcontentloaded', 'networkidle0']
-    });
+    // Clicking the tester option does a full page load, so click it from
+    // Puppeteer (not inside page.evaluate) and start waiting for the navigation
+    // before clicking so it can't be missed
+    const targetTesterOption = await page.waitForSelector(
+      'div.dropdown-menu a.dropdown-item ::-p-text(esmeralda-baggins)'
+    );
+    await Promise.all([
+      page.waitForNavigation({
+        waitUntil: ['domcontentloaded', 'networkidle0']
+      }),
+      targetTesterOption.click()
+    ]);
 
     const atBrowserModalHeadingSelector =
       'h1 ::-p-text(Assistive Technology and Browser Details)';
@@ -412,25 +405,18 @@ describe('Test Run when signed in as tester', () => {
       timeout: 5000
     });
 
-    await page.evaluate(() => {
-      const openRunAsMenu = document.querySelector('div.dropdown-menu');
-      if (!openRunAsMenu) return;
-
-      const testerOptions = Array.from(
-        openRunAsMenu.querySelectorAll('a.dropdown-item')
-      );
-      const targetTesterOption = testerOptions.find(option =>
-        option.innerText.includes('esmeralda-baggins')
-      );
-      if (targetTesterOption) {
-        targetTesterOption.click();
-      }
-    });
-
-    // Wait for navigation to Test Run page to complete
-    await page.waitForNavigation({
-      waitUntil: ['domcontentloaded', 'networkidle0']
-    });
+    // Clicking the tester option does a full page load, so click it from
+    // Puppeteer (not inside page.evaluate) and start waiting for the navigation
+    // before clicking so it can't be missed
+    const targetTesterOption = await page.waitForSelector(
+      'div.dropdown-menu a.dropdown-item ::-p-text(esmeralda-baggins)'
+    );
+    await Promise.all([
+      page.waitForNavigation({
+        waitUntil: ['domcontentloaded', 'networkidle0']
+      }),
+      targetTesterOption.click()
+    ]);
     await page.waitForSelector(
       '::-p-text(tests of esmeralda-baggins in read-only mode)'
     );
