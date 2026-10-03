@@ -9,17 +9,20 @@
 - name: Show status of nodejs installation
   debug: msg="{{ node_version.stdout }}"
 
-- name: Remove Node.js repo if not version 18
+- name: Remove legacy Node.js and Yarn repos
   apt_repository:
     state: absent
-    repo: deb https://deb.nodesource.com/node_14.x buster main
-    update_cache: True
+    repo: '{{item}}'
+    update_cache: False
   become: yes
-  when: 'node_version.stdout is not match("v18.*")'
+  with_items:
+    - deb https://deb.nodesource.com/node_14.x buster main
+    - deb https://deb.nodesource.com/node_18.x buster main
+    - deb https://dl.yarnpkg.com/debian/ stable main
 
-- name: Remove Node.js if not version 18
+- name: Remove Node.js if not version {{ nodejs_major_version }}
   apt:
     name: nodejs
     state: absent
   become: yes
-  when: 'node_version.stdout is not match("v18.*")'
+  when: 'node_version.stdout is not match("v" ~ nodejs_major_version ~ "[.]")'
