@@ -1,3 +1,11 @@
+### [1.26.1](https://github.com/w3c/aria-at-app/compare/v1.26.0...v1.26.1) (2026-10-DD)
+
+
+   ### Bug Fixes
+
+   * Restore production deploys on Debian trixie: apt keyrings, `signed-by`, and Node 22 ([#1672](https://github.com/w3c/aria-at-app/issues/1672), [#1675](https://github.com/w3c/aria-at-app/issues/1675))
+   * Harden the GraphQL API: disable introspection and playground, restrict CORS to the app origin, and require auth for update events and collection jobs ([#1667](https://github.com/w3c/aria-at-app/issues/1667))
+
 ## [1.26.0](https://github.com/w3c/aria-at-app/compare/v1.25.2...v1.26.0) (2025-12-11)
 
 
